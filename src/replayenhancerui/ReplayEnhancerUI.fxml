@@ -18,13 +18,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-
 <VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="replayenhancerui.ReplayEnhancerUIController">
    <children>
-      <MenuBar prefHeight="25.0" prefWidth="640.0">
+      <MenuBar maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="640.0">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
@@ -51,7 +52,7 @@
           </Menu>
         </menus>
       </MenuBar>
-      <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="430.0" prefWidth="640.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab closable="false" text="Files">
                <content>
@@ -96,9 +97,9 @@
                                     <RowConstraints vgrow="SOMETIMES" />
                                  </rowConstraints>
                                  <children>
-                                    <TextField fx:id="txtVideoStart" GridPane.columnIndex="1" />
-                                    <TextField fx:id="txtVideoEnd" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <TextField fx:id="txtVideoSync" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <TextField fx:id="txtVideoStart" onKeyReleased="#validateFloat" styleClass="input-float" GridPane.columnIndex="1" />
+                                    <TextField fx:id="txtVideoEnd" onKeyReleased="#validateFloat" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <TextField fx:id="txtVideoSync" onKeyReleased="#validateFloat" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                     <Label text="Video Start Time:" />
                                     <Label text="Video End Time:" GridPane.rowIndex="1" />
                                     <Label text="Telemetry Sync. Value:" GridPane.rowIndex="2" />
@@ -412,5 +413,16 @@
             </Tab>
         </tabs>
       </TabPane>
+      <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <Label fx:id="txtStatusBar" text="Project CARS Replay Enhancer" />
+            <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+            <Label alignment="CENTER_RIGHT" text="Configuration Status: " />
+            <Label fx:id="txtValidConfig" text="Valid" />
+         </children>
+         <VBox.margin>
+            <Insets left="14.0" right="14.0" />
+         </VBox.margin>
+      </HBox>
    </children>
 </VBox>

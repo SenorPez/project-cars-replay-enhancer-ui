@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 
 /**
  *
- * @author 502625185
+ * @author SenorPez
  */
 public class ReplayEnhancerUI extends Application {
     
