@@ -49,6 +49,27 @@ public class ReplayEnhancerUIController implements Initializable {
     private TextField txtOutputVideo;
     
     @FXML
+    private TextField txtHeadingFont;
+    
+    @FXML
+    private TextField txtHeadingFontSize;
+    
+    @FXML
+    private TextField txtFont;
+    
+    @FXML
+    private TextField txtFontSize;
+    
+    @FXML
+    private TextField txtMarginWidth;
+    
+    @FXML
+    private TextField txtColumnMarginWidth;
+    
+    @FXML
+    private TextField txtResultLines;
+    
+    @FXML
     private Label txtStatusBar;
     
     @FXML
@@ -104,7 +125,7 @@ public class ReplayEnhancerUIController implements Initializable {
                     new FileChooser.ExtensionFilter("All Files", "*.*")
                 );      
                 File file = fileChooser.showOpenDialog(stage);
-                if (file.isFile()) {
+                if (file != null && file.isFile()) {
                     try {
                         String sourceVideo = file.getCanonicalPath();
                         txtSourceVideo.setText(sourceVideo);
@@ -122,11 +143,12 @@ public class ReplayEnhancerUIController implements Initializable {
                     new File(System.getProperty("user.home"))
                 );  
                 File directory = directoryChooser.showDialog(stage);
-                if (directory.isDirectory()) {
+                if (directory != null && directory.isDirectory()) {
                     try {
                         String sourceTelemetry = directory.getCanonicalPath();
                         txtSourceTelemetry.setText(sourceTelemetry);
-                    } catch (Exception e) {
+                    } catch (IOException e) {
+                        throw(e);
                     }
                 }   
                 break;
@@ -148,9 +170,54 @@ public class ReplayEnhancerUIController implements Initializable {
                     try {
                         String outputVideo = file.getCanonicalPath();
                         txtOutputVideo.setText(outputVideo);
-                    } catch (Exception e) {
+                    } catch (IOException e) {
+                        throw(e);
                     }
                 }       
+                break;
+            }
+            
+            case "btnHeadingFont": {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Select Heading Font");
+                fileChooser.setInitialDirectory(
+                    new File(System.getProperty("user.home"))
+                );
+                fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("TTF", "*.ttf"),
+                    new FileChooser.ExtensionFilter("All Files", "*.*")
+                );
+                File file = fileChooser.showOpenDialog(stage);
+                if (file != null && file.isFile()) {
+                    try {
+                        String headingFont = file.getCanonicalPath();
+                        txtHeadingFont.setText(headingFont);
+                    } catch (IOException e) {
+                        throw(e);
+                    }
+                }
+                break;
+            }
+            
+            case "btnFont": {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Select Font");
+                fileChooser.setInitialDirectory(
+                    new File(System.getProperty("user.home"))
+                );
+                fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("TTF", "*.ttf"),
+                    new FileChooser.ExtensionFilter("All Files", "*.*")
+                );
+                File file = fileChooser.showOpenDialog(stage);
+                if (file != null && file.isFile()) {
+                    try {
+                        String font = file.getCanonicalPath();
+                        txtFont.setText(font);
+                    } catch (IOException e) {
+                        throw(e);
+                    }
+                }
                 break;
             }
             

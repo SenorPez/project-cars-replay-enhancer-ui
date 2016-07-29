@@ -157,9 +157,9 @@
                                     <Label text="Heading Font" />
                                     <Label text="Heading Font Size" GridPane.rowIndex="1" />
                                     <Label text="Heading Font Color" GridPane.rowIndex="2" />
-                                    <TextField editable="false" GridPane.columnIndex="1" />
-                                    <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <Button mnemonicParsing="false" text="Select..." GridPane.columnIndex="2" />
+                                    <TextField fx:id="txtHeadingFont" editable="false" GridPane.columnIndex="1" />
+                                    <TextField fx:id="txtHeadingFontSize" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Button id="btnHeadingFont" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
                                     <ColorPicker GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                  </children>
                               </GridPane>
@@ -185,9 +185,9 @@
                                     <Label text="Font" />
                                     <Label text="Font Size" GridPane.rowIndex="1" />
                                     <Label text="Font Color" GridPane.rowIndex="2" />
-                                    <TextField editable="false" GridPane.columnIndex="1" />
-                                    <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <Button mnemonicParsing="false" text="Select..." GridPane.columnIndex="2" />
+                                    <TextField fx:id="txtFont" editable="false" GridPane.columnIndex="1" />
+                                    <TextField fx:id="txtFontSize" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Button id="btnFont" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
                                     <ColorPicker GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                  </children>
                               </GridPane>
@@ -211,10 +211,10 @@
                                  <children>
                                     <Label text="Margin Width" />
                                     <Label text="Column Margin Width" GridPane.rowIndex="1" />
-                                    <TextField GridPane.columnIndex="1" />
-                                    <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <TextField fx:id="txtMarginWidth" onKeyReleased="#validateInteger" GridPane.columnIndex="1" />
+                                    <TextField fx:id="txtColumnMarginWidth" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                     <Label text="Result Lines" GridPane.rowIndex="2" />
-                                    <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <TextField fx:id="txtResultLines" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                  </children>
                               </GridPane>
                            </content>
