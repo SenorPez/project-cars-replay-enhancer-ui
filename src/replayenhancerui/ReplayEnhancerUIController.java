@@ -9,23 +9,40 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import javafx.util.converter.IntegerStringConverter;
+
 
 /**
  *
  * @author SenorPez
  */
 public class ReplayEnhancerUIController implements Initializable {
+
+    ObservableList<PointStructureItem> pointStructure = FXCollections.observableArrayList();
     
     @FXML
     private VBox root;
@@ -68,6 +85,39 @@ public class ReplayEnhancerUIController implements Initializable {
     
     @FXML
     private TextField txtResultLines;
+    
+    @FXML
+    private TextField txtBackdrop;
+        
+    @FXML
+    private TextField txtLogo;
+        
+    @FXML
+    private TextField txtLogoWidth;
+        
+    @FXML
+    private TextField txtLogoHeight;
+    
+    @FXML
+    private TextField txtHeadingLogo;
+    
+    @FXML
+    private TextField txtHeadingText;
+    
+    @FXML
+    private TextField txtSubheadingText;
+    
+    @FXML
+    private TableView<PointStructureItem> tblPointStructure;
+    
+    @FXML
+    private TableColumn<PointStructureItem, Integer> colFinishPosition;
+    
+    @FXML
+    private TableColumn<PointStructureItem, Integer> colPoints;
+    
+    @FXML
+    private TextField txtBonusPoints;
     
     @FXML
     private Label txtStatusBar;
@@ -221,6 +271,82 @@ public class ReplayEnhancerUIController implements Initializable {
                 break;
             }
             
+            case "btnBackdrop": {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Open Backdrop Image");
+                fileChooser.setInitialDirectory(
+                    new File(System.getProperty("user.home"))
+                );      
+                fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("JPG", "*.jpg"),
+                    new FileChooser.ExtensionFilter("PNG", "*.png"),
+                    new FileChooser.ExtensionFilter("All Files", "*.*")
+                );      
+                File file = fileChooser.showOpenDialog(stage);
+                if (file != null && file.isFile()) {
+                    try {
+                        String sourceVideo = file.getCanonicalPath();
+                        txtBackdrop.setText(sourceVideo);
+                    } catch (IOException e) {
+                        throw(e);
+                    }
+                }
+                break;
+            }            
+            
+            case "btnLogo": {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Open Logo Image");
+                fileChooser.setInitialDirectory(
+                    new File(System.getProperty("user.home"))
+                );      
+                fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("PNG", "*.png"),
+                    new FileChooser.ExtensionFilter("JPG", "*.jpg"),
+                    new FileChooser.ExtensionFilter("All Files", "*.*")
+                );      
+                File file = fileChooser.showOpenDialog(stage);
+                if (file != null && file.isFile()) {
+                    try {
+                        String sourceVideo = file.getCanonicalPath();
+                        txtLogo.setText(sourceVideo);
+                    } catch (IOException e) {
+                        throw(e);
+                    }
+                }
+                break;
+            }     
+            
+            case "btnHeadingLogo": {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Open Heading Logo Image");
+                fileChooser.setInitialDirectory(
+                    new File(System.getProperty("user.home"))
+                );      
+                fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("JPG", "*.jpg"),
+                    new FileChooser.ExtensionFilter("PNG", "*.png"),
+                    new FileChooser.ExtensionFilter("All Files", "*.*")
+                );      
+                File file = fileChooser.showOpenDialog(stage);
+                if (file != null && file.isFile()) {
+                    try {
+                        String sourceVideo = file.getCanonicalPath();
+                        txtHeadingLogo.setText(sourceVideo);
+                    } catch (IOException e) {
+                        throw(e);
+                    }
+                }
+                break;
+            }            
+            
+            case "btnAddPosition": {
+                pointStructure.add(new PointStructureItem(
+                    pointStructure.size()+1, 0)
+                );
+                break;
+            }            
+            
             default:
                 break;
         }
@@ -228,6 +354,125 @@ public class ReplayEnhancerUIController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-    }    
+        Callback<TableColumn<PointStructureItem, Integer>, TableCell<PointStructureItem, Integer>> cellFactory = 
+            new Callback<TableColumn<PointStructureItem, Integer>, TableCell<PointStructureItem, Integer>>() {
+                public TableCell call(TableColumn p) {
+                    return new EditingCell();
+                }
+            };
+        
+        colFinishPosition.setCellValueFactory(
+            new PropertyValueFactory<PointStructureItem,Integer>("finishPosition")
+        );
+        colPoints.setCellValueFactory(
+            new PropertyValueFactory<PointStructureItem,Integer>("points")
+        );
+        colPoints.setCellFactory(cellFactory);
+        colPoints.setOnEditCommit(
+            new EventHandler<CellEditEvent<PointStructureItem, Integer>>() {
+                @Override
+                public void handle(CellEditEvent<PointStructureItem, Integer> t) {
+                    ((PointStructureItem) t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                            ).setPoints(t.getNewValue());
+                }
+            }
+        );
+        tblPointStructure.setItems(pointStructure);
+    }
+    
+    public static class PointStructureItem {
+        private SimpleIntegerProperty finishPosition;
+        private SimpleIntegerProperty points;
+        
+        private PointStructureItem(Integer finishPosition, Integer points) {
+            this.finishPosition = new SimpleIntegerProperty(finishPosition);
+            this.points = new SimpleIntegerProperty(points);
+        }
+        
+        public Integer getFinishPosition() {
+            return finishPosition.get();
+        }
+        
+        public void setFinishPosition(Integer value) {
+            finishPosition.set(value);
+        }
+        
+        public Integer getPoints() {
+            return points.get();
+        }
+        
+        public void setPoints(Integer value) {
+            points.set(value);
+        }
+    }
+    
+    /*
+    * From http://docs.oracle.com/javafx/2/ui_controls/table-view.htm
+    */
+    class EditingCell extends TableCell<PointStructureItem, Integer> {
+        private TextField textField;
+        
+        public EditingCell() {
+            
+        }
+        
+        @Override
+        public void startEdit() {
+            if (!isEmpty()) {
+                super.startEdit();
+                createTextField();
+                setText(null);
+                setGraphic(textField);
+                textField.selectAll();
+            }
+        }
+        
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+            
+            setText(getItem().toString());
+            setGraphic(null);
+        }
+        
+        @Override
+        public void updateItem(Integer item, boolean empty) {
+            super.updateItem(item, empty);
+            
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textField != null) {
+                        textField.setText(getString());
+                    }
+                    setText(null);
+                    setGraphic(textField);
+                } else {
+                    setText(getString());
+                    setGraphic(null);
+                }
+            }
+        }
+        
+        private void createTextField() {
+            textField = new TextField(getString());
+            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+            textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> arg0,
+                        Boolean arg1, Boolean arg2) {
+                    if (!arg2) {
+                        commitEdit(Integer.valueOf(textField.getText()));
+                    }
+                }
+            });
+        }
+        
+        private String getString() {
+            return getItem() == null ? "" : getItem().toString();
+        }
+    }
 }
