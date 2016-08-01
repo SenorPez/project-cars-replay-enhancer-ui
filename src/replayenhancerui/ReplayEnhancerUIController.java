@@ -16,7 +16,6 @@ import java.util.Comparator;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -508,59 +507,38 @@ public class ReplayEnhancerUIController implements Initializable {
                 return Integer.compare(n1, n2);
             }
         });
-  
+        
         Set<String> names = new TreeSet<String>();
         for (File file : files) {
             if (file.length() == 1347) {
                 try {
-                    ByteBuffer data = ByteBuffer.wrap(Files.readAllBytes(file.toPath()));
-                         
-                    byte[] version = new byte[2];
-                    data.get(version);
-                    
-                    byte[] packetType = new byte[1];
-                    data.get(packetType);
-                    
-                    byte[] carName = new byte[64];
-                    data.get(carName);
-                    
-                    byte[] carClass = new byte[64];
-                    data.get(carClass);
-                    
-                    byte[] trackLocation = new byte[64];
-                    data.get(trackLocation);
-                    
-                    byte[] trackVariation = new byte[64];
-                    data.get(trackVariation);
-
-                    for (int i=0; i<16; i++) {
-                        byte[] byteName = new byte[64];
-                        data.get(byteName);
-                        names.add(new String(byteName, "UTF-8").trim());
+                    ParticipantPacket packet = new ParticipantPacket(
+                            ByteBuffer.wrap(Files.readAllBytes(file.toPath())));
+                    for (SimpleStringProperty name : packet.names) {
+                        String trimmedName = name.get().trim();
+                        if (trimmedName.length() > 0) {
+                            names.add(trimmedName);
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else if (file.length() == 1028) {
                 try {
-                    ByteBuffer data = ByteBuffer.wrap(Files.readAllBytes(file.toPath()));
-                         
-                    byte[] version = new byte[2];
-                    data.get(version);
-                    
-                    byte[] packetType = new byte[1];
-                    data.get(packetType);
-                    
-                    for (int i=0; i<16; i++) {
-                        byte[] byteName = new byte[64];
-                        data.get(byteName);
-                        names.add(new String(byteName, "UTF-8").trim());
+                    AdditionalParticipantPacket packet = new AdditionalParticipantPacket(
+                        ByteBuffer.wrap(Files.readAllBytes(file.toPath())));
+                    for (SimpleStringProperty name : packet.names) {
+                        String trimmedName = name.get().trim();
+                        if (trimmedName.length() > 0) {
+                            names.add(trimmedName);
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
+
         for (String name : names) {
             if (name.length() > 0) {
                 drivers.add(new Driver(name));
@@ -568,99 +546,7 @@ public class ReplayEnhancerUIController implements Initializable {
         }        
         return drivers;
     }
-    
-    public static class Driver {
-        private final SimpleStringProperty name;
-        private final SimpleStringProperty displayName;
-        private final SimpleStringProperty shortName;
-        private final SimpleStringProperty car;
-        private final SimpleStringProperty team;
-        private final SimpleIntegerProperty seriesPoints;
-        
-        private Driver(String name) {
-            this.name = new SimpleStringProperty(name);
-            this.displayName = new SimpleStringProperty(name);
-            this.shortName = new SimpleStringProperty(name);
-            this.car = new SimpleStringProperty("");
-            this.team = new SimpleStringProperty("");
-            this.seriesPoints = new SimpleIntegerProperty(0);
-        }
-        
-        public String getName() {
-            return name.get();
-        }
-        
-        public void setName(String value) {
-            name.set(value);
-        }
-        
-        public String getDisplayName() {
-            return displayName.get();
-        }
-        
-        public void setDisplayName(String value) {
-            displayName.set(value);
-        }
-        
-        public String getShortName() {
-            return shortName.get();
-        }
-        
-        public void setShortName(String value) {
-            shortName.set(value);
-        }
-        
-        public String getCar() {
-            return car.get();
-        }
-        
-        public void setCar(String value) {
-            car.set(value);
-        }
-        
-        public String getTeam() {
-            return team.get();
-        }
-        
-        public void setTeam(String value) {
-            team.set(value);
-        }
-        
-        public Integer getSeriesPoints() {
-            return seriesPoints.get();
-        }
-        
-        public void setSeriesPoints(Integer value) {
-            seriesPoints.set(value);
-        }
-    }
-    
-    public static class PointStructureItem {
-        private final SimpleIntegerProperty finishPosition;
-        private final SimpleIntegerProperty points;
-        
-        private PointStructureItem(Integer finishPosition, Integer points) {
-            this.finishPosition = new SimpleIntegerProperty(finishPosition);
-            this.points = new SimpleIntegerProperty(points);
-        }
-        
-        public Integer getFinishPosition() {
-            return finishPosition.get();
-        }
-        
-        public void setFinishPosition(Integer value) {
-            finishPosition.set(value);
-        }
-        
-        public Integer getPoints() {
-            return points.get();
-        }
-        
-        public void setPoints(Integer value) {
-            points.set(value);
-        }
-    }
-    
+
     /*
     * From http://docs.oracle.com/javafx/2/ui_controls/table-view.htm
     */
