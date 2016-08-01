@@ -361,14 +361,14 @@
                      <children>
                         <TitledPane collapsible="false" layoutX="14.0" layoutY="14.0" text="Drivers">
                            <content>
-                              <TableView prefHeight="200.0" prefWidth="618.0">
+                              <TableView fx:id="tblDrivers" editable="true" prefHeight="200.0" prefWidth="618.0">
                                 <columns>
-                                  <TableColumn prefWidth="75.0" text="Name" />
-                                  <TableColumn prefWidth="102.0" text="Display Name" />
-                                    <TableColumn prefWidth="83.0" text="Short Name" />
-                                    <TableColumn prefWidth="88.0" text="Car" />
-                                    <TableColumn prefWidth="63.0" text="Team" />
-                                    <TableColumn prefWidth="78.0" text="Series Points" />
+                                  <TableColumn fx:id="colName" editable="false" prefWidth="75.0" text="Name" />
+                                  <TableColumn fx:id="colDisplayName" prefWidth="102.0" text="Display Name" />
+                                    <TableColumn fx:id="colShortName" prefWidth="83.0" text="Short Name" />
+                                    <TableColumn fx:id="colCar" prefWidth="88.0" text="Car" />
+                                    <TableColumn fx:id="colTeam" prefWidth="63.0" text="Team" />
+                                    <TableColumn fx:id="colSeriesPoints" prefWidth="78.0" text="Series Points" />
                                 </columns>
                               </TableView>
                            </content>

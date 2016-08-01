@@ -6,10 +6,18 @@
 package replayenhancerui;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.TreeSet;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -32,7 +40,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import javafx.util.converter.IntegerStringConverter;
 
 
@@ -43,7 +50,8 @@ import javafx.util.converter.IntegerStringConverter;
 public class ReplayEnhancerUIController implements Initializable {
 
     ObservableList<PointStructureItem> pointStructure = FXCollections.observableArrayList();
-    
+    ObservableList<Driver> drivers = FXCollections.observableArrayList();
+
     @FXML
     private VBox root;
     
@@ -118,6 +126,27 @@ public class ReplayEnhancerUIController implements Initializable {
     
     @FXML
     private TextField txtBonusPoints;
+    
+    @FXML
+    private TableView<Driver> tblDrivers;
+    
+    @FXML
+    private TableColumn<Driver, String> colName;
+    
+    @FXML
+    private TableColumn<Driver, String> colDisplayName;
+    
+    @FXML
+    private TableColumn<Driver, String> colShortName;
+    
+    @FXML
+    private TableColumn<Driver, String> colCar;
+    
+    @FXML
+    private TableColumn<Driver, String> colTeam;
+    
+    @FXML
+    private TableColumn<Driver, Integer> colSeriesPoints;
     
     @FXML
     private Label txtStatusBar;
@@ -197,6 +226,7 @@ public class ReplayEnhancerUIController implements Initializable {
                     try {
                         String sourceTelemetry = directory.getCanonicalPath();
                         txtSourceTelemetry.setText(sourceTelemetry);
+                        populateDrivers();
                     } catch (IOException e) {
                         throw(e);
                     }
@@ -354,12 +384,12 @@ public class ReplayEnhancerUIController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        Callback<TableColumn<PointStructureItem, Integer>, TableCell<PointStructureItem, Integer>> cellFactory = 
-            new Callback<TableColumn<PointStructureItem, Integer>, TableCell<PointStructureItem, Integer>>() {
-                public TableCell call(TableColumn p) {
-                    return new EditingCell();
-                }
-            };
+//        Callback<TableColumn<PointStructureItem, Integer>, TableCell<PointStructureItem, Integer>> cellFactory = 
+//            new Callback<TableColumn<PointStructureItem, Integer>, TableCell<PointStructureItem, Integer>>() {
+//                public TableCell call(TableColumn p) {
+//                    return new EditingCell();
+//                }
+//            };
         
         colFinishPosition.setCellValueFactory(
             new PropertyValueFactory<PointStructureItem,Integer>("finishPosition")
@@ -367,7 +397,7 @@ public class ReplayEnhancerUIController implements Initializable {
         colPoints.setCellValueFactory(
             new PropertyValueFactory<PointStructureItem,Integer>("points")
         );
-        colPoints.setCellFactory(cellFactory);
+        colPoints.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         colPoints.setOnEditCommit(
             new EventHandler<CellEditEvent<PointStructureItem, Integer>>() {
                 @Override
@@ -379,11 +409,235 @@ public class ReplayEnhancerUIController implements Initializable {
             }
         );
         tblPointStructure.setItems(pointStructure);
+        
+        colName.setCellValueFactory(
+            new PropertyValueFactory<Driver, String>("name")
+        );
+        colDisplayName.setCellValueFactory(
+            new PropertyValueFactory<Driver, String>("displayName")
+        );
+        colDisplayName.setCellFactory(TextFieldTableCell.forTableColumn());
+        colDisplayName.setOnEditCommit(
+            new EventHandler<CellEditEvent<Driver, String>>() {
+                @Override
+                public void handle(CellEditEvent<Driver, String> t) {
+                    ((Driver) t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                            ).setName(t.getNewValue());
+                }
+            }
+        );
+        colShortName.setCellValueFactory(
+            new PropertyValueFactory<Driver, String>("shortName")
+        );
+        colShortName.setCellFactory(TextFieldTableCell.forTableColumn());
+        colShortName.setOnEditCommit(
+            new EventHandler<CellEditEvent<Driver, String>>() {
+                @Override
+                public void handle(CellEditEvent<Driver, String> t) {
+                    ((Driver) t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                            ).setShortName(t.getNewValue());
+                }
+            }
+        );        
+        colCar.setCellValueFactory(
+            new PropertyValueFactory<Driver, String>("car")
+        );
+        colCar.setCellFactory(TextFieldTableCell.forTableColumn());
+        colCar.setOnEditCommit(
+            new EventHandler<CellEditEvent<Driver, String>>() {
+                @Override
+                public void handle(CellEditEvent<Driver, String> t) {
+                    ((Driver) t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                            ).setCar(t.getNewValue());
+                }
+            }
+        );                
+        colTeam.setCellValueFactory(
+            new PropertyValueFactory<Driver, String>("team")
+        );
+        colTeam.setCellFactory(TextFieldTableCell.forTableColumn());
+        colTeam.setOnEditCommit(
+            new EventHandler<CellEditEvent<Driver, String>>() {
+                @Override
+                public void handle(CellEditEvent<Driver, String> t) {
+                    ((Driver) t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                            ).setTeam(t.getNewValue());
+                }
+            }
+        );        
+        colSeriesPoints.setCellValueFactory(
+            new PropertyValueFactory<Driver, Integer>("seriesPoints")
+        );
+        colSeriesPoints.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        colSeriesPoints.setOnEditCommit(
+            new EventHandler<CellEditEvent<Driver, Integer>>() {
+                @Override
+                public void handle(CellEditEvent<Driver, Integer> t) {
+                    ((Driver) t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                            ).setSeriesPoints(t.getNewValue());
+                }
+            }
+        );
+        tblDrivers.setItems(populateDrivers());
+        
+    }
+    
+    public ObservableList<Driver> populateDrivers() {
+        File testFile = new File(txtSourceTelemetry.getText());
+        
+        if (!testFile.isDirectory()) {
+            return drivers;
+        }
+        
+        File[] files = new File(txtSourceTelemetry.getText()).listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.matches(".*pdata.*");
+            }
+        });
+        Arrays.sort(files, new Comparator<File>() {
+            @Override
+            public int compare(File o1, File o2) {
+                Integer n1 = Integer.valueOf(o1.getName().replaceAll("[^\\d]", ""));
+                Integer n2 = Integer.valueOf(o2.getName().replaceAll("[^\\d]", ""));
+                return Integer.compare(n1, n2);
+            }
+        });
+  
+        Set<String> names = new TreeSet<String>();
+        for (File file : files) {
+            if (file.length() == 1347) {
+                try {
+                    ByteBuffer data = ByteBuffer.wrap(Files.readAllBytes(file.toPath()));
+                         
+                    byte[] version = new byte[2];
+                    data.get(version);
+                    
+                    byte[] packetType = new byte[1];
+                    data.get(packetType);
+                    
+                    byte[] carName = new byte[64];
+                    data.get(carName);
+                    
+                    byte[] carClass = new byte[64];
+                    data.get(carClass);
+                    
+                    byte[] trackLocation = new byte[64];
+                    data.get(trackLocation);
+                    
+                    byte[] trackVariation = new byte[64];
+                    data.get(trackVariation);
+
+                    for (int i=0; i<16; i++) {
+                        byte[] byteName = new byte[64];
+                        data.get(byteName);
+                        names.add(new String(byteName, "UTF-8").trim());
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else if (file.length() == 1028) {
+                try {
+                    ByteBuffer data = ByteBuffer.wrap(Files.readAllBytes(file.toPath()));
+                         
+                    byte[] version = new byte[2];
+                    data.get(version);
+                    
+                    byte[] packetType = new byte[1];
+                    data.get(packetType);
+                    
+                    for (int i=0; i<16; i++) {
+                        byte[] byteName = new byte[64];
+                        data.get(byteName);
+                        names.add(new String(byteName, "UTF-8").trim());
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        for (String name : names) {
+            if (name.length() > 0) {
+                drivers.add(new Driver(name));
+            }
+        }        
+        return drivers;
+    }
+    
+    public static class Driver {
+        private final SimpleStringProperty name;
+        private final SimpleStringProperty displayName;
+        private final SimpleStringProperty shortName;
+        private final SimpleStringProperty car;
+        private final SimpleStringProperty team;
+        private final SimpleIntegerProperty seriesPoints;
+        
+        private Driver(String name) {
+            this.name = new SimpleStringProperty(name);
+            this.displayName = new SimpleStringProperty(name);
+            this.shortName = new SimpleStringProperty(name);
+            this.car = new SimpleStringProperty("");
+            this.team = new SimpleStringProperty("");
+            this.seriesPoints = new SimpleIntegerProperty(0);
+        }
+        
+        public String getName() {
+            return name.get();
+        }
+        
+        public void setName(String value) {
+            name.set(value);
+        }
+        
+        public String getDisplayName() {
+            return displayName.get();
+        }
+        
+        public void setDisplayName(String value) {
+            displayName.set(value);
+        }
+        
+        public String getShortName() {
+            return shortName.get();
+        }
+        
+        public void setShortName(String value) {
+            shortName.set(value);
+        }
+        
+        public String getCar() {
+            return car.get();
+        }
+        
+        public void setCar(String value) {
+            car.set(value);
+        }
+        
+        public String getTeam() {
+            return team.get();
+        }
+        
+        public void setTeam(String value) {
+            team.set(value);
+        }
+        
+        public Integer getSeriesPoints() {
+            return seriesPoints.get();
+        }
+        
+        public void setSeriesPoints(Integer value) {
+            seriesPoints.set(value);
+        }
     }
     
     public static class PointStructureItem {
-        private SimpleIntegerProperty finishPosition;
-        private SimpleIntegerProperty points;
+        private final SimpleIntegerProperty finishPosition;
+        private final SimpleIntegerProperty points;
         
         private PointStructureItem(Integer finishPosition, Integer points) {
             this.finishPosition = new SimpleIntegerProperty(finishPosition);
