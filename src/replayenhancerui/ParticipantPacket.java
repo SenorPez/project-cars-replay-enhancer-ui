@@ -9,8 +9,10 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableSet;
 
 /**
  *
@@ -22,23 +24,26 @@ public class ParticipantPacket extends Packet {
     public final SimpleStringProperty trackLocation;
     public final SimpleStringProperty trackVariation;
         
-    public final ObservableList<SimpleFloatProperty> fastestLapTimes;
+    public SimpleSetProperty<SimpleFloatProperty> fastestLapTimes;
     
     public ParticipantPacket(ByteBuffer data) throws UnsupportedEncodingException {
-            this.buildVersionNumber = new SimpleIntegerProperty(ByteBuffer.wrap(ReadBytes(data, 2)).getInt());
-            this.packetType = new SimpleIntegerProperty(ByteBuffer.wrap(ReadBytes(data, 1)).getInt());
-            this.carName = new SimpleStringProperty(new String(ReadBytes(data, 64), "UTF-8"));
-            this.carClass = new SimpleStringProperty(new String(ReadBytes(data, 64), "UTF-8"));
-            this.trackLocation = new SimpleStringProperty(new String(ReadBytes(data, 64), "UTF-8"));
-            this.trackVariation = new SimpleStringProperty(new String(ReadBytes(data, 64), "UTF-8"));
-            this.names = null;
-            this.fastestLapTimes = null;
-            for (int i=0; i<16; i++) {
-                this.names.add(new SimpleStringProperty(new String(ReadBytes(data, 64), "UTF-8")));
-            }
-            for (int i=0; i<16; i++) {
-                this.fastestLapTimes.add(new SimpleFloatProperty(ByteBuffer.wrap(ReadBytes(data, 4)).getFloat()));
-            }
+        this.buildVersionNumber = new SimpleIntegerProperty(ReadShort(data));
+        this.packetType = new SimpleIntegerProperty(ReadChar(data));
+        
+        this.carName = new SimpleStringProperty(ReadString(data, 64));
+        this.carClass = new SimpleStringProperty(ReadString(data, 64));
+        this.trackLocation = new SimpleStringProperty(ReadString(data, 64));
+        this.trackVariation = new SimpleStringProperty(ReadString(data, 64));
+        
+        this.names = new SimpleSetProperty<SimpleStringProperty>(FXCollections.observableSet());
+        this.fastestLapTimes = new SimpleSetProperty<SimpleFloatProperty>(FXCollections.observableSet());
+        
+        for (int i=0; i<16; i++) {
+            this.names.add(new SimpleStringProperty(ReadString(data, 64)));
+        }
+        for (int i=0; i<16; i++) {
+            this.fastestLapTimes.add(new SimpleFloatProperty(ReadFloat(data)));
+        }
     }
     
     public String getCarName() {
@@ -55,5 +60,9 @@ public class ParticipantPacket extends Packet {
     
     public String getTrackVariation() {
         return trackVariation.get();
+    }
+    
+    public ObservableSet getFastestLapTimes() {
+        return fastestLapTimes.get();
     }
 }

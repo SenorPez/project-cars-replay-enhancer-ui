@@ -5,10 +5,14 @@
  */
 package replayenhancerui;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 
 /**
  *
@@ -19,12 +23,35 @@ public abstract class Packet {
     public SimpleIntegerProperty buildVersionNumber;
     public SimpleIntegerProperty packetType;    
     
-    public ObservableList<SimpleStringProperty> names;
-
-    protected final byte[] ReadBytes(ByteBuffer data, Integer size) {
-        byte[] readBytes = new byte[size];
+    public SimpleSetProperty<SimpleStringProperty> names;
+     
+    protected final Integer ReadShort(ByteBuffer data) {
+        byte[] readBytes = new byte[2];
         data.get(readBytes);
-        return readBytes;
+        return ((0x00 << 24) + (0x00 << 16) + (readBytes[1] << 8) + (readBytes[0]));
+    }
+    
+    protected final Integer ReadChar(ByteBuffer data) {
+        byte[] readBytes = new byte[1];
+        data.get(readBytes);
+        return ((0x00 << 24) + (0x00 << 16) + (0x00 << 8) + (readBytes[0]));
+    }
+    
+    protected final Float ReadFloat(ByteBuffer data) {
+        byte[] readBytes = new byte[4];
+        data.get(readBytes);
+        return ByteBuffer.wrap(readBytes).getFloat();
+    }
+    
+    protected final String ReadString(ByteBuffer data, Integer length) {
+        byte[] readBytes = new byte[length];
+        data.get(readBytes);
+        try {
+            return new String(readBytes, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Packet.class.getName()).log(Level.SEVERE, null, ex);
+            return "";
+        }
     }
     
     public Integer getBuildVersionNumber() {
@@ -35,7 +62,11 @@ public abstract class Packet {
         return packetType.get();
     }
 
-    public ObservableList getNames() {
-        return names;
+    public ObservableSet getNames() {
+        return names.get();
+    }
+    
+    protected void setNames(SimpleStringProperty value) {
+        names.add(value);
     }
 }

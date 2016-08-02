@@ -17,13 +17,13 @@ import javafx.beans.property.SimpleStringProperty;
 public class AdditionalParticipantPacket extends Packet {
     
     public AdditionalParticipantPacket(ByteBuffer data) throws UnsupportedEncodingException {
-            this.buildVersionNumber = new SimpleIntegerProperty(ByteBuffer.wrap(ReadBytes(data, 2)).getInt());
-            this.packetType = new SimpleIntegerProperty(ByteBuffer.wrap(ReadBytes(data, 1)).getInt());
+        this.buildVersionNumber = new SimpleIntegerProperty(ReadShort(data));
+        this.packetType = new SimpleIntegerProperty(ReadChar(data));            
             
-            this.names = null;
+        this.names = null;
             
-            for (int i=0; i<16; i++) {
-                this.names.add(new SimpleStringProperty(new String(ReadBytes(data, 64), "UTF-8")));
-            }
+        for (int i=0; i<16; i++) {
+            this.names.add(new SimpleStringProperty(ReadString(data, 64)));
+        }
     }
 }

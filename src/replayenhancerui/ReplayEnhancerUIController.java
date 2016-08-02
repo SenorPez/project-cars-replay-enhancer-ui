@@ -514,7 +514,7 @@ public class ReplayEnhancerUIController implements Initializable {
                 try {
                     ParticipantPacket packet = new ParticipantPacket(
                             ByteBuffer.wrap(Files.readAllBytes(file.toPath())));
-                    for (SimpleStringProperty name : packet.names) {
+                    for (SimpleStringProperty name : packet.names.get()) {
                         String trimmedName = name.get().trim();
                         if (trimmedName.length() > 0) {
                             names.add(trimmedName);
@@ -527,7 +527,7 @@ public class ReplayEnhancerUIController implements Initializable {
                 try {
                     AdditionalParticipantPacket packet = new AdditionalParticipantPacket(
                         ByteBuffer.wrap(Files.readAllBytes(file.toPath())));
-                    for (SimpleStringProperty name : packet.names) {
+                    for (SimpleStringProperty name : packet.names.get()) {
                         String trimmedName = name.get().trim();
                         if (trimmedName.length() > 0) {
                             names.add(trimmedName);
