@@ -16,6 +16,8 @@ import java.util.Comparator;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -514,27 +516,27 @@ public class ReplayEnhancerUIController implements Initializable {
                 try {
                     ParticipantPacket packet = new ParticipantPacket(
                             ByteBuffer.wrap(Files.readAllBytes(file.toPath())));
-                    for (SimpleStringProperty name : packet.names.get()) {
+                    for (SimpleStringProperty name : packet.getNames()) {
                         String trimmedName = name.get().trim();
                         if (trimmedName.length() > 0) {
                             names.add(trimmedName);
                         }
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException ex) {
+                    Logger.getLogger(Packet.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (file.length() == 1028) {
                 try {
                     AdditionalParticipantPacket packet = new AdditionalParticipantPacket(
                         ByteBuffer.wrap(Files.readAllBytes(file.toPath())));
-                    for (SimpleStringProperty name : packet.names.get()) {
+                    for (SimpleStringProperty name : packet.getNames()) {
                         String trimmedName = name.get().trim();
                         if (trimmedName.length() > 0) {
                             names.add(trimmedName);
                         }
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException ex) {
+                    Logger.getLogger(Packet.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }

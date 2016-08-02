@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
 /**
@@ -20,10 +21,16 @@ import javafx.collections.ObservableSet;
  */
 public abstract class Packet {
 
-    public SimpleIntegerProperty buildVersionNumber;
-    public SimpleIntegerProperty packetType;    
+    private final SimpleIntegerProperty buildVersionNumber;
+    private final SimpleIntegerProperty packetType;    
     
-    public SimpleSetProperty<SimpleStringProperty> names;
+    private SimpleSetProperty<SimpleStringProperty> names;
+    
+    protected Packet(ByteBuffer data) {
+        this.buildVersionNumber = new SimpleIntegerProperty(ReadShort(data));
+        this.packetType = new SimpleIntegerProperty(ReadChar(data));
+        this.names = new SimpleSetProperty<SimpleStringProperty>(FXCollections.observableSet());
+    }
      
     protected final Integer ReadShort(ByteBuffer data) {
         byte[] readBytes = new byte[2];
@@ -58,15 +65,17 @@ public abstract class Packet {
         return buildVersionNumber.get();
     }
     
-    public Integer packetType() {
+    public Integer getPacketType() {
         return packetType.get();
     }
 
-    public ObservableSet getNames() {
+    public ObservableSet<SimpleStringProperty> getNames() {
         return names.get();
     }
     
-    protected void setNames(SimpleStringProperty value) {
-        names.add(value);
+    protected void setNames(ByteBuffer data) {
+        for (int i=0; i<16; i++) {
+            this.names.add(new SimpleStringProperty(ReadString(data, 64)));
+        }
     }
 }

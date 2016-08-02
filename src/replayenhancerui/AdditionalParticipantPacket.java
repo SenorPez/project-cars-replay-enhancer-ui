@@ -8,22 +8,23 @@ package replayenhancerui;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 
 /**
  *
  * @author SenorPez
  */
 public class AdditionalParticipantPacket extends Packet {
+    private final SimpleIntegerProperty offset;
     
     public AdditionalParticipantPacket(ByteBuffer data) throws UnsupportedEncodingException {
-        this.buildVersionNumber = new SimpleIntegerProperty(ReadShort(data));
-        this.packetType = new SimpleIntegerProperty(ReadChar(data));            
+        super(data);          
+        
+        this.offset = new SimpleIntegerProperty(ReadChar(data));
             
-        this.names = null;
-            
-        for (int i=0; i<16; i++) {
-            this.names.add(new SimpleStringProperty(ReadString(data, 64)));
-        }
+        super.setNames(data);
+    }
+    
+    public Integer getOffset() {
+        return offset.get();
     }
 }
