@@ -6,6 +6,7 @@
 package replayenhancerui;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
@@ -23,12 +24,16 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
@@ -38,10 +43,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 
 /**
@@ -52,7 +60,20 @@ public class ReplayEnhancerUIController implements Initializable {
 
     ObservableList<PointStructureItem> pointStructure = FXCollections.observableArrayList();
     ObservableList<Driver> drivers = FXCollections.observableArrayList();
-
+    ObservableList<Driver> additionalDrivers = FXCollections.observableArrayList();
+    ObservableSet<Car> cars = FXCollections.observableSet();
+    
+    File JSONFile = new File("C:/Users/502625185/Downloads/out.json");
+    
+    @FXML
+    private MenuItem fileNew;
+    
+    @FXML
+    private MenuItem fileSave;
+    
+    @FXML
+    private MenuItem fileClose;
+    
     @FXML
     private VBox root;
     
@@ -81,10 +102,16 @@ public class ReplayEnhancerUIController implements Initializable {
     private TextField txtHeadingFontSize;
     
     @FXML
+    private ColorPicker colorHeadingFontColor;
+    
+    @FXML
     private TextField txtFont;
     
     @FXML
     private TextField txtFontSize;
+    
+    @FXML
+    private ColorPicker colorFontColor;
     
     @FXML
     private TextField txtMarginWidth;
@@ -108,6 +135,9 @@ public class ReplayEnhancerUIController implements Initializable {
     private TextField txtLogoHeight;
     
     @FXML
+    private ColorPicker colorHeadingColor;
+    
+    @FXML
     private TextField txtHeadingLogo;
     
     @FXML
@@ -117,6 +147,21 @@ public class ReplayEnhancerUIController implements Initializable {
     private TextField txtSubheadingText;
     
     @FXML
+    private CheckBox cbUseTeams;
+    
+    @FXML
+    private CheckBox cbUseClasses;
+    
+    @FXML
+    private CheckBox cbShowChampion;
+    
+    @FXML
+    private CheckBox cbUsePoints;
+        
+    @FXML
+    private TextField txtBonusPoints;
+    
+    @FXML
     private TableView<PointStructureItem> tblPointStructure;
     
     @FXML
@@ -124,10 +169,7 @@ public class ReplayEnhancerUIController implements Initializable {
     
     @FXML
     private TableColumn<PointStructureItem, Integer> colPoints;
-    
-    @FXML
-    private TextField txtBonusPoints;
-    
+
     @FXML
     private TableView<Driver> tblDrivers;
     
@@ -154,6 +196,172 @@ public class ReplayEnhancerUIController implements Initializable {
     
     @FXML
     private Label txtValidConfig;
+    
+    @FXML
+    private void resetAll() {
+        txtSourceVideo.setText("");
+        txtSourceTelemetry.setText("");
+        txtVideoStart.setText("");
+        txtVideoEnd.setText("");
+        txtVideoSync.setText("");
+        txtOutputVideo.setText("");
+        
+        txtHeadingFont.setText("");
+        txtHeadingFontSize.setText("");
+        colorHeadingFontColor.setValue(Color.WHITE);
+        
+        txtFont.setText("");
+        txtFontSize.setText("");
+        colorFontColor.setValue(Color.BLACK);
+        
+        txtMarginWidth.setText("");
+        txtColumnMarginWidth.setText("");
+        txtResultLines.setText("");
+        
+        txtBackdrop.setText("");
+        txtLogo.setText("");
+        txtLogoWidth.setText("");
+        txtLogoHeight.setText("");
+        
+        colorHeadingColor.setValue(Color.BLACK);
+        txtHeadingLogo.setText("");
+        txtHeadingText.setText("");
+        txtSubheadingText.setText("");
+        
+        cbUseTeams.setSelected(true);
+        cbUseClasses.setSelected(false);
+        cbShowChampion.setSelected(false);
+        
+        txtBonusPoints.setText("0");
+        pointStructure.add(
+            new PointStructureItem(1, 25));
+        pointStructure.add(
+            new PointStructureItem(2, 18));
+        pointStructure.add(
+            new PointStructureItem(3, 15));
+        pointStructure.add(
+            new PointStructureItem(4, 12));
+        pointStructure.add(
+            new PointStructureItem(5, 10));
+        pointStructure.add(
+            new PointStructureItem(6, 8));
+        pointStructure.add(
+            new PointStructureItem(7, 6));
+        pointStructure.add(
+            new PointStructureItem(8, 4));
+        pointStructure.add(
+            new PointStructureItem(9, 2));
+        pointStructure.add(
+            new PointStructureItem(10, 1));
+        
+        drivers.clear();
+        additionalDrivers.clear();
+        
+        cars.clear();
+    }
+    
+    private Integer[] convertColor(Color input) {
+        Integer[] output = new Integer[3];
+        output[0] = (int) input.getRed()*255;
+        output[1] = (int) input.getGreen()*255;
+        output[2] = (int) input.getBlue()*255;
+        
+        return output;
+    }
+    
+    private JSONArray JSONColor(Color input) {
+        JSONArray output = new JSONArray();
+        output.add((int) input.getRed()*255);
+        output.add((int) input.getGreen()*255);
+        output.add((int) input.getBlue()*255);
+        
+        return output;
+    }
+    
+    @FXML
+    private void writeJSON() {
+        JSONObject output = new JSONObject();
+                      
+        output.put("source_video", txtSourceVideo.getText());
+        output.put("source_telemetry", txtSourceTelemetry.getText());
+        
+        output.put("skip_start", txtVideoStart.getText());
+        output.put("skip_end", txtVideoEnd.getText());
+        output.put("racesync", txtVideoSync.getText());
+        
+        output.put("output_video", txtOutputVideo.getText());
+        
+        output.put("heading_font", txtHeadingFont.getText());
+        output.put("heading_font_size", txtHeadingFontSize.getText());
+        output.put("heading_font_color", JSONColor(colorHeadingFontColor.getValue()));
+        
+        output.put("font", txtFont.getText());
+        output.put("font_size", txtFontSize.getText());
+        output.put("font_color", JSONColor(colorFontColor.getValue()));
+        
+        output.put("margin", txtMarginWidth.getText());
+        output.put("column_margin", txtColumnMarginWidth.getText());
+        output.put("result_lines", txtResultLines.getText());
+        
+        output.put("backdrop", txtBackdrop.getText());
+        output.put("logo", txtLogo.getText());
+        output.put("logo_height", txtLogoHeight.getText());
+        output.put("logo_width", txtLogoWidth.getText());
+        
+        output.put("heading_color", JSONColor(colorHeadingColor.getValue()));
+        output.put("heading_logo", txtHeadingLogo.getText());
+        output.put("heading_text", txtHeadingText.getText());
+        output.put("subheading_text", txtSubheadingText.getText());
+        
+        JSONArray pointStructureJSON = new JSONArray();
+        pointStructureJSON.add(Integer.valueOf(txtBonusPoints.getText()));
+        for (PointStructureItem points : pointStructure) {
+            pointStructureJSON.add(points.getPoints());
+        }
+        output.put("points_structure", pointStructureJSON);
+        
+        JSONObject driversJSON = new JSONObject();
+        
+        for (Driver driver : drivers) {
+            JSONObject driverDataJSON = new JSONObject();
+            driverDataJSON.put("name_display", driver.getDisplayName());
+            driverDataJSON.put("short_name_display", driver.getShortName());
+            driverDataJSON.put("car", driver.getCar());
+    
+            if (cbUseTeams.isSelected()) {
+                driverDataJSON.put("team", driver.getTeam());
+            } else {
+                driverDataJSON.put("team", null);
+            }
+            
+            if (cbUsePoints.isSelected()) {
+                driverDataJSON.put("points", driver.getSeriesPoints());
+            } else {
+                driverDataJSON.put("points", null);
+            }
+            driversJSON.put(driver.getName(), driverDataJSON);
+        }
+        
+        output.put("participant_data", driversJSON);
+        
+        try {
+            FileWriter file = new FileWriter("C:\\Users\\502625185\\Downloads\\out.json");
+            file.write(output.toJSONString());
+            file.flush();
+            file.close();
+        
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        System.out.println(output.toJSONString());
+    }
+    
+    @FXML
+    private void closeWindow() {
+        Stage stage = (Stage) root.getScene().getWindow();
+        stage.close();
+    }
     
     @FXML
     private void validateInteger(KeyEvent event) {
@@ -391,6 +599,7 @@ public class ReplayEnhancerUIController implements Initializable {
 //                    return new EditingCell();
 //                }
 //            };
+        resetAll();
         
         colFinishPosition.setCellValueFactory(
             new PropertyValueFactory<PointStructureItem,Integer>("finishPosition")

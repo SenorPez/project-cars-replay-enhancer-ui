@@ -15,6 +15,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -29,15 +30,21 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-                  <MenuItem mnemonicParsing="false" text="New" />
+                  <MenuItem fx:id="fileNew" mnemonicParsing="false" onAction="#resetAll" onMenuValidation="#resetAll" text="New">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
                   <MenuItem mnemonicParsing="false" text="New from Existing..." />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" text="Open..." />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" text="Save" />
+                  <MenuItem fx:id="fileSave" mnemonicParsing="false" onAction="#writeJSON" onMenuValidation="#writeJSON" text="Save">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
                   <MenuItem mnemonicParsing="false" text="Save As..." />
                   <SeparatorMenuItem mnemonicParsing="false" />
-              <MenuItem mnemonicParsing="false" text="Close" />
+              <MenuItem fx:id="fileClose" mnemonicParsing="false" onAction="#closeWindow" text="Close" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Tools">
@@ -160,7 +167,7 @@
                                     <TextField fx:id="txtHeadingFont" editable="false" GridPane.columnIndex="1" />
                                     <TextField fx:id="txtHeadingFontSize" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                     <Button id="btnHeadingFont" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
-                                    <ColorPicker GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <ColorPicker fx:id="colorHeadingFontColor" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                  </children>
                               </GridPane>
                            </content>
@@ -188,7 +195,7 @@
                                     <TextField fx:id="txtFont" editable="false" GridPane.columnIndex="1" />
                                     <TextField fx:id="txtFontSize" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                     <Button id="btnFont" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
-                                    <ColorPicker GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <ColorPicker fx:id="colorFontColor" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                  </children>
                               </GridPane>
                            </content>
@@ -278,7 +285,7 @@
                                  </rowConstraints>
                                  <children>
                                     <Label text="Heading Color" />
-                                    <ColorPicker GridPane.columnIndex="1" />
+                                    <ColorPicker fx:id="colorHeadingColor" GridPane.columnIndex="1" />
                                     <Label text="Heading Text" GridPane.rowIndex="2" />
                                     <TextField fx:id="txtHeadingText" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                     <Label text="Subheading Text" GridPane.rowIndex="3" />
@@ -309,9 +316,9 @@
                                     <Label text="Show Teams?" />
                                     <Label text="Show Car Classes?" GridPane.rowIndex="1" />
                                     <Label text="Show Series Champion?" GridPane.rowIndex="2" />
-                                    <CheckBox mnemonicParsing="false" GridPane.columnIndex="1" />
-                                    <CheckBox mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <CheckBox mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <CheckBox fx:id="cbUseTeams" mnemonicParsing="false" GridPane.columnIndex="1" />
+                                    <CheckBox fx:id="cbUseClasses" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <CheckBox fx:id="cbShowChampion" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                  </children>
                               </GridPane>
                            </content>
@@ -334,7 +341,7 @@
                                 </rowConstraints>
                                  <children>
                                     <Label text="Use Points Structure?" />
-                                    <CheckBox mnemonicParsing="false" GridPane.columnIndex="1" />
+                                    <CheckBox fx:id="cbUsePoints" mnemonicParsing="false" GridPane.columnIndex="1" />
                                     <Label text="Fastest Lap Bonus Points" GridPane.rowIndex="1" />
                                     <TextField fx:id="txtBonusPoints" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                     <TableView fx:id="tblPointStructure" editable="true" prefHeight="140.0" prefWidth="254.0" GridPane.columnSpan="2" GridPane.rowIndex="2">
