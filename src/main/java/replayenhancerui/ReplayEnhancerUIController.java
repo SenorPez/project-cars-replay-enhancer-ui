@@ -697,7 +697,7 @@ public class ReplayEnhancerUIController implements Initializable {
         
     }
     
-    public ObservableList<Driver> populateDrivers() {
+    private ObservableList<Driver> populateDrivers() {
         File testFile = new File(txtSourceTelemetry.getText());
         
         if (!testFile.isDirectory()) {
