@@ -13,6 +13,7 @@ before_install:
  - chmod +x gradlew      
  
 install:
+    - python setup.py install
     - pip install coverage
 
 jdk:
