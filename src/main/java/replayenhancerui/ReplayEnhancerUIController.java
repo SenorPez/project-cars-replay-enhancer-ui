@@ -233,6 +233,7 @@ public class ReplayEnhancerUIController implements Initializable {
         cbShowChampion.setSelected(false);
         
         txtBonusPoints.setText("0");
+        pointStructure.clear();
         pointStructure.add(
             new PointStructureItem(1, 25));
         pointStructure.add(
