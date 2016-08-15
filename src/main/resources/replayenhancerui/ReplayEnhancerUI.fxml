@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -16,7 +17,6 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.input.KeyCodeCombination?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -24,7 +24,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="replayenhancerui.ReplayEnhancerUIController">
+<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="replayenhancerui.ReplayEnhancerUIController">
    <children>
       <MenuBar maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="640.0">
         <menus>
@@ -59,370 +59,351 @@
           </Menu>
         </menus>
       </MenuBar>
-      <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="430.0" prefWidth="640.0" tabClosingPolicy="UNAVAILABLE">
-        <tabs>
-          <Tab closable="false" text="Files">
-               <content>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
-                     <children>
-                        <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="14.0" text="Source Data">
-                           <content>
-                              <GridPane hgap="4.0" vgap="4.0">
-                                 <columnConstraints>
-                                    <ColumnConstraints hgrow="NEVER" prefWidth="150.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" prefWidth="150.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" />
-                                 </columnConstraints>
-                                 <rowConstraints>
-                                    <RowConstraints fillHeight="false" vgrow="NEVER" />
-                                    <RowConstraints vgrow="NEVER" />
-                                 </rowConstraints>
-                                 <children>
-                                    <Label text="Source Video" />
-                                    <Label text="Source Telemetry" GridPane.rowIndex="1" />
-                                    <TextField fx:id="txtSourceVideo" editable="false" GridPane.columnIndex="1" />
-                                    <TextField fx:id="txtSourceTelemetry" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <Button id="btnSourceVideo" fx:id="btnSourceVideo" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
-                                    <Button id="btnSourceTelemetry" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                                 </children>
-                              </GridPane>
-                           </content>
+      <ScrollPane fitToWidth="true" hbarPolicy="NEVER" minWidth="-Infinity" vbarPolicy="ALWAYS" VBox.vgrow="NEVER">
+         <content>
+            <TabPane tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab closable="false" text="Files">
+                     <content>
+                        <VBox minHeight="-Infinity" minWidth="-Infinity">
+                           <children>
+                              <TitledPane animated="false" collapsible="false" text="Source Data">
+                                 <content>
+                                    <GridPane hgap="4.0" vgap="4.0">
+                                       <columnConstraints>
+                                          <ColumnConstraints hgrow="NEVER" percentWidth="25.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
+                                       </columnConstraints>
+                                       <rowConstraints>
+                                          <RowConstraints fillHeight="false" vgrow="NEVER" />
+                                          <RowConstraints vgrow="NEVER" />
+                                       </rowConstraints>
+                                       <children>
+                                          <Label text="Source Video" />
+                                          <Label text="Source Telemetry" GridPane.rowIndex="1" />
+                                          <TextField fx:id="txtSourceVideo" editable="false" GridPane.columnIndex="1" />
+                                          <TextField fx:id="txtSourceTelemetry" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <Button id="btnSourceVideo" fx:id="btnSourceVideo" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
+                                          <Button id="btnSourceTelemetry" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                       </children>
+                                    </GridPane>
+                                 </content>
+                                 <padding>
+                                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                 </padding>
+                              </TitledPane>
+                              <TitledPane animated="false" collapsible="false" prefHeight="136.0" prefWidth="330.0" text="Source Parameters">
+                                 <content>
+                                    <GridPane hgap="4.0" vgap="4.0">
+                                       <columnConstraints>
+                                          <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
+                                       </columnConstraints>
+                                       <rowConstraints>
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints vgrow="SOMETIMES" />
+                                       </rowConstraints>
+                                       <children>
+                                          <TextField fx:id="txtVideoStart" onKeyReleased="#validateFloat" styleClass="input-float" GridPane.columnIndex="1" />
+                                          <TextField fx:id="txtVideoEnd" onKeyReleased="#validateFloat" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <TextField fx:id="txtVideoSync" onKeyReleased="#validateFloat" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                          <Label text="Video Start Time:" />
+                                          <Label text="Video End Time:" GridPane.rowIndex="1" />
+                                          <Label text="Telemetry Sync. Value:" GridPane.rowIndex="2" />
+                                       </children>
+                                    </GridPane>
+                                 </content>
+                                 <padding>
+                                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                 </padding>
+                              </TitledPane>
+                              <TitledPane animated="false" collapsible="false" text="Output">
+                                 <content>
+                                    <GridPane hgap="4.0" vgap="4.0">
+                                       <columnConstraints>
+                                          <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
+                                       </columnConstraints>
+                                       <rowConstraints>
+                                          <RowConstraints vgrow="SOMETIMES" />
+                                       </rowConstraints>
+                                       <children>
+                                          <Label text="Output Video" />
+                                          <TextField fx:id="txtOutputVideo" editable="false" GridPane.columnIndex="1" />
+                                          <Button id="btnOutputVideo" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
+                                       </children>
+                                    </GridPane>
+                                 </content>
+                                 <padding>
+                                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                 </padding>
+                              </TitledPane>
+                           </children>
                            <padding>
                               <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                            </padding>
-                        </TitledPane>
-                        <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="118.0" prefHeight="136.0" prefWidth="330.0" text="Source Parameters">
-                           <content>
-                              <GridPane hgap="4.0" vgap="4.0">
-                                 <columnConstraints>
-                                    <ColumnConstraints hgrow="SOMETIMES" prefWidth="150.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" prefWidth="150.0" />
-                                 </columnConstraints>
-                                 <rowConstraints>
-                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                    <RowConstraints vgrow="SOMETIMES" />
-                                 </rowConstraints>
-                                 <children>
-                                    <TextField fx:id="txtVideoStart" onKeyReleased="#validateFloat" styleClass="input-float" GridPane.columnIndex="1" />
-                                    <TextField fx:id="txtVideoEnd" onKeyReleased="#validateFloat" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <TextField fx:id="txtVideoSync" onKeyReleased="#validateFloat" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                    <Label text="Video Start Time:" />
-                                    <Label text="Video End Time:" GridPane.rowIndex="1" />
-                                    <Label text="Telemetry Sync. Value:" GridPane.rowIndex="2" />
-                                 </children>
-                              </GridPane>
-                           </content>
+                        </VBox>
+                     </content>
+                </Tab>
+                <Tab text="Presentation">
+                  <content>
+                        <VBox>
+                           <children>
+                              <TitledPane animated="false" collapsible="false" text="Headings">
+                                 <content>
+                                    <GridPane hgap="4.0" vgap="4.0">
+                                      <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
+                                      </columnConstraints>
+                                      <rowConstraints>
+                                          <RowConstraints vgrow="SOMETIMES" />
+                                          <RowConstraints vgrow="SOMETIMES" />
+                                        <RowConstraints vgrow="SOMETIMES" />
+                                        <RowConstraints vgrow="SOMETIMES" />
+                                        <RowConstraints vgrow="SOMETIMES" />
+                                          <RowConstraints vgrow="SOMETIMES" />
+                                          <RowConstraints vgrow="SOMETIMES" />
+                                      </rowConstraints>
+                                       <children>
+                                          <Label text="Heading Font" GridPane.rowIndex="2" />
+                                          <Label text="Heading Font Size" GridPane.rowIndex="3" />
+                                          <Label text="Heading Font Color" GridPane.rowIndex="4" />
+                                          <TextField fx:id="txtHeadingFont" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                          <TextField fx:id="txtHeadingFontSize" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                          <Button id="btnHeadingFont" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                                          <ColorPicker fx:id="colorHeadingFontColor" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                          <Label text="Heading Color" GridPane.rowIndex="5" />
+                                          <ColorPicker fx:id="colorHeadingColor" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                          <Label text="Heading Logo" GridPane.rowIndex="6" />
+                                          <TextField fx:id="txtHeadingLogo" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                          <Button id="btnHeadingLogo" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="6" />
+                                          <Label text="Heading Text" />
+                                          <TextField fx:id="txtHeadingText" GridPane.columnIndex="1" />
+                                          <Label text="Subheading Text" GridPane.rowIndex="1" />
+                                          <TextField fx:id="txtSubheadingText" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                       </children>
+                                    </GridPane>
+                                 </content>
+                                 <padding>
+                                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                 </padding>
+                              </TitledPane>
+                              <TitledPane animated="false" collapsible="false" text="Background (Title and Results Screens)">
+                                 <content>
+                                    <GridPane hgap="4.0" vgap="4.0">
+                                       <columnConstraints>
+                                          <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
+                                       </columnConstraints>
+                                       <rowConstraints>
+                                          <RowConstraints vgrow="SOMETIMES" />
+                                          <RowConstraints vgrow="SOMETIMES" />
+                                          <RowConstraints vgrow="SOMETIMES" />
+                                          <RowConstraints vgrow="SOMETIMES" />
+                                       </rowConstraints>
+                                       <children>
+                                          <Label text="Image" />
+                                          <Label text="Logo" GridPane.rowIndex="1" />
+                                          <Label text="Logo Width" GridPane.rowIndex="2" />
+                                          <TextField fx:id="txtBackdrop" editable="false" GridPane.columnIndex="1" />
+                                          <TextField fx:id="txtLogo" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <Button id="btnBackdrop" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
+                                          <Label text="Logo Height" GridPane.rowIndex="3" />
+                                          <Button id="btnLogo" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                          <TextField fx:id="txtLogoWidth" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                          <TextField fx:id="txtLogoHeight" onKeyTyped="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                       </children>
+                                    </GridPane>
+                                 </content>
+                                 <padding>
+                                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                 </padding>
+                              </TitledPane>
+                              <TitledPane animated="false" collapsible="false" text="Font">
+                                 <content>
+                                    <GridPane hgap="4.0" vgap="4.0">
+                                       <columnConstraints>
+                                          <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
+                                       </columnConstraints>
+                                       <rowConstraints>
+                                          <RowConstraints vgrow="SOMETIMES" />
+                                          <RowConstraints vgrow="SOMETIMES" />
+                                          <RowConstraints vgrow="SOMETIMES" />
+                                       </rowConstraints>
+                                       <children>
+                                          <Label text="Font" />
+                                          <Label text="Font Size" GridPane.rowIndex="1" />
+                                          <Label text="Font Color" GridPane.rowIndex="2" />
+                                          <TextField fx:id="txtFont" editable="false" GridPane.columnIndex="1" />
+                                          <TextField fx:id="txtFontSize" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <Button id="btnFont" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
+                                          <ColorPicker fx:id="colorFontColor" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                       </children>
+                                    </GridPane>
+                                 </content>
+                                 <padding>
+                                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                 </padding>
+                              </TitledPane>
+                              <TitledPane animated="false" collapsible="false" text="Layout">
+                                 <content>
+                                    <GridPane hgap="4.0" vgap="4.0">
+                                       <columnConstraints>
+                                          <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.0" />
+                                       </columnConstraints>
+                                       <rowConstraints>
+                                          <RowConstraints vgrow="SOMETIMES" />
+                                          <RowConstraints vgrow="SOMETIMES" />
+                                          <RowConstraints vgrow="SOMETIMES" />
+                                       </rowConstraints>
+                                       <children>
+                                          <Label text="Margin Width" />
+                                          <Label text="Column Margin Width" GridPane.rowIndex="1" />
+                                          <TextField fx:id="txtMarginWidth" onKeyReleased="#validateInteger" GridPane.columnIndex="1" />
+                                          <TextField fx:id="txtColumnMarginWidth" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <Label text="Result Lines" GridPane.rowIndex="2" />
+                                          <TextField fx:id="txtResultLines" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                       </children>
+                                    </GridPane>
+                                 </content>
+                                 <padding>
+                                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                 </padding>
+                              </TitledPane>
+                           </children>
                            <padding>
                               <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                            </padding>
-                        </TitledPane>
-                        <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="254.0" text="Output">
-                           <content>
-                              <GridPane hgap="4.0" vgap="4.0">
-                                 <columnConstraints>
-                                    <ColumnConstraints hgrow="SOMETIMES" prefWidth="150.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" prefWidth="150.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" />
-                                 </columnConstraints>
-                                 <rowConstraints>
-                                    <RowConstraints vgrow="SOMETIMES" />
-                                 </rowConstraints>
-                                 <children>
-                                    <Label text="Output Video" />
-                                    <TextField fx:id="txtOutputVideo" editable="false" GridPane.columnIndex="1" />
-                                    <Button id="btnOutputVideo" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
-                                 </children>
-                              </GridPane>
-                           </content>
+                        </VBox>
+                  </content>
+                </Tab>
+                  <Tab text="Options">
+                    <content>
+                        <VBox>
+                           <children>
+                              <TitledPane animated="false" collapsible="false" text="Options">
+                                 <content>
+                                    <GridPane hgap="4.0" vgap="4.0">
+                                      <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" percentWidth="25.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" percentWidth="33.0" />
+                                      </columnConstraints>
+                                      <rowConstraints>
+                                        <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                      </rowConstraints>
+                                       <children>
+                                          <Label text="Show Teams?" />
+                                          <Label text="Show Car Classes?" GridPane.rowIndex="1" />
+                                          <Label text="Show Series Champion?" GridPane.rowIndex="2" />
+                                          <CheckBox fx:id="cbUseTeams" mnemonicParsing="false" GridPane.columnIndex="1" />
+                                          <CheckBox fx:id="cbUseClasses" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <CheckBox fx:id="cbShowChampion" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                          <Label text="Use Points Structure?" GridPane.rowIndex="3" />
+                                          <CheckBox fx:id="cbUsePoints" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                          <Label text="Fastest Lap Bonus Points" GridPane.rowIndex="4" />
+                                          <TextField fx:id="txtBonusPoints" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                          <TableView fx:id="tblPointStructure" editable="true" prefHeight="404.0" prefWidth="254.0" GridPane.columnSpan="2" GridPane.rowIndex="5">
+                                            <columns>
+                                              <TableColumn fx:id="colFinishPosition" editable="false" prefWidth="75.0" resizable="false" sortable="false" text="Position" />
+                                              <TableColumn fx:id="colPoints" prefWidth="178.0" sortable="false" text="Points" />
+                                            </columns>
+                                          </TableView>
+                                          <Button id="btnAddPosition" mnemonicParsing="false" onAction="#handleButtonAction" text="Add Position" GridPane.rowIndex="6" />
+                                       </children>
+                                    </GridPane>
+                                 </content>
+                                 <padding>
+                                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                 </padding>
+                              </TitledPane>
+                           </children>
                            <padding>
                               <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                            </padding>
-                        </TitledPane>
-                     </children>
-                  </AnchorPane>
-               </content>
-          </Tab>
-          <Tab text="Presentation">
-            <content>
-              <AnchorPane>
-                     <children>
-                        <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="14.0" text="Heading Font">
-                           <content>
-                              <GridPane hgap="4.0" vgap="4.0">
-                                <columnConstraints>
-                                  <ColumnConstraints hgrow="SOMETIMES" prefWidth="150.0" />
-                                  <ColumnConstraints hgrow="SOMETIMES" prefWidth="150.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" />
-                                </columnConstraints>
-                                <rowConstraints>
-                                  <RowConstraints vgrow="SOMETIMES" />
-                                  <RowConstraints vgrow="SOMETIMES" />
-                                  <RowConstraints vgrow="SOMETIMES" />
-                                </rowConstraints>
-                                 <children>
-                                    <Label text="Heading Font" />
-                                    <Label text="Heading Font Size" GridPane.rowIndex="1" />
-                                    <Label text="Heading Font Color" GridPane.rowIndex="2" />
-                                    <TextField fx:id="txtHeadingFont" editable="false" GridPane.columnIndex="1" />
-                                    <TextField fx:id="txtHeadingFontSize" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <Button id="btnHeadingFont" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
-                                    <ColorPicker fx:id="colorHeadingFontColor" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                 </children>
-                              </GridPane>
-                           </content>
-                           <padding>
-                              <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                           </padding>
-                        </TitledPane>
-                        <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="147.0" text="Presentation Font">
-                           <content>
-                              <GridPane hgap="4.0" vgap="4.0">
-                                 <columnConstraints>
-                                    <ColumnConstraints hgrow="SOMETIMES" prefWidth="150.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" prefWidth="150.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" />
-                                 </columnConstraints>
-                                 <rowConstraints>
-                                    <RowConstraints vgrow="SOMETIMES" />
-                                    <RowConstraints vgrow="SOMETIMES" />
-                                    <RowConstraints vgrow="SOMETIMES" />
-                                 </rowConstraints>
-                                 <children>
-                                    <Label text="Font" />
-                                    <Label text="Font Size" GridPane.rowIndex="1" />
-                                    <Label text="Font Color" GridPane.rowIndex="2" />
-                                    <TextField fx:id="txtFont" editable="false" GridPane.columnIndex="1" />
-                                    <TextField fx:id="txtFontSize" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <Button id="btnFont" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
-                                    <ColorPicker fx:id="colorFontColor" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                 </children>
-                              </GridPane>
-                           </content>
-                           <padding>
-                              <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                           </padding>
-                        </TitledPane>
-                        <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="280.0" text="Layout">
-                           <content>
-                              <GridPane hgap="4.0" vgap="4.0">
-                                 <columnConstraints>
-                                    <ColumnConstraints hgrow="SOMETIMES" prefWidth="150.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" prefWidth="150.0" />
-                                 </columnConstraints>
-                                 <rowConstraints>
-                                    <RowConstraints vgrow="SOMETIMES" />
-                                    <RowConstraints vgrow="SOMETIMES" />
-                                    <RowConstraints vgrow="SOMETIMES" />
-                                 </rowConstraints>
-                                 <children>
-                                    <Label text="Margin Width" />
-                                    <Label text="Column Margin Width" GridPane.rowIndex="1" />
-                                    <TextField fx:id="txtMarginWidth" onKeyReleased="#validateInteger" GridPane.columnIndex="1" />
-                                    <TextField fx:id="txtColumnMarginWidth" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <Label text="Result Lines" GridPane.rowIndex="2" />
-                                    <TextField fx:id="txtResultLines" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                 </children>
-                              </GridPane>
-                           </content>
-                           <padding>
-                              <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                           </padding>
-                        </TitledPane>
-                     </children>
-                  </AnchorPane>
-            </content>
-          </Tab>
-            <Tab text="Race">
-              <content>
-                <AnchorPane>
-                     <children>
-                        <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="14.0" text="Background (Title and Results Screens)">
-                           <content>
-                              <GridPane hgap="4.0" vgap="4.0">
-                                 <columnConstraints>
-                                    <ColumnConstraints hgrow="SOMETIMES" prefWidth="100.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" prefWidth="150.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" />
-                                 </columnConstraints>
-                                 <rowConstraints>
-                                    <RowConstraints vgrow="SOMETIMES" />
-                                    <RowConstraints vgrow="SOMETIMES" />
-                                    <RowConstraints vgrow="SOMETIMES" />
-                                    <RowConstraints vgrow="SOMETIMES" />
-                                 </rowConstraints>
-                                 <children>
-                                    <Label text="Image" />
-                                    <Label text="Logo" GridPane.rowIndex="1" />
-                                    <Label text="Logo Width" GridPane.rowIndex="2" />
-                                    <TextField fx:id="txtBackdrop" editable="false" GridPane.columnIndex="1" />
-                                    <TextField fx:id="txtLogo" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <Button id="btnBackdrop" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
-                                    <Label text="Logo Height" GridPane.rowIndex="3" />
-                                    <Button id="btnLogo" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                                    <TextField fx:id="txtLogoWidth" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                    <TextField fx:id="txtLogoHeight" onKeyTyped="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                 </children>
-                              </GridPane>
-                           </content>
-                           <padding>
-                              <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                           </padding>
-                        </TitledPane>
-                        <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="176.0" text="Headings">
-                           <content>
-                              <GridPane hgap="4.0" vgap="4.0">
-                                 <columnConstraints>
-                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
-                                    <ColumnConstraints hgrow="SOMETIMES" />
-                                 </columnConstraints>
-                                 <rowConstraints>
-                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                 </rowConstraints>
-                                 <children>
-                                    <Label text="Heading Color" />
-                                    <ColorPicker fx:id="colorHeadingColor" GridPane.columnIndex="1" />
-                                    <Label text="Heading Text" GridPane.rowIndex="2" />
-                                    <TextField fx:id="txtHeadingText" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                    <Label text="Subheading Text" GridPane.rowIndex="3" />
-                                    <TextField fx:id="txtSubheadingText" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                    <Label text="Heading Logo" GridPane.rowIndex="1" />
-                                    <TextField fx:id="txtHeadingLogo" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <Button id="btnHeadingLogo" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                                 </children>
-                              </GridPane>
-                           </content>
-                           <padding>
-                              <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                           </padding>
-                        </TitledPane>
-                        <TitledPane animated="false" collapsible="false" layoutX="354.0" layoutY="14.0" text="Options">
-                           <content>
-                              <GridPane hgap="4.0" vgap="4.0">
-                                <columnConstraints>
-                                  <ColumnConstraints hgrow="SOMETIMES" prefWidth="150.0" />
-                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                </columnConstraints>
-                                <rowConstraints>
-                                  <RowConstraints prefHeight="25.0" vgrow="SOMETIMES" />
-                                  <RowConstraints prefHeight="25.0" vgrow="SOMETIMES" />
-                                  <RowConstraints prefHeight="25.0" vgrow="SOMETIMES" />
-                                </rowConstraints>
-                                 <children>
-                                    <Label text="Show Teams?" />
-                                    <Label text="Show Car Classes?" GridPane.rowIndex="1" />
-                                    <Label text="Show Series Champion?" GridPane.rowIndex="2" />
-                                    <CheckBox fx:id="cbUseTeams" mnemonicParsing="false" GridPane.columnIndex="1" />
-                                    <CheckBox fx:id="cbUseClasses" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <CheckBox fx:id="cbShowChampion" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                 </children>
-                              </GridPane>
-                           </content>
-                           <padding>
-                              <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                           </padding>
-                        </TitledPane>
-                        <TitledPane animated="false" collapsible="false" layoutX="354.0" layoutY="147.0" text="Points Structure">
-                           <content>
-                              <GridPane hgap="4.0" vgap="4.0">
-                                <columnConstraints>
-                                  <ColumnConstraints hgrow="SOMETIMES" prefWidth="150.0" />
-                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                </columnConstraints>
-                                <rowConstraints>
-                                  <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                  <RowConstraints vgrow="SOMETIMES" />
-                                  <RowConstraints vgrow="SOMETIMES" />
-                                    <RowConstraints vgrow="SOMETIMES" />
-                                </rowConstraints>
-                                 <children>
-                                    <Label text="Use Points Structure?" />
-                                    <CheckBox fx:id="cbUsePoints" mnemonicParsing="false" GridPane.columnIndex="1" />
-                                    <Label text="Fastest Lap Bonus Points" GridPane.rowIndex="1" />
-                                    <TextField fx:id="txtBonusPoints" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <TableView fx:id="tblPointStructure" editable="true" prefHeight="140.0" prefWidth="254.0" GridPane.columnSpan="2" GridPane.rowIndex="2">
+                        </VBox>
+                    </content>
+                  </Tab>
+                  <Tab disable="true" text="Drivers">
+                    <content>
+                        <VBox>
+                           <children>
+                              <TitledPane collapsible="false" text="Drivers">
+                                 <content>
+                                    <TableView fx:id="tblDrivers" editable="true" prefHeight="200.0" prefWidth="618.0">
                                       <columns>
-                                        <TableColumn fx:id="colFinishPosition" editable="false" prefWidth="75.0" resizable="false" sortable="false" text="Position" />
-                                        <TableColumn fx:id="colPoints" prefWidth="178.0" sortable="false" text="Points" />
+                                        <TableColumn fx:id="colName" editable="false" prefWidth="75.0" text="Name" />
+                                        <TableColumn fx:id="colDisplayName" prefWidth="102.0" text="Display Name" />
+                                          <TableColumn fx:id="colShortName" prefWidth="83.0" text="Short Name" />
+                                          <TableColumn fx:id="colCar" prefWidth="88.0" text="Car" />
+                                          <TableColumn fx:id="colTeam" prefWidth="63.0" text="Team" />
+                                          <TableColumn fx:id="colSeriesPoints" prefWidth="78.0" text="Series Points" />
                                       </columns>
                                     </TableView>
-                                    <Button id="btnAddPosition" mnemonicParsing="false" onAction="#handleButtonAction" text="Add Position" GridPane.rowIndex="3" />
-                                 </children>
-                              </GridPane>
-                           </content>
+                                 </content>
+                                 <padding>
+                                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                 </padding>
+                              </TitledPane>
+                              <TitledPane collapsible="false" prefHeight="175.0" prefWidth="620.0" text="Cars">
+                                 <content>
+                                    <TableView prefHeight="200.0" prefWidth="618.0">
+                                      <columns>
+                                        <TableColumn prefWidth="75.0" text="Car" />
+                                        <TableColumn prefWidth="75.0" text="Class" />
+                                          <TableColumn prefWidth="75.0" text="Class Color" />
+                                      </columns>
+                                    </TableView>
+                                 </content>
+                                 <padding>
+                                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                 </padding>
+                              </TitledPane>
+                              <TitledPane collapsible="false" text="Additional Drivers">
+                                 <content>
+                                    <TableView prefHeight="200.0" prefWidth="618.0">
+                                       <columns>
+                                          <TableColumn prefWidth="75.0" text="Name" />
+                                          <TableColumn prefWidth="106.0" text="Display Name" />
+                                          <TableColumn prefWidth="97.0" text="Short Name" />
+                                          <TableColumn prefWidth="53.0" text="Car" />
+                                          <TableColumn prefWidth="71.0" text="Team" />
+                                          <TableColumn prefWidth="110.0" text="Series Points" />
+                                       </columns>
+                                    </TableView>
+                                 </content>
+                                 <padding>
+                                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                 </padding>
+                              </TitledPane>
+                              <Button mnemonicParsing="false" text="Add Additional Driver" />
+                           </children>
                            <padding>
                               <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                            </padding>
-                        </TitledPane>
-                     </children>
-                  </AnchorPane>
-              </content>
-            </Tab>
-            <Tab text="Drivers">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <TitledPane collapsible="false" layoutX="14.0" layoutY="14.0" text="Drivers">
-                           <content>
-                              <TableView fx:id="tblDrivers" editable="true" prefHeight="200.0" prefWidth="618.0">
-                                <columns>
-                                  <TableColumn fx:id="colName" editable="false" prefWidth="75.0" text="Name" />
-                                  <TableColumn fx:id="colDisplayName" prefWidth="102.0" text="Display Name" />
-                                    <TableColumn fx:id="colShortName" prefWidth="83.0" text="Short Name" />
-                                    <TableColumn fx:id="colCar" prefWidth="88.0" text="Car" />
-                                    <TableColumn fx:id="colTeam" prefWidth="63.0" text="Team" />
-                                    <TableColumn fx:id="colSeriesPoints" prefWidth="78.0" text="Series Points" />
-                                </columns>
-                              </TableView>
-                           </content>
-                        </TitledPane>
-                        <TitledPane collapsible="false" layoutX="14.0" layoutY="240.0" prefHeight="175.0" prefWidth="620.0" text="Cars">
-                           <content>
-                              <TableView prefHeight="200.0" prefWidth="618.0">
-                                <columns>
-                                  <TableColumn prefWidth="75.0" text="Car" />
-                                  <TableColumn prefWidth="75.0" text="Class" />
-                                    <TableColumn prefWidth="75.0" text="Class Color" />
-                                </columns>
-                              </TableView>
-                           </content>
-                        </TitledPane>
-                     </children>
-                  </AnchorPane>
-              </content>
-            </Tab>
-            <Tab text="Additional Drivers">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <TitledPane collapsible="false" layoutX="14.0" layoutY="14.0" text="Additional Drivers">
-                           <content>
-                              <TableView prefHeight="200.0" prefWidth="618.0">
-                                 <columns>
-                                    <TableColumn prefWidth="75.0" text="Name" />
-                                    <TableColumn prefWidth="106.0" text="Display Name" />
-                                    <TableColumn prefWidth="97.0" text="Short Name" />
-                                    <TableColumn prefWidth="53.0" text="Car" />
-                                    <TableColumn prefWidth="71.0" text="Team" />
-                                    <TableColumn prefWidth="110.0" text="Series Points" />
-                                 </columns>
-                              </TableView>
-                           </content>
-                        </TitledPane>
-                        <Button layoutX="14.0" layoutY="240.0" mnemonicParsing="false" text="Add Additional Driver" />
-                     </children>
-                  </AnchorPane>
-               </content>
-            </Tab>
-        </tabs>
-      </TabPane>
-      <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                        </VBox>
+                    </content>
+                  </Tab>
+              </tabs>
+            </TabPane>
+         </content>
+      </ScrollPane>
+      <HBox alignment="CENTER_LEFT" prefHeight="21.0" prefWidth="612.0">
          <children>
-            <Label fx:id="txtStatusBar" text="Project CARS Replay Enhancer" />
             <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
             <Label alignment="CENTER_RIGHT" text="Configuration Status: " />
             <Label fx:id="txtValidConfig" text="Valid" />
