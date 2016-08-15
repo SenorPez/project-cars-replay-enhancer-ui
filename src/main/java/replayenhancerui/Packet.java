@@ -26,31 +26,44 @@ public abstract class Packet {
     
     private SimpleSetProperty<SimpleStringProperty> names;
     
+    private static Integer toInt(byte[] bytes) {
+        int returnValue = 0;
+        for (byte chunk : bytes) {
+            returnValue <<= 8;
+            returnValue |= (int)chunk & 0xFF;
+        }
+        return returnValue;
+    }
+    
     protected Packet(ByteBuffer data) {
         this.buildVersionNumber = new SimpleIntegerProperty(ReadShort(data));
         this.packetType = new SimpleIntegerProperty(ReadChar(data));
         this.names = new SimpleSetProperty<SimpleStringProperty>(FXCollections.observableSet());
     }
      
-    protected final Integer ReadShort(ByteBuffer data) {
+    protected final static Integer ReadShort(ByteBuffer data) {
         byte[] readBytes = new byte[2];
         data.get(readBytes);
-        return ((0x00 << 24) + (0x00 << 16) + (readBytes[1] << 8) + (readBytes[0]));
+        return toInt(readBytes);
     }
     
-    protected final Integer ReadChar(ByteBuffer data) {
+    protected final static Integer ReadChar(ByteBuffer data) {
         byte[] readBytes = new byte[1];
         data.get(readBytes);
-        return ((0x00 << 24) + (0x00 << 16) + (0x00 << 8) + (readBytes[0]));
+        return toInt(readBytes);
     }
     
-    protected final Float ReadFloat(ByteBuffer data) {
+    protected final static Integer ReadByte(ByteBuffer data) {
+        return ReadChar(data);
+    }
+    
+    protected final static Float ReadFloat(ByteBuffer data) {
         byte[] readBytes = new byte[4];
         data.get(readBytes);
         return ByteBuffer.wrap(readBytes).getFloat();
     }
     
-    protected final String ReadString(ByteBuffer data, Integer length) {
+    protected final static String ReadString(ByteBuffer data, Integer length) {
         byte[] readBytes = new byte[length];
         data.get(readBytes);
         try {

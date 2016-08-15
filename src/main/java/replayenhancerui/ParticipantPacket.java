@@ -7,11 +7,12 @@ package replayenhancerui;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleSetProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -23,17 +24,17 @@ public class ParticipantPacket extends Packet {
     private final SimpleStringProperty trackLocation;
     private final SimpleStringProperty trackVariation;
         
-    private final SimpleSetProperty<SimpleFloatProperty> fastestLapTimes;
+    private final SimpleListProperty<SimpleFloatProperty> fastestLapTimes;
     
     public ParticipantPacket(ByteBuffer data) throws UnsupportedEncodingException {
         super(data);
       
-        this.carName = new SimpleStringProperty(ReadString(data, 64));
-        this.carClass = new SimpleStringProperty(ReadString(data, 64));
-        this.trackLocation = new SimpleStringProperty(ReadString(data, 64));
-        this.trackVariation = new SimpleStringProperty(ReadString(data, 64));
+        this.carName = new SimpleStringProperty(ReadString(data, 64).trim());
+        this.carClass = new SimpleStringProperty(ReadString(data, 64).trim());
+        this.trackLocation = new SimpleStringProperty(ReadString(data, 64).trim());
+        this.trackVariation = new SimpleStringProperty(ReadString(data, 64).trim());
         
-        this.fastestLapTimes = new SimpleSetProperty<SimpleFloatProperty>(FXCollections.observableSet());
+        this.fastestLapTimes = new SimpleListProperty<SimpleFloatProperty>(FXCollections.observableList(new ArrayList<SimpleFloatProperty>()));
         
         super.setNames(data);
         
@@ -58,7 +59,7 @@ public class ParticipantPacket extends Packet {
         return trackVariation.get();
     }
     
-    public ObservableSet<SimpleFloatProperty> getFastestLapTimes() {
+    public ObservableList<SimpleFloatProperty> getFastestLapTimes() {
         return fastestLapTimes.get();
     }
 }
