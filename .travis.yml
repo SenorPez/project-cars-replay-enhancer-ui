@@ -18,7 +18,6 @@ install:
 jdk:
     - oraclejdk8
     
-test:
-    post:
-        - if [ -e ./gradlew ]; then ./gradlew jacocoTestReport;else gradle jacocoTestReport;fi
-        - bash <(curl -s https://codecov.io/bash)
+after_success:
+    - if [ -e ./gradlew ]; then ./gradlew jacocoTestReport;else gradle jacocoTestReport;fi
+    - bash <(curl -s https://codecov.io/bash)
