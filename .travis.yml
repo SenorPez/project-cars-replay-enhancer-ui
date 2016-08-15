@@ -10,7 +10,10 @@ cache:
         - $HOME/.gradle/wrapper/
         
 before_install:
- - chmod +x gradlew        
+ - chmod +x gradlew      
+ 
+install:
+    - pip install coverage
 
 jdk:
     - oraclejdk8
