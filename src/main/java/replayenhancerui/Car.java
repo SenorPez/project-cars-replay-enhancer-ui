@@ -25,4 +25,20 @@ public class Car {
         this.carName = new SimpleStringProperty(name);
         this.carClass = new SimpleObjectProperty<CarClass>(carClass);
     }
+    
+    public String getCarName() {
+        return carName.get();
+    }
+    
+    public CarClass getCarClass() {
+        return carClass.get();
+    }
+    
+    public void setCarName(String value) {
+        carName.set(value);
+    }
+    
+    public void setCarClass(CarClass value) {
+        carClass.set(value);
+    }
 }

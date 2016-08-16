@@ -22,4 +22,20 @@ public class CarClass {
         this.className = new SimpleStringProperty(className);
         this.classColor = new SimpleObjectProperty<Color>(classColor);
     }
+    
+    public String getClassName() {
+        return className.get();
+    }
+    
+    public Color getClassColor() {
+        return classColor.get();
+    }
+    
+    public void setClassName(String value) {
+        className.set(value);
+    }
+    
+    public void setClassColor(Color value) {
+        classColor.set(value);
+    }
 }
