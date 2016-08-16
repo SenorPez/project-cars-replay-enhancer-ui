@@ -274,7 +274,24 @@ public class ReplayEnhancerUIController implements Initializable {
     
     @FXML
     private void menuFileSaveAs() {
+        JSONFile = createJSONFile(root);
         
+        if (JSONFile != null) {
+            JSONObject output = writeJSON();
+            txtFileName.setText(JSONFile.getName());
+            
+            try {
+                FileWriter file = new FileWriter(JSONFile.getCanonicalFile());
+                file.write(output.toJSONString());
+                file.flush();
+                file.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            JSONFile = null;
+            txtFileName.setText("<NONE>");
+        }
     }
     
     @FXML
@@ -354,6 +371,21 @@ public class ReplayEnhancerUIController implements Initializable {
         
         File file = fileChooser.showOpenDialog(stage);
         return file;
+    }
+    
+    private static File createJSONFile(Pane root) {
+        Stage stage = (Stage) root.getScene().getWindow();
+        
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Configuration File As");
+        fileChooser.setInitialDirectory(
+            new File(System.getProperty("user.home")));
+        fileChooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("JSON", "*.json"),
+            new FileChooser.ExtensionFilter("All Files", "*.*"));      
+        
+        File file = fileChooser.showSaveDialog(stage);
+        return file;  
     }
     
     @FXML
