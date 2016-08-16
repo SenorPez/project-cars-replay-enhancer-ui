@@ -27,7 +27,16 @@ public class Driver {
         this.car = new SimpleStringProperty("");
         this.team = new SimpleStringProperty("");
         this.seriesPoints = new SimpleIntegerProperty(0);
-    }    
+    }
+    
+    public Driver(String name, String displayName, String shortName, String car) {
+        this.name = new SimpleStringProperty(name);
+        this.displayName = new SimpleStringProperty(displayName);
+        this.shortName = new SimpleStringProperty(shortName);
+        this.car = new SimpleStringProperty(car);
+        this.team = new SimpleStringProperty("");
+        this.seriesPoints = new SimpleIntegerProperty(0);
+    }
 
     public String getCar() {
         return car.get();

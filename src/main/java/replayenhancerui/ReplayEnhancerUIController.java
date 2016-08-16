@@ -6,6 +6,8 @@
 package replayenhancerui;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -14,6 +16,8 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
@@ -34,6 +38,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
@@ -50,6 +55,8 @@ import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 
 /**
@@ -62,8 +69,8 @@ public class ReplayEnhancerUIController implements Initializable {
     ObservableList<Driver> drivers = FXCollections.observableArrayList();
     ObservableList<Driver> additionalDrivers = FXCollections.observableArrayList();
     ObservableSet<Car> cars = FXCollections.observableSet();
-    
-    File JSONFile = new File("C:/Users/SenorPez/Downloads/out.json");
+      
+    File JSONFile = null;
     
     @FXML
     private MenuItem fileNew;
@@ -76,6 +83,9 @@ public class ReplayEnhancerUIController implements Initializable {
     
     @FXML
     private VBox root;
+    
+    @FXML
+    private Tab tabDrivers;
     
     @FXML
     private TextField txtSourceVideo;
@@ -261,16 +271,116 @@ public class ReplayEnhancerUIController implements Initializable {
         cars.clear();
     }
     
-    private Integer[] convertColor(Color input) {
-        Integer[] output = new Integer[3];
-        output[0] = (int) input.getRed()*255;
-        output[1] = (int) input.getGreen()*255;
-        output[2] = (int) input.getBlue()*255;
+    @FXML
+    private void loadFile() {
+        Stage stage = (Stage) root.getScene().getWindow();
         
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Configuration File");
+        fileChooser.setInitialDirectory(
+                new File(System.getProperty("user.home")));
+        fileChooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("JSON", "*.json"),
+            new FileChooser.ExtensionFilter("All Files", "*.*"));
+        
+        File file = fileChooser.showOpenDialog(stage);
+        if (file != null && file.isFile()) {
+            JSONParser parser = new JSONParser();
+            try {
+                JSONObject data = (JSONObject) parser.parse(new FileReader(file.getCanonicalPath()));
+                setValuesFromJSON(data);
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            } catch (ParseException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+    
+    @FXML
+    private void setValuesFromJSON(JSONObject data) {
+        txtSourceVideo.setText(data.get("source_video").toString());
+        txtSourceTelemetry.setText(data.get("source_telemetry").toString());
+        
+        txtVideoStart.setText(data.get("video_skipstart").toString());
+        txtVideoEnd.setText(data.get("video_skipend").toString());
+        txtVideoSync.setText(data.get("sync_racestart").toString());
+        
+        txtOutputVideo.setText(data.get("output_video").toString());
+        
+        txtHeadingFont.setText(data.get("heading_font").toString());
+        txtHeadingFontSize.setText(data.get("heading_font_size").toString());
+        colorHeadingFontColor.setValue(fromJSONColor((JSONArray) data.get("heading_font_color")));
+        
+        txtFont.setText(data.get("font").toString());
+        txtFontSize.setText(data.get("font_size").toString());
+        colorFontColor.setValue(fromJSONColor((JSONArray) data.get("font_color")));
+        
+        txtMarginWidth.setText(data.get("margin").toString());
+        txtColumnMarginWidth.setText(data.get("column_margin").toString());
+        txtResultLines.setText(data.get("result_lines").toString());
+        
+        txtBackdrop.setText(data.get("backdrop").toString());
+        txtLogo.setText(data.get("logo").toString());
+        txtLogoHeight.setText(data.get("logo_height").toString());
+        txtLogoWidth.setText(data.get("logo_width").toString());
+        
+        colorHeadingColor.setValue(fromJSONColor((JSONArray) data.get("heading_color")));
+        txtHeadingLogo.setText(data.get("series_logo").toString());
+        txtHeadingText.setText(data.get("heading_text").toString());
+        txtSubheadingText.setText(data.get("subheading_text").toString());
+        
+        pointStructure.clear();
+        JSONArray pointStructureJSON = (JSONArray) data.get("point_structure");
+        int i = 0;
+        for (Object points : pointStructureJSON) {
+            if (i == 0) {
+                txtBonusPoints.setText(points.toString());
+            } else {
+                pointStructure.add(new PointStructureItem(i, Integer.valueOf(points.toString())));
+            }
+            i += 1;
+        }
+        
+        drivers.clear();
+        JSONObject driversJSON = (JSONObject) data.get("participant_config");
+        Map<String,JSONObject> entries = driversJSON;
+        for (Entry<String,JSONObject> entry : entries.entrySet()) {
+            Driver driver = new Driver(
+                    entry.getKey(), 
+                    entry.getValue().get("display").toString(), 
+                    entry.getValue().get("short_display").toString(),
+                    entry.getValue().get("car").toString());
+            if (entry.getValue().get("team") == null) {
+                cbUseTeams.setSelected(false);
+            } else {
+                cbUseTeams.setSelected(true);
+                driver.setTeam(entry.getValue().get("team").toString());
+            }
+            
+            if (entry.getValue().get("points") == null) {
+                cbUsePoints.setSelected(false);
+            } else {
+                cbUsePoints.setSelected(true);
+                driver.setSeriesPoints(Integer.valueOf(entry.getValue().get("points").toString()));
+            }
+            drivers.add(driver);
+        }
+        tabDrivers.setDisable(false);
+    }
+    
+    private static Color fromJSONColor(JSONArray input) {
+        int red = Integer.valueOf(input.get(0).toString());
+        int green = Integer.valueOf(input.get(1).toString());
+        int blue = Integer.valueOf(input.get(2).toString());
+        
+        Color output = Color.rgb(red, green, blue);
         return output;
     }
     
-    private JSONArray JSONColor(Color input) {
+    private static JSONArray toJSONColor(Color input) {
         JSONArray output = new JSONArray();
         output.add((int) input.getRed()*255);
         output.add((int) input.getGreen()*255);
@@ -286,19 +396,19 @@ public class ReplayEnhancerUIController implements Initializable {
         output.put("source_video", txtSourceVideo.getText());
         output.put("source_telemetry", txtSourceTelemetry.getText());
         
-        output.put("skip_start", txtVideoStart.getText());
-        output.put("skip_end", txtVideoEnd.getText());
-        output.put("racesync", txtVideoSync.getText());
+        output.put("video_skipstart", txtVideoStart.getText());
+        output.put("video_skipend", txtVideoEnd.getText());
+        output.put("sync_racestart", txtVideoSync.getText());
         
         output.put("output_video", txtOutputVideo.getText());
         
         output.put("heading_font", txtHeadingFont.getText());
         output.put("heading_font_size", txtHeadingFontSize.getText());
-        output.put("heading_font_color", JSONColor(colorHeadingFontColor.getValue()));
+        output.put("heading_font_color", toJSONColor(colorHeadingFontColor.getValue()));
         
         output.put("font", txtFont.getText());
         output.put("font_size", txtFontSize.getText());
-        output.put("font_color", JSONColor(colorFontColor.getValue()));
+        output.put("font_color", toJSONColor(colorFontColor.getValue()));
         
         output.put("margin", txtMarginWidth.getText());
         output.put("column_margin", txtColumnMarginWidth.getText());
@@ -309,8 +419,8 @@ public class ReplayEnhancerUIController implements Initializable {
         output.put("logo_height", txtLogoHeight.getText());
         output.put("logo_width", txtLogoWidth.getText());
         
-        output.put("heading_color", JSONColor(colorHeadingColor.getValue()));
-        output.put("heading_logo", txtHeadingLogo.getText());
+        output.put("heading_color", toJSONColor(colorHeadingColor.getValue()));
+        output.put("series_logo", txtHeadingLogo.getText());
         output.put("heading_text", txtHeadingText.getText());
         output.put("subheading_text", txtSubheadingText.getText());
         
@@ -319,14 +429,14 @@ public class ReplayEnhancerUIController implements Initializable {
         for (PointStructureItem points : pointStructure) {
             pointStructureJSON.add(points.getPoints());
         }
-        output.put("points_structure", pointStructureJSON);
+        output.put("point_structure", pointStructureJSON);
         
         JSONObject driversJSON = new JSONObject();
         
         for (Driver driver : drivers) {
             JSONObject driverDataJSON = new JSONObject();
-            driverDataJSON.put("name_display", driver.getDisplayName());
-            driverDataJSON.put("short_name_display", driver.getShortName());
+            driverDataJSON.put("display", driver.getDisplayName());
+            driverDataJSON.put("short_display", driver.getShortName());
             driverDataJSON.put("car", driver.getCar());
     
             if (cbUseTeams.isSelected()) {
@@ -343,7 +453,7 @@ public class ReplayEnhancerUIController implements Initializable {
             driversJSON.put(driver.getName(), driverDataJSON);
         }
         
-        output.put("participant_data", driversJSON);
+        output.put("participant_config", driversJSON);
         
         try {
             FileWriter file = new FileWriter("C:\\Users\\SenorPez\\Downloads\\out.json");
@@ -695,7 +805,6 @@ public class ReplayEnhancerUIController implements Initializable {
             }
         );
         tblDrivers.setItems(populateDrivers());
-        
     }
     
     private ObservableList<Driver> populateDrivers() {

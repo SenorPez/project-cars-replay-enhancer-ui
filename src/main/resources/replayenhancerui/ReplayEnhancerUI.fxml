@@ -36,7 +36,10 @@
                      </accelerator></MenuItem>
                   <MenuItem mnemonicParsing="false" text="New from Existing..." />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" text="Open..." />
+                  <MenuItem mnemonicParsing="false" onAction="#loadFile" onMenuValidation="#loadFile" text="Open...">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="fileSave" mnemonicParsing="false" onAction="#writeJSON" onMenuValidation="#writeJSON" text="Save">
                      <accelerator>
@@ -338,7 +341,7 @@
                         </VBox>
                     </content>
                   </Tab>
-                  <Tab disable="true" text="Drivers">
+                  <Tab fx:id="tabDrivers" disable="true" text="Drivers">
                     <content>
                         <VBox>
                            <children>
