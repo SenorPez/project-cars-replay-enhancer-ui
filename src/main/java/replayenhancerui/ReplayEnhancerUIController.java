@@ -255,6 +255,29 @@ public class ReplayEnhancerUIController implements Initializable {
     }
     
     @FXML
+    private void menuFileSave() {
+        if (JSONFile == null) {
+            menuFileSaveAs();
+        } else {
+            JSONObject output = writeJSON();
+                    
+            try {
+                FileWriter file = new FileWriter(JSONFile.getCanonicalFile());
+                file.write(output.toJSONString());
+                file.flush();
+                file.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    @FXML
+    private void menuFileSaveAs() {
+        
+    }
+    
+    @FXML
     private void resetAll() {
         txtSourceVideo.setText("");
         txtSourceTelemetry.setText("");
@@ -452,7 +475,7 @@ public class ReplayEnhancerUIController implements Initializable {
     }
     
     @FXML
-    private void writeJSON() {
+    private JSONObject writeJSON() {
         JSONObject output = new JSONObject();
                       
         output.put("source_video", txtSourceVideo.getText());
@@ -516,18 +539,7 @@ public class ReplayEnhancerUIController implements Initializable {
         }
         
         output.put("participant_config", driversJSON);
-        
-        try {
-            FileWriter file = new FileWriter("C:\\Users\\SenorPez\\Downloads\\out.json");
-            file.write(output.toJSONString());
-            file.flush();
-            file.close();
-        
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        System.out.println(output.toJSONString());
+        return output;
     }
     
     @FXML

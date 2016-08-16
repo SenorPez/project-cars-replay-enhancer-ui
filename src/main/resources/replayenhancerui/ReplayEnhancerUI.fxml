@@ -44,7 +44,7 @@
                         <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="fileSave" mnemonicParsing="false" onAction="#writeJSON" onMenuValidation="#writeJSON" text="Save">
+                  <MenuItem mnemonicParsing="false" onAction="#menuFileSave" onMenuValidation="#menuFileSave" text="Save">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
