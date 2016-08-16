@@ -37,7 +37,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -295,6 +294,10 @@ public class ReplayEnhancerUIController implements Initializable {
     }
     
     @FXML
+    private void menuFileExit() {
+        closeWindow(root);
+    }
+    
     private void resetAll() {
         txtSourceVideo.setText("");
         txtSourceTelemetry.setText("");
@@ -388,35 +391,6 @@ public class ReplayEnhancerUIController implements Initializable {
         return file;  
     }
     
-    @FXML
-    private void loadFile() {
-        Stage stage = (Stage) root.getScene().getWindow();
-        
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Configuration File");
-        fileChooser.setInitialDirectory(
-                new File(System.getProperty("user.home")));
-        fileChooser.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("JSON", "*.json"),
-            new FileChooser.ExtensionFilter("All Files", "*.*"));
-        
-        File file = fileChooser.showOpenDialog(stage);
-        if (file != null && file.isFile()) {
-            JSONParser parser = new JSONParser();
-            try {
-                JSONObject data = (JSONObject) parser.parse(new FileReader(file.getCanonicalPath()));
-                setValuesFromJSON(data);
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            } catch (ParseException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-    
-    @FXML
     private void setValuesFromJSON(JSONObject data) {
         txtSourceVideo.setText(data.get("source_video").toString());
         txtSourceTelemetry.setText(data.get("source_telemetry").toString());
@@ -574,8 +548,7 @@ public class ReplayEnhancerUIController implements Initializable {
         return output;
     }
     
-    @FXML
-    private void closeWindow() {
+    private static void closeWindow(Pane root) {
         Stage stage = (Stage) root.getScene().getWindow();
         stage.close();
     }

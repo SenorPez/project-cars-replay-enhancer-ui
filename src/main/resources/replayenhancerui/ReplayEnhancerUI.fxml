@@ -53,7 +53,7 @@
                         <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
                      </accelerator></MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
-              <MenuItem fx:id="fileClose" mnemonicParsing="false" onAction="#closeWindow" text="Close" />
+              <MenuItem mnemonicParsing="false" onAction="#menuFileExit" onMenuValidation="#menuFileExit" text="Exit" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Tools">
