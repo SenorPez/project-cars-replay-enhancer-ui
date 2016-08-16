@@ -12,7 +12,7 @@ import javafx.scene.paint.Color;
 
 /**
  *
- * @author 502625185
+ * @author SenorPez
  */
 public class CarClass {
     final SimpleStringProperty className;

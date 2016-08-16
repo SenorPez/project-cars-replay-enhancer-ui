@@ -18,6 +18,13 @@ install:
 jdk:
     - oraclejdk8
     
-after_success:
+script:
+    - wget http://senorpez.servebeer.com/pcars/races/testdata.tar.gz
+    - mkdir src/test/resources/assets
+    - tar -zxf testdata.tar.gz -C src/test/resources/assets/
+    - ./gradlew assemble
+    - ./gradlew check
+    
+after_script:
     - if [ -e ./gradlew ]; then ./gradlew jacocoTestReport;else gradle jacocoTestReport;fi
     - bash <(curl -s https://codecov.io/bash)

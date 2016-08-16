@@ -10,7 +10,7 @@ import javafx.beans.property.SimpleStringProperty;
 
 /**
  *
- * @author 502625185
+ * @author SenorPez
  */
 public class Car {
     final SimpleStringProperty carName;

@@ -5,18 +5,29 @@
  */
 package replayenhancerui;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.nio.file.Files;
+import java.util.Arrays;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableSet;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.BeforeClass;
 
 /**
  *
- * @author 502625185
+ * @author SenorPez
  */
 public class PacketTest {
+    private static File packet;
+    
+    @BeforeClass
+    public static void setUpClass() {
+        packet = new File("src/test/resources/assets/race21/pdata4");
+    }
+    
     /**
      * Test of ReadShort method, of class Packet.
      */
@@ -62,9 +73,9 @@ public class PacketTest {
     @Test
     public void testReadFloat() {
         System.out.println("ReadFloat");
-        ByteBuffer data = ByteBuffer.allocate(Float.BYTES).put((byte)Float.MAX_VALUE);
+        ByteBuffer data = ByteBuffer.allocate(Float.BYTES).putFloat(Float.MAX_VALUE);
         data.rewind();
-        Float expResult = Float.MAX_VALUE;
+        Float expResult = new Float(Float.MAX_VALUE);
         Float result = Packet.ReadFloat(data);
         assertEquals(expResult, result);
     }
@@ -75,7 +86,7 @@ public class PacketTest {
     @Test
     public void testReadString() {
         System.out.println("ReadString");
-        String testString = "I'm driving what I think is a real dragon.";
+        String testString = "Lotus 98T";
         ByteBuffer data = ByteBuffer.allocate(testString.length()).put(testString.getBytes());
         data.rewind();
         Integer length = testString.length();        
@@ -86,64 +97,76 @@ public class PacketTest {
 
     /**
      * Test of getBuildVersionNumber method, of class Packet.
+     * @throws java.io.IOException
      */
     @Test
-    public void testGetBuildVersionNumber() {
+    public void testGetBuildVersionNumber() throws IOException {
         System.out.println("getBuildVersionNumber");
-        Packet instance = null;
-        Integer expResult = null;
+        Packet instance = new ParticipantPacket(
+            ByteBuffer.wrap(Files.readAllBytes(packet.toPath())));
+        Integer expResult = 38404;
         Integer result = instance.getBuildVersionNumber();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
      * Test of getPacketType method, of class Packet.
+     * @throws java.io.IOException
      */
     @Test
-    public void testGetPacketType() {
+    public void testGetPacketType() throws IOException {
         System.out.println("getPacketType");
-        Packet instance = null;
-        Integer expResult = null;
+        Packet instance = new ParticipantPacket(
+            ByteBuffer.wrap(Files.readAllBytes(packet.toPath())));
+        Integer expResult = 49;
         Integer result = instance.getPacketType();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
      * Test of getNames method, of class Packet.
+     * @throws java.io.IOException
      */
     @Test
-    public void testGetNames() {
+    public void testGetNames() throws IOException {
         System.out.println("getNames");
-        Packet instance = null;
-        ObservableSet<SimpleStringProperty> expResult = null;
+        Packet instance = new ParticipantPacket(
+            ByteBuffer.wrap(Files.readAllBytes(packet.toPath())));
+        
+        String[] expResult = new String[16];
+        expResult[0] = "Darian May";
+        expResult[1] = "José Javier Buisán";
+        expResult[2] = "Kobernulf Monnur";
+        expResult[3] = "Steven Toth";
+        expResult[4] = "Murray Smith";
+        expResult[5] = "Adam Viljoen";
+        expResult[6] = "Forest Herve";
+        expResult[7] = "Matthew Mul";
+        expResult[8] = "Antti Sipola";
+        expResult[9] = "Thomas Einöder";
+        expResult[10] = "Arnaud Puiravaud";
+        expResult[11] = "Elliot Teague";
+        expResult[12] = "Mauricio Matos";
+        expResult[13] = "Nevil Wigbels";
+        expResult[14] = "Daniele Di Genni";
+        expResult[15] = "Iain Chalmers";
+        
         ObservableSet<SimpleStringProperty> result = instance.getNames();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of setNames method, of class Packet.
-     */
-    @Test
-    public void testSetNames() {
-        System.out.println("setNames");
-        ByteBuffer data = null;
-        Packet instance = null;
-        instance.setNames(data);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    public class PacketImpl extends Packet {
-
-        public PacketImpl() {
-            super(null);
+        String[] resultValues = new String[16];
+        int i = 0;
+        for (SimpleStringProperty stringProp : result) {
+            resultValues[i++] = stringProp.getValue();
         }
+        
+        Arrays.sort(expResult);
+        Arrays.sort(resultValues);
+        assertArrayEquals(expResult, resultValues);
     }
+
+//    public class PacketImpl extends Packet {
+//        public PacketImpl() {
+//            super(null);
+//        }
+//    }
     
 }

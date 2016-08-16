@@ -63,7 +63,7 @@ public class ReplayEnhancerUIController implements Initializable {
     ObservableList<Driver> additionalDrivers = FXCollections.observableArrayList();
     ObservableSet<Car> cars = FXCollections.observableSet();
     
-    File JSONFile = new File("C:/Users/502625185/Downloads/out.json");
+    File JSONFile = new File("C:/Users/SenorPez/Downloads/out.json");
     
     @FXML
     private MenuItem fileNew;
@@ -346,7 +346,7 @@ public class ReplayEnhancerUIController implements Initializable {
         output.put("participant_data", driversJSON);
         
         try {
-            FileWriter file = new FileWriter("C:\\Users\\502625185\\Downloads\\out.json");
+            FileWriter file = new FileWriter("C:\\Users\\SenorPez\\Downloads\\out.json");
             file.write(output.toJSONString());
             file.flush();
             file.close();

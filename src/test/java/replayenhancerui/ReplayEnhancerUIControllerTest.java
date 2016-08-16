@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author 502625185
+ * @author SenorPez
  */
 public class ReplayEnhancerUIControllerTest {
     

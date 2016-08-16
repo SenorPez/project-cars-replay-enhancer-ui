@@ -5,7 +5,9 @@
  */
 package replayenhancerui;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -88,7 +90,7 @@ public abstract class Packet {
     
     protected void setNames(ByteBuffer data) {
         for (int i=0; i<16; i++) {
-            this.names.add(new SimpleStringProperty(ReadString(data, 64)));
+            this.names.add(new SimpleStringProperty(ReadString(data, 64).trim()));
         }
     }
 }
