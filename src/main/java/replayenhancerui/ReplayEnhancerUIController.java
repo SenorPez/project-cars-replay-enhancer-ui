@@ -74,18 +74,6 @@ public class ReplayEnhancerUIController implements Initializable {
     File JSONFile = null;
     
     @FXML
-    private MenuItem fileNew;
-    
-    @FXML
-    private MenuItem fileNewFrom;
-    
-    @FXML
-    private MenuItem fileSave;
-    
-    @FXML
-    private MenuItem fileClose;
-    
-    @FXML
     private VBox root;
     
     @FXML
@@ -223,9 +211,6 @@ public class ReplayEnhancerUIController implements Initializable {
     
     @FXML
     private void menuFileNewFrom() {
-        JSONFile = null;
-        txtFileName.setText("<NONE>");
-        
         File file = chooseJSONFile(root);
         if (file != null && file.isFile()) {
             JSONParser parser = new JSONParser();
@@ -240,6 +225,33 @@ public class ReplayEnhancerUIController implements Initializable {
                 ex.printStackTrace();
             }
         }        
+        
+        JSONFile = null;
+        txtFileName.setText("<NONE>");
+    }
+    
+    @FXML
+    private void menuFileOpen() {
+        File file = chooseJSONFile(root);
+        if (file != null && file.isFile()) {
+            JSONParser parser = new JSONParser();
+            try {
+                JSONObject data = (JSONObject) parser.parse(new FileReader(file.getCanonicalPath()));
+                setValuesFromJSON(data);
+                
+                JSONFile = file;
+                txtFileName.setText(file.getName());
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            } catch (ParseException ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            JSONFile = null;
+            txtFileName.setText("<NONE>");
+        }
     }
     
     @FXML

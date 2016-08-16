@@ -30,16 +30,16 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-                  <MenuItem fx:id="fileNew" mnemonicParsing="false" onAction="#menuFileNew" onMenuValidation="#menuFileNew" text="New">
+                  <MenuItem mnemonicParsing="false" onAction="#menuFileNew" onMenuValidation="#menuFileNew" text="New">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
-                  <MenuItem fx:id="fileNewFrom" mnemonicParsing="false" onAction="#menuFileNewFrom" onMenuValidation="#menuFileNewFrom" text="New from Existing...">
+                  <MenuItem mnemonicParsing="false" onAction="#menuFileNewFrom" onMenuValidation="#menuFileNewFrom" text="New from Existing...">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
                      </accelerator></MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" onAction="#loadFile" onMenuValidation="#loadFile" text="Open...">
+                  <MenuItem mnemonicParsing="false" onAction="#menuFileOpen" onMenuValidation="#menuFileOpen" text="Open...">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
