@@ -30,7 +30,7 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-                  <MenuItem fx:id="fileNew" mnemonicParsing="false" onAction="#resetAll" onMenuValidation="#resetAll" text="New">
+                  <MenuItem fx:id="fileNew" mnemonicParsing="false" onAction="#menuFileNew" onMenuValidation="#menuFileNew" text="New">
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
@@ -407,6 +407,8 @@
       </ScrollPane>
       <HBox alignment="CENTER_LEFT" prefHeight="21.0" prefWidth="612.0">
          <children>
+            <Label text="Output File:" />
+            <Label fx:id="txtFileName" text="&lt;NONE&gt;" />
             <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
             <Label alignment="CENTER_RIGHT" text="Configuration Status: " />
             <Label fx:id="txtValidConfig" text="Valid" />

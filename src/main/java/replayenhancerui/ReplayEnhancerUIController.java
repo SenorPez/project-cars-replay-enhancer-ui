@@ -202,10 +202,20 @@ public class ReplayEnhancerUIController implements Initializable {
     private TableColumn<Driver, Integer> colSeriesPoints;
     
     @FXML
+    private Label txtFileName;
+    
+    @FXML
     private Label txtStatusBar;
     
     @FXML
     private Label txtValidConfig;
+    
+    @FXML
+    private void menuFileNew() {
+        JSONFile = null;
+        txtFileName.setText("<NONE>");
+        resetAll();
+    }
     
     @FXML
     private void resetAll() {
