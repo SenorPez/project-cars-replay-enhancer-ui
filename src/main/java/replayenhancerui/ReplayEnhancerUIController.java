@@ -47,6 +47,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
@@ -74,6 +75,9 @@ public class ReplayEnhancerUIController implements Initializable {
     
     @FXML
     private MenuItem fileNew;
+    
+    @FXML
+    private MenuItem fileNewFrom;
     
     @FXML
     private MenuItem fileSave;
@@ -218,6 +222,27 @@ public class ReplayEnhancerUIController implements Initializable {
     }
     
     @FXML
+    private void menuFileNewFrom() {
+        JSONFile = null;
+        txtFileName.setText("<NONE>");
+        
+        File file = chooseJSONFile(root);
+        if (file != null && file.isFile()) {
+            JSONParser parser = new JSONParser();
+            try {
+                JSONObject data = (JSONObject) parser.parse(new FileReader(file.getCanonicalPath()));
+                setValuesFromJSON(data);
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            } catch (ParseException ex) {
+                ex.printStackTrace();
+            }
+        }        
+    }
+    
+    @FXML
     private void resetAll() {
         txtSourceVideo.setText("");
         txtSourceTelemetry.setText("");
@@ -279,6 +304,21 @@ public class ReplayEnhancerUIController implements Initializable {
         additionalDrivers.clear();
         
         cars.clear();
+    }
+    
+    private static File chooseJSONFile(Pane root) {
+        Stage stage = (Stage) root.getScene().getWindow();
+              
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Configuration File");
+        fileChooser.setInitialDirectory(
+                new File(System.getProperty("user.home")));
+        fileChooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("JSON", "*.json"),
+            new FileChooser.ExtensionFilter("All Files", "*.*"));
+        
+        File file = fileChooser.showOpenDialog(stage);
+        return file;
     }
     
     @FXML

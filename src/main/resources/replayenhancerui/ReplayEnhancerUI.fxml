@@ -34,7 +34,10 @@
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
-                  <MenuItem mnemonicParsing="false" text="New from Existing..." />
+                  <MenuItem fx:id="fileNewFrom" mnemonicParsing="false" onAction="#menuFileNewFrom" onMenuValidation="#menuFileNewFrom" text="New from Existing...">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+                     </accelerator></MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#loadFile" onMenuValidation="#loadFile" text="Open...">
                      <accelerator>
@@ -62,7 +65,7 @@
           </Menu>
         </menus>
       </MenuBar>
-      <ScrollPane fitToWidth="true" hbarPolicy="NEVER" minWidth="-Infinity" vbarPolicy="ALWAYS" VBox.vgrow="NEVER">
+      <ScrollPane fitToWidth="true" hbarPolicy="NEVER" minWidth="-Infinity" VBox.vgrow="NEVER">
          <content>
             <TabPane tabClosingPolicy="UNAVAILABLE">
               <tabs>
