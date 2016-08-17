@@ -5,44 +5,16 @@
  */
 package configurationeditor;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
+import javafx.collections.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
+import javafx.scene.control.*;
 import javafx.scene.control.TableColumn.CellEditEvent;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyEvent;
@@ -58,18 +30,28 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.*;
+import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 /**
  *
  * @author SenorPez
  */
 public class ReplayEnhancerUIController implements Initializable {
-
     ObservableList<PointStructureItem> pointStructure = FXCollections.observableArrayList();
-    ObservableList<Driver> drivers = FXCollections.observableArrayList();
+    ObservableSet<Driver> drivers = FXCollections.observableSet();
+    ObservableList<Driver> listDrivers = FXCollections.observableArrayList();
+
     ObservableList<Driver> additionalDrivers = FXCollections.observableArrayList();
-    ObservableSet<Car> cars = FXCollections.observableSet();
-      
+    ObservableList<Car> cars = FXCollections.observableArrayList();
+
     File JSONFile = null;
     
     @FXML
@@ -333,7 +315,7 @@ public class ReplayEnhancerUIController implements Initializable {
         cbShowChampion.setSelected(false);
         
         txtBonusPoints.setText("0");
-        pointStructure.clear();
+        pointStructure.removeAll(pointStructure);
         pointStructure.add(
             new PointStructureItem(1, 25));
         pointStructure.add(
@@ -354,11 +336,11 @@ public class ReplayEnhancerUIController implements Initializable {
             new PointStructureItem(9, 2));
         pointStructure.add(
             new PointStructureItem(10, 1));
-        
-        drivers.clear();
-        additionalDrivers.clear();
-        
-        cars.clear();
+
+        drivers.removeAll(drivers);
+        additionalDrivers.removeAll(additionalDrivers);
+
+        cars.removeAll(cars);
     }
     
     private static File chooseJSONFile(Pane root) {
@@ -390,7 +372,7 @@ public class ReplayEnhancerUIController implements Initializable {
         File file = fileChooser.showSaveDialog(stage);
         return file;  
     }
-    
+
     private void setValuesFromJSON(JSONObject data) {
         txtSourceVideo.setText(data.get("source_video").toString());
         txtSourceTelemetry.setText(data.get("source_telemetry").toString());
@@ -423,7 +405,7 @@ public class ReplayEnhancerUIController implements Initializable {
         txtHeadingText.setText(data.get("heading_text").toString());
         txtSubheadingText.setText(data.get("subheading_text").toString());
         
-        pointStructure.clear();
+        pointStructure.removeAll(pointStructure);
         JSONArray pointStructureJSON = (JSONArray) data.get("point_structure");
         int i = 0;
         for (Object points : pointStructureJSON) {
@@ -434,23 +416,26 @@ public class ReplayEnhancerUIController implements Initializable {
             }
             i += 1;
         }
-        
-        drivers.clear();
+
+        drivers.removeAll(drivers);
+
         JSONObject driversJSON = (JSONObject) data.get("participant_config");
         Map<String,JSONObject> entries = driversJSON;
+
         for (Entry<String,JSONObject> entry : entries.entrySet()) {
             Driver driver = new Driver(
-                    entry.getKey(), 
-                    entry.getValue().get("display").toString(), 
+                    entry.getKey(),
+                    entry.getValue().get("display").toString(),
                     entry.getValue().get("short_display").toString(),
-                    entry.getValue().get("car").toString());
+                    entry.getValue().get("car").toString()
+            );
             if (entry.getValue().get("team") == null) {
                 cbUseTeams.setSelected(false);
             } else {
                 cbUseTeams.setSelected(true);
                 driver.setTeam(entry.getValue().get("team").toString());
             }
-            
+
             if (entry.getValue().get("points") == null) {
                 cbUsePoints.setSelected(false);
             } else {
@@ -780,6 +765,27 @@ public class ReplayEnhancerUIController implements Initializable {
                 break;
         }
     }
+
+    class DriverUpdater<Driver extends configurationeditor.Driver> implements SetChangeListener {
+        @Override
+        public void onChanged(Change change) {
+            if (change.wasRemoved()) {
+                listDrivers.remove(change.getElementRemoved());
+            } else if (change.wasAdded()) {
+                Driver newDriver = (Driver) change.getElementAdded();
+                listDrivers.add(newDriver);
+            }
+
+            listDrivers.sort(
+                    new Comparator<configurationeditor.Driver>() {
+                        @Override
+                        public int compare(configurationeditor.Driver o1, configurationeditor.Driver o2) {
+                            return o1.getName().compareTo(o2.getName());
+                        }
+                    }
+            );
+        }
+    }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -790,6 +796,8 @@ public class ReplayEnhancerUIController implements Initializable {
 //                }
 //            };
         resetAll();
+
+        drivers.addListener(new DriverUpdater<Driver>());
         
         colFinishPosition.setCellValueFactory(
             new PropertyValueFactory<PointStructureItem,Integer>("finishPosition")
@@ -883,10 +891,10 @@ public class ReplayEnhancerUIController implements Initializable {
                 }
             }
         );
-        tblDrivers.setItems(populateDrivers());
+        tblDrivers.setItems(listDrivers);
     }
     
-    private ObservableList<Driver> populateDrivers() {
+    private ObservableSet<Driver> populateDrivers() {
         File testFile = new File(txtSourceTelemetry.getText());
         
         if (!testFile.isDirectory()) {
@@ -908,7 +916,15 @@ public class ReplayEnhancerUIController implements Initializable {
             }
         });
         
-        Set<String> names = new TreeSet<String>();
+        Set<String> names = new TreeSet<String>(
+                new Comparator<String>() {
+                    @Override
+                    public int compare(String driver1, String driver2) {
+                        return driver1.compareTo(driver2);
+                    }
+                }
+        );
+
         for (File file : files) {
             if (file.length() == 1347) {
                 try {
@@ -943,7 +959,7 @@ public class ReplayEnhancerUIController implements Initializable {
             if (name.length() > 0) {
                 drivers.add(new Driver(name));
             }
-        }        
+        }
         return drivers;
     }
 

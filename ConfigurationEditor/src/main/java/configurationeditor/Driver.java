@@ -19,7 +19,21 @@ public class Driver {
     final SimpleStringProperty name;
     final SimpleStringProperty car;
     final SimpleIntegerProperty seriesPoints;
-    
+
+    @Override
+    public int hashCode() {
+        return this.getName().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj.getClass() == this.getClass()) {
+            Driver driverObj = (Driver) obj;
+            return this.getName().equals(driverObj.getName());
+        }
+        return false;
+    }
+
     public Driver(String name) {
         this.name = new SimpleStringProperty(name);
         this.displayName = new SimpleStringProperty(name);
@@ -28,7 +42,7 @@ public class Driver {
         this.team = new SimpleStringProperty("");
         this.seriesPoints = new SimpleIntegerProperty(0);
     }
-    
+
     public Driver(String name, String displayName, String shortName, String car) {
         this.name = new SimpleStringProperty(name);
         this.displayName = new SimpleStringProperty(displayName);
