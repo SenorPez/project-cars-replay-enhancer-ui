@@ -4,47 +4,54 @@
 
 apply plugin: 'java'
 apply plugin: 'maven'
-
-String mavenGroupId = 'replayenhancer'
-String mavenVersion = '1.0-SNAPSHOT'
+apply plugin: 'jacoco'
 
 sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
+//String mavenGroupId = 'replayenhancer'
+//String mavenVersion = '1.0-SNAPSHOT'
+
 repositories {
-    mavenCentral();
+    mavenCentral()
     // You may define additional repositories, or even remove "mavenCentral()".
     // Read more about repositories here:
     //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:repositories
 }
 
+
 dependencies {
-    // Adding dependencies here will add the dependencies to each subproject.
+    // TODO: Add dependencies here ...
+    // You can read more about how to add dependency here:
+    //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:how_to_declare_your_dependencies
     testCompile group: 'junit', name: 'junit', version: '4.10'
+    
+    // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
 }
+//
+//String mavenArtifactId = name
+//
+//group = mavenGroupId
+//version = mavenVersion
+//
+//task sourcesJar(type: Jar, dependsOn: classes, description: 'Creates a jar from the source files.') {
+//    classifier = 'sources'
+//    from sourceSets.main.allSource
+//}
 
-String mavenArtifactId = name
-
-group = mavenGroupId
-version = mavenVersion
-
-task sourcesJar(type: Jar, dependsOn: classes, description: 'Creates a jar from the source files.') {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives jar
-    archives sourcesJar
-}
-
-configure(install.repositories.mavenInstaller) {
-    pom.project {
-        groupId = mavenGroupId
-        artifactId = mavenArtifactId
-        version = mavenVersion
-    }
-}
+//artifacts {
+//    archives jar
+//    archives sourcesJar
+//}
+//
+//configure(install.repositories.mavenInstaller) {
+//    pom.project {
+//        groupId = mavenGroupId
+//        artifactId = mavenArtifactId
+//        version = mavenVersion
+//    }
+//}
 
 task createFolders(description: 'Creates the source folders if they do not exist.') doLast {
     sourceSets*.allSource*.srcDirs*.each { File srcDir ->
@@ -52,5 +59,12 @@ task createFolders(description: 'Creates the source folders if they do not exist
             println "Creating source folder: ${srcDir}"
             srcDir.mkdirs()
         }
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
     }
 }

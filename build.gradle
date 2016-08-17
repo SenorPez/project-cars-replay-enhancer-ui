@@ -1,5 +1,7 @@
 import org.gradle.api.artifacts.*
 
+ext.mainClass = 'configurationeditor.ReplayEnhancerUI'
+
 apply plugin: 'base' // To add "clean" task to the root project.
 
 subprojects {
@@ -18,3 +20,9 @@ task mergedJavadoc(type: Javadoc, description: 'Creates Javadoc from all the pro
         subprojects*.configurations*.compile*.copyRecursive({ !(it instanceof ProjectDependency); })*.resolve()
     }
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = project.property('gradle.wrapper.version')
+}
+
+
