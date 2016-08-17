@@ -13,8 +13,4 @@ import static org.junit.Assert.*;
  * @author senor
  */
 public class PacketCaptureControllerTest {
-    @Test
-    public void Fail() {
-        fail("This test fails.");
-    }
 }
