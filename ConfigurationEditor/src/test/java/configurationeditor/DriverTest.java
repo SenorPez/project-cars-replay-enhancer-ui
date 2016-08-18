@@ -45,9 +45,9 @@ public class DriverTest {
     public void testGetCar() {
         System.out.println("getCar");
         Driver instance = new Driver("Kobernulf Monnur");
-        String expResult = "Lotus 98T";
+        Car expResult = new Car("Lotus 98T");
         instance.setCar(expResult);
-        String result = instance.getCar();
+        Car result = instance.getCar();
         assertEquals(expResult, result);
     }
 
@@ -107,7 +107,7 @@ public class DriverTest {
     @Test
     public void testSetCar() {
         System.out.println("setCar");
-        String value = "Lotus 98T";
+        Car value = new Car("Lotus 98T");
         Driver instance = new Driver("Kobernulf Monnur");
         instance.setCar(value);
         assertEquals(value, instance.getCar());
