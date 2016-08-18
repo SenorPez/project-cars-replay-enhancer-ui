@@ -14,7 +14,21 @@ import javafx.beans.property.SimpleIntegerProperty;
 public class PointStructureItem {
     final SimpleIntegerProperty points;
     final SimpleIntegerProperty finishPosition;
-    
+
+    @Override
+    public int hashCode() {
+        return this.getFinishPosition().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj.getClass() == this.getClass()) {
+            PointStructureItem thisObj = (PointStructureItem) obj;
+            return thisObj.getFinishPosition() == this.getFinishPosition();
+        }
+        return false;
+    }
+
     public PointStructureItem(Integer finishPosition, Integer points) {
         this.points = new SimpleIntegerProperty(points);
         this.finishPosition = new SimpleIntegerProperty(finishPosition);

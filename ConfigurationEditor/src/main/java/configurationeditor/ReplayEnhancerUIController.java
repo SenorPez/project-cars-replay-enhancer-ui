@@ -45,7 +45,9 @@ import java.util.logging.Logger;
  * @author SenorPez
  */
 public class ReplayEnhancerUIController implements Initializable {
-    ObservableList<PointStructureItem> pointStructure = FXCollections.observableArrayList();
+    ObservableSet<PointStructureItem> pointStructure = FXCollections.observableSet();
+    ObservableList<PointStructureItem> listPointStructure = FXCollections.observableArrayList();
+
     ObservableSet<Driver> drivers = FXCollections.observableSet();
     ObservableList<Driver> listDrivers = FXCollections.observableArrayList();
 
@@ -413,6 +415,7 @@ public class ReplayEnhancerUIController implements Initializable {
                 txtBonusPoints.setText(points.toString());
             } else {
                 pointStructure.add(new PointStructureItem(i, Integer.valueOf(points.toString())));
+                pointStructure.add(new PointStructureItem(i, Integer.valueOf(points.toString())));
             }
             i += 1;
         }
@@ -766,6 +769,33 @@ public class ReplayEnhancerUIController implements Initializable {
         }
     }
 
+    class PointsUpdater<PointStructureItem extends configurationeditor.PointStructureItem> implements SetChangeListener {
+        @Override
+        public void onChanged(Change change) {
+            if (change.wasRemoved()) {
+                listPointStructure.remove(change.getElementRemoved());
+            } else if (change.wasAdded()) {
+                PointStructureItem newPoints = (PointStructureItem) change.getElementAdded();
+                listPointStructure.add(newPoints);
+            }
+
+            listPointStructure.sort(
+                    new Comparator<configurationeditor.PointStructureItem>() {
+                        @Override
+                        public int compare(configurationeditor.PointStructureItem o1, configurationeditor.PointStructureItem o2) {
+                            if (o1.getFinishPosition() < o2.getFinishPosition()) {
+                                return -1;
+                            } else if (o1.getFinishPosition() > o2.getFinishPosition()) {
+                                return 1;
+                            } else {
+                                return 0;
+                            }
+                        }
+                    }
+            );
+        }
+    }
+
     class DriverUpdater<Driver extends configurationeditor.Driver> implements SetChangeListener {
         @Override
         public void onChanged(Change change) {
@@ -797,6 +827,7 @@ public class ReplayEnhancerUIController implements Initializable {
 //            };
         resetAll();
 
+        pointStructure.addListener(new PointsUpdater<PointStructureItem>());
         drivers.addListener(new DriverUpdater<Driver>());
         
         colFinishPosition.setCellValueFactory(
@@ -816,7 +847,7 @@ public class ReplayEnhancerUIController implements Initializable {
                 }
             }
         );
-        tblPointStructure.setItems(pointStructure);
+        tblPointStructure.setItems(listPointStructure);
         
         colName.setCellValueFactory(
             new PropertyValueFactory<Driver, String>("name")
