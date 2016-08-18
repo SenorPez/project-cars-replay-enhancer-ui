@@ -17,7 +17,21 @@ import javafx.scene.paint.Color;
 public class CarClass {
     final SimpleStringProperty className;
     final SimpleObjectProperty<Color> classColor;
-    
+
+    @Override
+    public int hashCode() {
+        return this.getClassName().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj.getClass() == this.getClass()) {
+            CarClass newCarClass = (CarClass) obj;
+            return newCarClass.getClassName().equals(this.getClassName());
+        }
+        return false;
+    }
+
     public CarClass(String className, Color classColor) {
         this.className = new SimpleStringProperty(className);
         this.classColor = new SimpleObjectProperty<Color>(classColor);

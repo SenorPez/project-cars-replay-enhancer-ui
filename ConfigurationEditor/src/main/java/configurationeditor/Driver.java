@@ -6,6 +6,7 @@
 package configurationeditor;
 
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 /**
@@ -17,7 +18,7 @@ public class Driver {
     final SimpleStringProperty shortName;
     final SimpleStringProperty displayName;
     final SimpleStringProperty name;
-    final SimpleStringProperty car;
+    final SimpleObjectProperty<Car> car;
     final SimpleIntegerProperty seriesPoints;
 
     @Override
@@ -38,21 +39,21 @@ public class Driver {
         this.name = new SimpleStringProperty(name);
         this.displayName = new SimpleStringProperty(name);
         this.shortName = new SimpleStringProperty(name);
-        this.car = new SimpleStringProperty("");
-        this.team = new SimpleStringProperty("");
+        this.car = new SimpleObjectProperty<>(null);
+        this.team = new SimpleStringProperty(null);
         this.seriesPoints = new SimpleIntegerProperty(0);
     }
 
-    public Driver(String name, String displayName, String shortName, String car) {
+    public Driver(String name, String displayName, String shortName, Car car) {
         this.name = new SimpleStringProperty(name);
         this.displayName = new SimpleStringProperty(displayName);
         this.shortName = new SimpleStringProperty(shortName);
-        this.car = new SimpleStringProperty(car);
-        this.team = new SimpleStringProperty("");
+        this.car = new SimpleObjectProperty<>(car);
+        this.team = new SimpleStringProperty(null);
         this.seriesPoints = new SimpleIntegerProperty(0);
     }
 
-    public String getCar() {
+    public Car getCar() {
         return car.get();
     }
 
@@ -72,7 +73,7 @@ public class Driver {
         name.set(value);
     }
 
-    public void setCar(String value) {
+    public void setCar(Car value) {
         car.set(value);
     }
 

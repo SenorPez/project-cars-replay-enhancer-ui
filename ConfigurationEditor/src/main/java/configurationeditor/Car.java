@@ -15,10 +15,24 @@ import javafx.beans.property.SimpleStringProperty;
 public class Car {
     final SimpleStringProperty carName;
     final SimpleObjectProperty<CarClass> carClass;
-    
+
+    @Override
+    public int hashCode() {
+        return this.getCarName().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj.getClass() == this.getClass()) {
+            Car newCar = (Car) obj;
+            return this.getCarName().equals(newCar.getCarName());
+        }
+        return false;
+    }
+
     public Car(String name) {
         this.carName = new SimpleStringProperty(name);
-        this.carClass = null;
+        this.carClass = new SimpleObjectProperty<>(null);
     }
     
     public Car(String name, CarClass carClass) {

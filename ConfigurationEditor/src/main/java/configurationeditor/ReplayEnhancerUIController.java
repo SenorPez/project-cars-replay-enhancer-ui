@@ -5,11 +5,13 @@
  */
 package configurationeditor;
 
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.*;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -24,6 +26,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.converter.IntegerStringConverter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -52,7 +55,9 @@ public class ReplayEnhancerUIController implements Initializable {
     ObservableList<Driver> listDrivers = FXCollections.observableArrayList();
 
     ObservableList<Driver> additionalDrivers = FXCollections.observableArrayList();
-    ObservableList<Car> cars = FXCollections.observableArrayList();
+
+    ObservableSet<Car> cars = FXCollections.observableSet();
+    ObservableList<Car> listCars = FXCollections.observableArrayList();
 
     File JSONFile = null;
     
@@ -175,6 +180,18 @@ public class ReplayEnhancerUIController implements Initializable {
     
     @FXML
     private TableColumn<Driver, Integer> colSeriesPoints;
+
+    @FXML
+    private TableView<Car> tblCars;
+
+    @FXML
+    private TableColumn<Car, String> colCarName;
+
+    @FXML
+    private TableColumn<Car, String> colClassName;
+
+    @FXML
+    private TableColumn<Car, Color> colClassColor;
     
     @FXML
     private Label txtFileName;
@@ -395,8 +412,13 @@ public class ReplayEnhancerUIController implements Initializable {
         
         txtMarginWidth.setText(data.get("margin").toString());
         txtColumnMarginWidth.setText(data.get("column_margin").toString());
-        txtResultLines.setText(data.get("result_lines").toString());
-        
+
+        if (data.get("result_lines") == null) {
+            txtResultLines.setText("");
+        } else {
+            txtResultLines.setText(data.get("result_lines").toString());
+        }
+
         txtBackdrop.setText(data.get("backdrop").toString());
         txtLogo.setText(data.get("logo").toString());
         txtLogoHeight.setText(data.get("logo_height").toString());
@@ -425,12 +447,18 @@ public class ReplayEnhancerUIController implements Initializable {
         JSONObject driversJSON = (JSONObject) data.get("participant_config");
         Map<String,JSONObject> entries = driversJSON;
 
+        JSONObject carClassesJSON = (JSONObject) data.get("car_classes");
+        Map<String,JSONObject> carClassEntries = carClassesJSON;
+
         for (Entry<String,JSONObject> entry : entries.entrySet()) {
+            Car car = createCar(entry.getValue().get("car").toString(), carClassEntries);
+            cars.add(car);
+
             Driver driver = new Driver(
                     entry.getKey(),
                     entry.getValue().get("display").toString(),
                     entry.getValue().get("short_display").toString(),
-                    entry.getValue().get("car").toString()
+                    car
             );
             if (entry.getValue().get("team") == null) {
                 cbUseTeams.setSelected(false);
@@ -448,6 +476,18 @@ public class ReplayEnhancerUIController implements Initializable {
             drivers.add(driver);
         }
         tabDrivers.setDisable(false);
+    }
+
+    private Car createCar(String carName, Map<String,JSONObject> carClasses) {
+        for (Entry<String, JSONObject> entry : carClasses.entrySet()) {
+            JSONArray carsInClass = (JSONArray) entry.getValue().get("cars");
+            if (carsInClass.contains(carName)) {
+                return new Car(carName, new CarClass(
+                        entry.getKey(), fromJSONColor((JSONArray) entry.getValue().get("color"))
+                ));
+            }
+        }
+        return new Car(carName);
     }
     
     private static Color fromJSONColor(JSONArray input) {
@@ -816,6 +856,27 @@ public class ReplayEnhancerUIController implements Initializable {
             );
         }
     }
+
+    class CarUpdater<Car extends configurationeditor.Car> implements SetChangeListener {
+        @Override
+        public void onChanged(Change change) {
+            if (change.wasRemoved()) {
+                listCars.remove(change.getElementRemoved());
+            } else if (change.wasAdded()) {
+                Car newCar = (Car) change.getElementAdded();
+                listCars.add(newCar);
+            }
+
+            listCars.sort(
+                    new Comparator<configurationeditor.Car>() {
+                        @Override
+                        public int compare(configurationeditor.Car o1, configurationeditor.Car o2) {
+                            return o1.getCarName().compareTo(o2.getCarName());
+                        }
+                    }
+            );
+        }
+    }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -829,6 +890,7 @@ public class ReplayEnhancerUIController implements Initializable {
 
         pointStructure.addListener(new PointsUpdater<PointStructureItem>());
         drivers.addListener(new DriverUpdater<Driver>());
+        cars.addListener(new CarUpdater<Car>());
         
         colFinishPosition.setCellValueFactory(
             new PropertyValueFactory<PointStructureItem,Integer>("finishPosition")
@@ -881,7 +943,12 @@ public class ReplayEnhancerUIController implements Initializable {
             }
         );        
         colCar.setCellValueFactory(
-            new PropertyValueFactory<Driver, String>("car")
+                new Callback<TableColumn.CellDataFeatures<Driver, String>, ObservableValue<String>>() {
+                    @Override
+                    public ObservableValue<String> call(TableColumn.CellDataFeatures<Driver, String> param) {
+                        return new SimpleStringProperty(param.getValue().getCar().getCarName());
+                    };
+                }
         );
         colCar.setCellFactory(TextFieldTableCell.forTableColumn());
         colCar.setOnEditCommit(
@@ -890,7 +957,7 @@ public class ReplayEnhancerUIController implements Initializable {
                 public void handle(CellEditEvent<Driver, String> t) {
                     ((Driver) t.getTableView().getItems().get(
                         t.getTablePosition().getRow())
-                            ).setCar(t.getNewValue());
+                            ).setCar(new Car(t.getNewValue()));
                 }
             }
         );                
@@ -923,6 +990,62 @@ public class ReplayEnhancerUIController implements Initializable {
             }
         );
         tblDrivers.setItems(listDrivers);
+
+        colCarName.setCellValueFactory(
+                new PropertyValueFactory<Car, String>("carName")
+        );
+        colCarName.setCellFactory(TextFieldTableCell.forTableColumn());
+        colCarName.setOnEditCommit(
+                new EventHandler<CellEditEvent<Car, String>>() {
+                    @Override
+                    public void handle(CellEditEvent<Car, String> event) {
+                        ((Car) event.getTableView().getItems().get(
+                                event.getTablePosition().getRow())
+                        ).setCarName(event.getNewValue());
+                    }
+                }
+        );
+
+        colClassName.setCellValueFactory(
+                new Callback<TableColumn.CellDataFeatures<Car, String>, ObservableValue<String>>() {
+                    @Override
+                    public ObservableValue<String> call(TableColumn.CellDataFeatures<Car, String> param) {
+                        if (param.getValue().getCarClass() == null) {
+                            return new SimpleStringProperty("");
+                        }
+                        return new SimpleStringProperty(param.getValue().getCarClass().getClassName());
+                    }
+                }
+        );
+        colClassName.setCellFactory(TextFieldTableCell.forTableColumn());
+        colClassName.setOnEditCommit(
+                new EventHandler<CellEditEvent<Car, String>>() {
+                    @Override
+                    public void handle(CellEditEvent<Car, String> event) {
+                        ((Car) event.getTableView().getItems().get(
+                                event.getTablePosition().getRow())
+                        ).setCarName(event.getNewValue());
+                    }
+                }
+        );
+        colClassColor.setCellValueFactory(
+                new Callback<TableColumn.CellDataFeatures<Car, Color>, ObservableValue<Color>>() {
+                    @Override
+                    public ObservableValue<Color> call(TableColumn.CellDataFeatures<Car, Color> param) {
+                        if (param.getValue().getCarClass() == null) {
+                            return new SimpleObjectProperty<Color>(null);
+                        }
+                        return new SimpleObjectProperty<Color>(param.getValue().getCarClass().getClassColor());
+                    }
+                }
+        );
+        colClassColor.setCellFactory(new Callback<TableColumn<Car, Color>, TableCell<Car, Color>>() {
+            @Override
+            public TableCell<Car, Color> call(TableColumn<Car, Color> column) {
+                return new ColorTableCell<Car>(column);
+            }
+        });
+        tblCars.setItems(listCars);
     }
     
     private ObservableSet<Driver> populateDrivers() {
@@ -992,6 +1115,43 @@ public class ReplayEnhancerUIController implements Initializable {
             }
         }
         return drivers;
+    }
+
+    /*
+     * From http://info.michael-simons.eu/2014/10/27/custom-editor-components-in-javafx-tablecells/
+     */
+    class ColorTableCell<T> extends TableCell<T, Color> {
+        private final ColorPicker colorPicker;
+
+        public ColorTableCell(TableColumn<T, Color> column) {
+            this.colorPicker = new ColorPicker();
+            this.colorPicker.editableProperty().bind(column.editableProperty());
+            this.colorPicker.disableProperty().bind(column.editableProperty().not());
+            this.colorPicker.setOnShowing(event -> {
+                final TableView<T> tableView = getTableView();
+                tableView.getSelectionModel().select(getTableRow().getIndex());
+                tableView.edit(tableView.getSelectionModel().getSelectedIndex(), column);
+            });
+            this.colorPicker.valueProperty().addListener((observable, oldValue, newValue) -> {
+                if (isEditing()) {
+                    commitEdit(newValue);
+                }
+            });
+            setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        }
+
+        @Override
+        protected void updateItem(Color item, boolean empty) {
+            super.updateItem(item, empty);
+
+            setText(null);
+            if (empty) {
+                setGraphic(null);
+            } else {
+                this.colorPicker.setValue(item);
+                this.setGraphic(this.colorPicker);
+            }
+        }
     }
 
     /*

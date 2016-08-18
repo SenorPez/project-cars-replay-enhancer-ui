@@ -370,11 +370,11 @@
                               </TitledPane>
                               <TitledPane collapsible="false" prefHeight="175.0" prefWidth="620.0" text="Cars">
                                  <content>
-                                    <TableView prefHeight="200.0" prefWidth="618.0">
+                                    <TableView fx:id="tblCars" prefHeight="200.0" prefWidth="618.0">
                                       <columns>
-                                        <TableColumn prefWidth="75.0" text="Car" />
-                                        <TableColumn prefWidth="75.0" text="Class" />
-                                          <TableColumn prefWidth="75.0" text="Class Color" />
+                                        <TableColumn fx:id="colCarName" prefWidth="75.0" text="Car" />
+                                        <TableColumn fx:id="colClassName" prefWidth="75.0" text="Class" />
+                                          <TableColumn fx:id="colClassColor" prefWidth="75.0" text="Class Color" />
                                       </columns>
                                     </TableView>
                                  </content>
