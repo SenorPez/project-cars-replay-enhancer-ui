@@ -1,5 +1,2 @@
 apply plugin: 'application'
-
 mainClassName = 'packetcapture.PacketCapture'
-
-

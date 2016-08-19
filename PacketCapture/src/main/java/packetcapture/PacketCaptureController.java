@@ -5,11 +5,21 @@
  */
 package packetcapture;
 
-import javafx.event.ActionEvent;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import javafx.fxml.FXML;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -17,6 +27,10 @@ import javafx.scene.layout.AnchorPane;
  * @author senor
  */
 public class PacketCaptureController {
+    String timestamp = null;
+    Boolean capture = false;
+    Thread thingThread = null;
+    
     @FXML
     private AnchorPane root;
     
@@ -27,10 +41,35 @@ public class PacketCaptureController {
     private Button btnEndCapture;
     
     @FXML
+    private TextField txtStorageDirectory;
+    
+    @FXML
+    private Button btnSelectStorageDirectory;
+    
+    @FXML
     private TextArea txtOutput;
     
     public void initialize() {
+        txtStorageDirectory.setText(System.getProperty("user.home"));
         resetAll();
+    }
+    
+    @FXML
+    private void selectStorageDirectory() {
+        Stage stage = (Stage) root.getScene().getWindow();
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Open Telemetry Storage Directory");
+        directoryChooser.setInitialDirectory(
+                new File(System.getProperty("user.home")));
+        File directory = directoryChooser.showDialog(stage);
+        if (directory != null && directory.isDirectory()) {
+            try {
+                String directoryName = directory.getCanonicalPath();
+                txtStorageDirectory.setText(directoryName);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } 
     }
     
     @FXML
@@ -38,8 +77,81 @@ public class PacketCaptureController {
         btnStartCapture.setDisable(false);
         btnStartCapture.setDefaultButton(true);
         btnEndCapture.setDisable(true);
+        btnEndCapture.setDefaultButton(false);
         txtOutput.setEditable(false);
         txtOutput.setText("Ready to capture...");
     }
+    
+    @FXML
+    private void startCapture() throws IOException {
+        btnStartCapture.setDisable(true);
+        btnStartCapture.setDefaultButton(false);
+        btnEndCapture.setDisable(false);
+        btnEndCapture.setDefaultButton(true);
+        txtOutput.setText(txtOutput.getText()+"\nBeginning capture.");
+        
+        LocalDateTime date = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
+        timestamp = date.format(formatter);
+        
+        File directory = new File(txtStorageDirectory.getText()+File.separator+timestamp);
+        boolean success = directory.mkdir();
+        if (success) {
+            txtOutput.setText(txtOutput.getText()+"\nSaving packets to "+directory.toString());   
+            getPacket(timestamp);
+        } else {
+            txtOutput.setText(txtOutput.getText()+"\nError creating "+directory.toString()+". Packet capture aborted");
+            btnEndCapture.setDisable(true);
+            btnEndCapture.setDefaultButton(false);
+            btnStartCapture.setDisable(false);
+            btnStartCapture.setDefaultButton(true);
+        }
+    }
+
+    @FXML
+    private void getPacket(String directory) throws SocketException, IOException {
+        DatagramSocket socket = new DatagramSocket(5606, InetAddress.getByName("0.0.0.0"));
+
+        Runnable captureThread = new Runnable() {
+            @Override
+            public void run() {
+                Integer i = new Integer(1);
+                while (capture) {
+                    byte[] buf = new byte[2048];
+                    DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                    try {
+                        socket.receive(packet);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        FileWriter file = new FileWriter(txtStorageDirectory.getText() + File.separator + directory + File.separator + "pdata" + i.toString());
+                        file.write(new String(packet.getData(), 0, packet.getLength(), "UTF-8"));
+                        file.flush();
+                        file.close();
+                        i += 1;
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        capture = true;
+        thingThread = new Thread(captureThread);
+        thingThread.start();
+    }
             
+    @FXML
+    private void endCapture() {
+        btnEndCapture.setDisable(true);
+        btnEndCapture.setDefaultButton(false);
+        btnStartCapture.setDisable(false);
+        btnStartCapture.setDefaultButton(true);
+        txtOutput.setText(txtOutput.getText()+"\nEnding capture.");
+
+        capture = false;
+    }
 }
