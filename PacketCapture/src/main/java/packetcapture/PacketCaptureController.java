@@ -5,10 +5,7 @@
  */
 package packetcapture;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -115,7 +112,7 @@ public class PacketCaptureController {
         Runnable captureThread = new Runnable() {
             @Override
             public void run() {
-                Integer i = new Integer(1);
+                Integer i = 0;
                 while (capture) {
                     byte[] buf = new byte[2048];
                     DatagramPacket packet = new DatagramPacket(buf, buf.length);
@@ -126,8 +123,9 @@ public class PacketCaptureController {
                     }
 
                     try {
-                        FileWriter file = new FileWriter(txtStorageDirectory.getText() + File.separator + directory + File.separator + "pdata" + i.toString());
-                        file.write(new String(packet.getData(), 0, packet.getLength(), "UTF-8"));
+                        FileOutputStream file = new FileOutputStream(txtStorageDirectory.getText() + File.separator + directory + File.separator + "pdata" + i.toString());
+                        file.write(buf, 0, packet.getLength());
+                        txtOutput.setText(txtOutput.getText()+"\nPacket Size: "+packet.getLength());
                         file.flush();
                         file.close();
                         i += 1;
