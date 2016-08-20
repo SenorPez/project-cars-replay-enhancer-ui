@@ -654,6 +654,7 @@ public class ReplayEnhancerUIController implements Initializable {
                         String sourceTelemetry = directory.getCanonicalPath();
                         txtSourceTelemetry.setText(sourceTelemetry);
                         populateDrivers();
+                        tabDrivers.setDisable(false);
                     } catch (IOException e) {
                         throw(e);
                     }
@@ -946,7 +947,12 @@ public class ReplayEnhancerUIController implements Initializable {
                 new Callback<TableColumn.CellDataFeatures<Driver, String>, ObservableValue<String>>() {
                     @Override
                     public ObservableValue<String> call(TableColumn.CellDataFeatures<Driver, String> param) {
-                        return new SimpleStringProperty(param.getValue().getCar().getCarName());
+                        Car car = param.getValue().getCar();
+                        if (car == null) {
+                            return new SimpleStringProperty("");
+                        } else {
+                            return new SimpleStringProperty(car.getCarName());
+                        }
                     };
                 }
         );
@@ -1047,7 +1053,7 @@ public class ReplayEnhancerUIController implements Initializable {
         });
         tblCars.setItems(listCars);
     }
-    
+
     private ObservableSet<Driver> populateDrivers() {
         File testFile = new File(txtSourceTelemetry.getText());
         
@@ -1091,7 +1097,7 @@ public class ReplayEnhancerUIController implements Initializable {
                         }
                     }
                 } catch (IOException ex) {
-                    Logger.getLogger(Packet.class.getName()).log(Level.SEVERE, null, ex);
+                    ex.printStackTrace();
                 }
             } else if (file.length() == 1028) {
                 try {
@@ -1104,8 +1110,10 @@ public class ReplayEnhancerUIController implements Initializable {
                         }
                     }
                 } catch (IOException ex) {
-                    Logger.getLogger(Packet.class.getName()).log(Level.SEVERE, null, ex);
+                    ex.printStackTrace();
                 }
+            } else if (file.length() != 1367) {
+                System.out.println(file.length());
             }
         }
 
