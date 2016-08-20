@@ -18,7 +18,6 @@ import javafx.stage.Stage;
  * @author SenorPez
  */
 public class PacketCapture extends Application {
-    
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("PacketCapture.fxml"));

@@ -24,9 +24,9 @@ import javafx.stage.Stage;
  * @author senor
  */
 public class PacketCaptureController {
-    String timestamp = null;
-    Boolean capture = false;
-    Thread thingThread = null;
+    private String timestamp = null;
+    private Boolean capture = false;
+    private Thread thingThread = null;
     
     @FXML
     private AnchorPane root;
@@ -39,9 +39,6 @@ public class PacketCaptureController {
     
     @FXML
     private TextField txtStorageDirectory;
-    
-    @FXML
-    private Button btnSelectStorageDirectory;
     
     @FXML
     private TextArea txtOutput;
@@ -106,7 +103,7 @@ public class PacketCaptureController {
     }
 
     @FXML
-    private void getPacket(String directory) throws SocketException, IOException {
+    private void getPacket(String directory) throws IOException {
         DatagramSocket socket = new DatagramSocket(5606, InetAddress.getByName("0.0.0.0"));
 
         Runnable captureThread = new Runnable() {
@@ -129,8 +126,6 @@ public class PacketCaptureController {
                         file.flush();
                         file.close();
                         i += 1;
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -141,7 +136,7 @@ public class PacketCaptureController {
         thingThread = new Thread(captureThread);
         thingThread.start();
     }
-            
+
     @FXML
     private void endCapture() {
         btnEndCapture.setDisable(true);
