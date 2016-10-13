@@ -57,6 +57,10 @@ public class Driver {
         return car.get();
     }
 
+    public String getCarName() {
+        return car.get().getCarName();
+    }
+
     public String getTeam() {
         return team.get();
     }

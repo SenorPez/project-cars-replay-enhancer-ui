@@ -514,29 +514,29 @@ public class ReplayEnhancerUIController implements Initializable {
                       
         output.put("source_video", txtSourceVideo.getText());
         output.put("source_telemetry", txtSourceTelemetry.getText());
-        
-        output.put("video_skipstart", txtVideoStart.getText());
-        output.put("video_skipend", txtVideoEnd.getText());
-        output.put("sync_racestart", txtVideoSync.getText());
+
+        output.put("video_skipstart", Float.valueOf(txtVideoStart.getText()));
+        output.put("video_skipend", Float.valueOf(txtVideoEnd.getText()));
+        output.put("sync_racestart", Float.valueOf(txtVideoSync.getText()));
         
         output.put("output_video", txtOutputVideo.getText());
         
         output.put("heading_font", txtHeadingFont.getText());
-        output.put("heading_font_size", txtHeadingFontSize.getText());
+        output.put("heading_font_size", Integer.valueOf(txtHeadingFontSize.getText()));
         output.put("heading_font_color", toJSONColor(colorHeadingFontColor.getValue()));
         
         output.put("font", txtFont.getText());
-        output.put("font_size", txtFontSize.getText());
+        output.put("font_size", Integer.valueOf(txtFontSize.getText()));
         output.put("font_color", toJSONColor(colorFontColor.getValue()));
         
-        output.put("margin", txtMarginWidth.getText());
-        output.put("column_margin", txtColumnMarginWidth.getText());
-        output.put("result_lines", txtResultLines.getText());
+        output.put("margin", Integer.valueOf(txtMarginWidth.getText()));
+        output.put("column_margin", Integer.valueOf(txtColumnMarginWidth.getText()));
+        output.put("result_lines", Integer.valueOf(txtResultLines.getText()));
         
         output.put("backdrop", txtBackdrop.getText());
         output.put("logo", txtLogo.getText());
-        output.put("logo_height", txtLogoHeight.getText());
-        output.put("logo_width", txtLogoWidth.getText());
+        output.put("logo_height", Integer.valueOf(txtLogoHeight.getText()));
+        output.put("logo_width", Integer.valueOf(txtLogoWidth.getText()));
         
         output.put("heading_color", toJSONColor(colorHeadingColor.getValue()));
         output.put("series_logo", txtHeadingLogo.getText());
@@ -556,7 +556,7 @@ public class ReplayEnhancerUIController implements Initializable {
             JSONObject driverDataJSON = new JSONObject();
             driverDataJSON.put("display", driver.getDisplayName());
             driverDataJSON.put("short_display", driver.getShortName());
-            driverDataJSON.put("car", driver.getCar());
+            driverDataJSON.put("car", driver.getCarName());
     
             if (cbUseTeams.isSelected()) {
                 driverDataJSON.put("team", driver.getTeam());
@@ -887,7 +887,7 @@ public class ReplayEnhancerUIController implements Initializable {
 //                    return new EditingCell();
 //                }
 //            };
-        resetAll();
+
 
         pointStructure.addListener(new PointsUpdater<PointStructureItem>());
         drivers.addListener(new DriverUpdater<Driver>());
@@ -1052,6 +1052,8 @@ public class ReplayEnhancerUIController implements Initializable {
             }
         });
         tblCars.setItems(listCars);
+
+        resetAll();
     }
 
     private ObservableSet<Driver> populateDrivers() {
