@@ -479,15 +479,19 @@ public class ReplayEnhancerUIController implements Initializable {
     }
 
     private Car createCar(String carName, Map<String,JSONObject> carClasses) {
-        for (Entry<String, JSONObject> entry : carClasses.entrySet()) {
-            JSONArray carsInClass = (JSONArray) entry.getValue().get("cars");
-            if (carsInClass.contains(carName)) {
-                return new Car(carName, new CarClass(
-                        entry.getKey(), fromJSONColor((JSONArray) entry.getValue().get("color"))
-                ));
+        if (carClasses == null) {
+            return new Car(carName);
+        } else {
+            for (Entry<String, JSONObject> entry : carClasses.entrySet()) {
+                JSONArray carsInClass = (JSONArray) entry.getValue().get("cars");
+                if (carsInClass.contains(carName)) {
+                    return new Car(carName, new CarClass(
+                            entry.getKey(), fromJSONColor((JSONArray) entry.getValue().get("color"))
+                    ));
+                }
             }
+            return new Car(carName);
         }
-        return new Car(carName);
     }
     
     private static Color fromJSONColor(JSONArray input) {
