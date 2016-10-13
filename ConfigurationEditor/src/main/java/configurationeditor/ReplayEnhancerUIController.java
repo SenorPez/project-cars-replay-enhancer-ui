@@ -505,9 +505,9 @@ public class ReplayEnhancerUIController implements Initializable {
     
     private static JSONArray toJSONColor(Color input) {
         JSONArray output = new JSONArray();
-        output.add((int) input.getRed()*255);
-        output.add((int) input.getGreen()*255);
-        output.add((int) input.getBlue()*255);
+        output.add((int) (input.getRed() * 255));
+        output.add((int) (input.getGreen() * 255));
+        output.add((int) (input.getBlue() * 255));
         
         return output;
     }
