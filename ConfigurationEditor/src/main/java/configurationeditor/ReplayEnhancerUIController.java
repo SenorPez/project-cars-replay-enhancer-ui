@@ -9,9 +9,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
+import javafx.collections.SetChangeListener;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -39,8 +41,6 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -431,12 +431,11 @@ public class ReplayEnhancerUIController implements Initializable {
         
         pointStructure.removeAll(pointStructure);
         JSONArray pointStructureJSON = (JSONArray) data.get("point_structure");
-        int i = 0;
+        Integer i = 0;
         for (Object points : pointStructureJSON) {
             if (i == 0) {
                 txtBonusPoints.setText(points.toString());
             } else {
-                pointStructure.add(new PointStructureItem(i, Integer.valueOf(points.toString())));
                 pointStructure.add(new PointStructureItem(i, Integer.valueOf(points.toString())));
             }
             i += 1;
@@ -838,6 +837,7 @@ public class ReplayEnhancerUIController implements Initializable {
                         }
                     }
             );
+            tblPointStructure.refresh();
         }
     }
 

@@ -5,6 +5,7 @@
  */
 package configurationeditor;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 /**
@@ -13,29 +14,27 @@ import javafx.beans.property.SimpleIntegerProperty;
  */
 public class PointStructureItem {
     final SimpleIntegerProperty points;
-    final SimpleIntegerProperty finishPosition;
+    final int finishPosition;
 
     @Override
     public int hashCode() {
-        return this.getFinishPosition().hashCode();
+        return finishPosition;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj.getClass() == this.getClass()) {
-            PointStructureItem thisObj = (PointStructureItem) obj;
-            return thisObj.getFinishPosition() == this.getFinishPosition();
-        }
-        return false;
+        return obj != null
+                && obj.getClass() == this.getClass()
+                && this.finishPosition == ((PointStructureItem) obj).finishPosition;
     }
 
-    public PointStructureItem(Integer finishPosition, Integer points) {
+    public PointStructureItem(int finishPosition, Integer points) {
         this.points = new SimpleIntegerProperty(points);
-        this.finishPosition = new SimpleIntegerProperty(finishPosition);
+        this.finishPosition = finishPosition;
     }
 
-    public Integer getFinishPosition() {
-        return finishPosition.get();
+    public int getFinishPosition() {
+        return finishPosition;
     }
 
     public void setPoints(Integer value) {
@@ -46,7 +45,7 @@ public class PointStructureItem {
         return points.get();
     }
 
-    public void setFinishPosition(Integer value) {
-        finishPosition.set(value);
+    public IntegerProperty pointsProperty() {
+        return points;
     }
 }
