@@ -16,18 +16,6 @@ public class PointStructureItem {
     final SimpleIntegerProperty points;
     final int finishPosition;
 
-    @Override
-    public int hashCode() {
-        return finishPosition;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return obj != null
-                && obj.getClass() == this.getClass()
-                && this.finishPosition == ((PointStructureItem) obj).finishPosition;
-    }
-
     public PointStructureItem(int finishPosition, Integer points) {
         this.points = new SimpleIntegerProperty(points);
         this.finishPosition = finishPosition;
@@ -43,9 +31,5 @@ public class PointStructureItem {
 
     public Integer getPoints() {
         return points.get();
-    }
-
-    public IntegerProperty pointsProperty() {
-        return points;
     }
 }

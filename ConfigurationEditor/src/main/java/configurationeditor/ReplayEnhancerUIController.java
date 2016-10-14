@@ -9,10 +9,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
-import javafx.collections.SetChangeListener;
+import javafx.collections.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -48,7 +45,7 @@ import java.util.Map.Entry;
  * @author SenorPez
  */
 public class ReplayEnhancerUIController implements Initializable {
-    ObservableSet<PointStructureItem> pointStructure = FXCollections.observableSet();
+    ObservableMap<Integer, PointStructureItem> pointStructure = FXCollections.observableHashMap();
     ObservableList<PointStructureItem> listPointStructure = FXCollections.observableArrayList();
 
     ObservableSet<Driver> drivers = FXCollections.observableSet();
@@ -334,27 +331,17 @@ public class ReplayEnhancerUIController implements Initializable {
         cbShowChampion.setSelected(false);
         
         txtBonusPoints.setText("0");
-        pointStructure.removeAll(pointStructure);
-        pointStructure.add(
-            new PointStructureItem(1, 25));
-        pointStructure.add(
-            new PointStructureItem(2, 18));
-        pointStructure.add(
-            new PointStructureItem(3, 15));
-        pointStructure.add(
-            new PointStructureItem(4, 12));
-        pointStructure.add(
-            new PointStructureItem(5, 10));
-        pointStructure.add(
-            new PointStructureItem(6, 8));
-        pointStructure.add(
-            new PointStructureItem(7, 6));
-        pointStructure.add(
-            new PointStructureItem(8, 4));
-        pointStructure.add(
-            new PointStructureItem(9, 2));
-        pointStructure.add(
-            new PointStructureItem(10, 1));
+        pointStructure.clear();
+        pointStructure.put(1, new PointStructureItem(1, 25));
+        pointStructure.put(2, new PointStructureItem(2, 18));
+        pointStructure.put(3, new PointStructureItem(3, 15));
+        pointStructure.put(4, new PointStructureItem(4, 12));
+        pointStructure.put(5, new PointStructureItem(5, 10));
+        pointStructure.put(6, new PointStructureItem(6, 8));
+        pointStructure.put(7, new PointStructureItem(7, 6));
+        pointStructure.put(8, new PointStructureItem(8, 4));
+        pointStructure.put(9, new PointStructureItem(9, 2));
+        pointStructure.put(10, new PointStructureItem(10, 1));
 
         drivers.removeAll(drivers);
         additionalDrivers.removeAll(additionalDrivers);
@@ -429,14 +416,14 @@ public class ReplayEnhancerUIController implements Initializable {
         txtHeadingText.setText(data.get("heading_text").toString());
         txtSubheadingText.setText(data.get("subheading_text").toString());
         
-        pointStructure.removeAll(pointStructure);
+        pointStructure.clear();
         JSONArray pointStructureJSON = (JSONArray) data.get("point_structure");
         Integer i = 0;
         for (Object points : pointStructureJSON) {
             if (i == 0) {
                 txtBonusPoints.setText(points.toString());
             } else {
-                pointStructure.add(new PointStructureItem(i, Integer.valueOf(points.toString())));
+                pointStructure.put(i, new PointStructureItem(i, Integer.valueOf(points.toString())));
             }
             i += 1;
         }
@@ -548,8 +535,8 @@ public class ReplayEnhancerUIController implements Initializable {
         
         JSONArray pointStructureJSON = new JSONArray();
         pointStructureJSON.add(Integer.valueOf(txtBonusPoints.getText()));
-        for (PointStructureItem points : pointStructure) {
-            pointStructureJSON.add(points.getPoints());
+        for (Map.Entry<Integer, PointStructureItem> entry : pointStructure.entrySet()) {
+            pointStructureJSON.add(entry.getValue().getPoints());
         }
         output.put("point_structure", pointStructureJSON);
         
@@ -802,9 +789,8 @@ public class ReplayEnhancerUIController implements Initializable {
             }            
             
             case "btnAddPosition": {
-                pointStructure.add(new PointStructureItem(
-                    pointStructure.size()+1, 0)
-                );
+                int next_index = pointStructure.size() + 1;
+                pointStructure.put(next_index, new PointStructureItem(next_index, 0));
                 break;
             }            
             
@@ -813,31 +799,17 @@ public class ReplayEnhancerUIController implements Initializable {
         }
     }
 
-    class PointsUpdater<PointStructureItem extends configurationeditor.PointStructureItem> implements SetChangeListener {
+    class PointsUpdater implements MapChangeListener<Integer, PointStructureItem> {
         @Override
-        public void onChanged(Change change) {
+        public void onChanged(Change<? extends Integer, ? extends PointStructureItem> change) {
             if (change.wasRemoved()) {
-                listPointStructure.remove(change.getElementRemoved());
-            } else if (change.wasAdded()) {
-                PointStructureItem newPoints = (PointStructureItem) change.getElementAdded();
-                listPointStructure.add(newPoints);
+                listPointStructure.remove(change.getValueRemoved());
             }
 
-            listPointStructure.sort(
-                    new Comparator<configurationeditor.PointStructureItem>() {
-                        @Override
-                        public int compare(configurationeditor.PointStructureItem o1, configurationeditor.PointStructureItem o2) {
-                            if (o1.getFinishPosition() < o2.getFinishPosition()) {
-                                return -1;
-                            } else if (o1.getFinishPosition() > o2.getFinishPosition()) {
-                                return 1;
-                            } else {
-                                return 0;
-                            }
-                        }
-                    }
-            );
-            tblPointStructure.refresh();
+            if (change.wasAdded()) {
+                PointStructureItem newPoints = change.getValueAdded();
+                listPointStructure.add(newPoints);
+            }
         }
     }
 
@@ -885,15 +857,7 @@ public class ReplayEnhancerUIController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-//        Callback<TableColumn<PointStructureItem, Integer>, TableCell<PointStructureItem, Integer>> cellFactory = 
-//            new Callback<TableColumn<PointStructureItem, Integer>, TableCell<PointStructureItem, Integer>>() {
-//                public TableCell call(TableColumn p) {
-//                    return new EditingCell();
-//                }
-//            };
-
-
-        pointStructure.addListener(new PointsUpdater<PointStructureItem>());
+        pointStructure.addListener(new PointsUpdater());
         drivers.addListener(new DriverUpdater<Driver>());
         cars.addListener(new CarUpdater<Car>());
         
@@ -915,7 +879,7 @@ public class ReplayEnhancerUIController implements Initializable {
             }
         );
         tblPointStructure.setItems(listPointStructure);
-        
+
         colName.setCellValueFactory(
             new PropertyValueFactory<Driver, String>("name")
         );
