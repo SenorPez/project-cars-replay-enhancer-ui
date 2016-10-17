@@ -76,7 +76,7 @@
                      <content>
                         <VBox minHeight="-Infinity" minWidth="-Infinity">
                            <children>
-                              <TitledPane animated="false" collapsible="false" text="Source Data">
+                              <TitledPane animated="false" collapsible="false" focusTraversable="false" text="Source Data">
                                  <content>
                                     <GridPane hgap="4.0" vgap="4.0">
                                        <columnConstraints>
@@ -90,10 +90,10 @@
                                        </rowConstraints>
                                        <children>
                                           <Label text="Source Video" />
-                                          <Label text="Source Telemetry" GridPane.rowIndex="1" />
                                           <TextField fx:id="txtSourceVideo" editable="false" GridPane.columnIndex="1" />
-                                          <TextField fx:id="txtSourceTelemetry" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                           <Button id="btnSourceVideo" fx:id="btnSourceVideo" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
+                                          <Label text="Source Telemetry" GridPane.rowIndex="1" />
+                                          <TextField fx:id="txtSourceTelemetry" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                           <Button id="btnSourceTelemetry" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="1" />
                                        </children>
                                     </GridPane>
@@ -102,7 +102,7 @@
                                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                  </padding>
                               </TitledPane>
-                              <TitledPane animated="false" collapsible="false" prefHeight="136.0" prefWidth="330.0" text="Source Parameters">
+                              <TitledPane animated="false" collapsible="false" focusTraversable="false" prefHeight="136.0" prefWidth="330.0" text="Source Parameters">
                                  <content>
                                     <GridPane hgap="4.0" vgap="4.0">
                                        <columnConstraints>
@@ -115,12 +115,12 @@
                                           <RowConstraints vgrow="SOMETIMES" />
                                        </rowConstraints>
                                        <children>
-                                          <TextField fx:id="txtVideoStart" onKeyReleased="#validateFloat" styleClass="input-float" GridPane.columnIndex="1" />
-                                          <TextField fx:id="txtVideoEnd" onKeyReleased="#validateFloat" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                          <TextField fx:id="txtVideoSync" onKeyReleased="#validateFloat" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                           <Label text="Video Start Time:" />
+                                          <TextField fx:id="txtVideoStart" onKeyReleased="#validateFloat" styleClass="input-float" GridPane.columnIndex="1" />
                                           <Label text="Video End Time:" GridPane.rowIndex="1" />
+                                          <TextField fx:id="txtVideoEnd" onKeyReleased="#validateFloat" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                           <Label text="Telemetry Sync. Value:" GridPane.rowIndex="2" />
+                                          <TextField fx:id="txtVideoSync" onKeyReleased="#validateFloat" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                        </children>
                                     </GridPane>
                                  </content>
@@ -128,7 +128,7 @@
                                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                  </padding>
                               </TitledPane>
-                              <TitledPane animated="false" collapsible="false" text="Output">
+                              <TitledPane animated="false" collapsible="false" focusTraversable="false" text="Output">
                                  <content>
                                     <GridPane hgap="4.0" vgap="4.0">
                                        <columnConstraints>
@@ -161,7 +161,7 @@
                   <content>
                         <VBox>
                            <children>
-                              <TitledPane animated="false" collapsible="false" text="Headings">
+                              <TitledPane animated="false" collapsible="false" focusTraversable="false" text="Headings">
                                  <content>
                                     <GridPane hgap="4.0" vgap="4.0">
                                       <columnConstraints>
@@ -179,22 +179,22 @@
                                           <RowConstraints vgrow="SOMETIMES" />
                                       </rowConstraints>
                                        <children>
+                                          <Label text="Heading Text" />
+                                          <TextField fx:id="txtHeadingText" GridPane.columnIndex="1" />
+                                          <Label text="Subheading Text" GridPane.rowIndex="1" />
+                                          <TextField fx:id="txtSubheadingText" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                           <Label text="Heading Font" GridPane.rowIndex="2" />
-                                          <Label text="Heading Font Size" GridPane.rowIndex="3" />
-                                          <Label text="Heading Font Color" GridPane.rowIndex="4" />
                                           <TextField fx:id="txtHeadingFont" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                          <TextField fx:id="txtHeadingFontSize" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                           <Button id="btnHeadingFont" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                                          <Label text="Heading Font Size" GridPane.rowIndex="3" />
+                                          <TextField fx:id="txtHeadingFontSize" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                          <Label text="Heading Font Color" GridPane.rowIndex="4" />
                                           <ColorPicker fx:id="colorHeadingFontColor" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                           <Label text="Heading Color" GridPane.rowIndex="5" />
                                           <ColorPicker fx:id="colorHeadingColor" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                           <Label text="Heading Logo" GridPane.rowIndex="6" />
                                           <TextField fx:id="txtHeadingLogo" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                                           <Button id="btnHeadingLogo" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="6" />
-                                          <Label text="Heading Text" />
-                                          <TextField fx:id="txtHeadingText" GridPane.columnIndex="1" />
-                                          <Label text="Subheading Text" GridPane.rowIndex="1" />
-                                          <TextField fx:id="txtSubheadingText" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                        </children>
                                     </GridPane>
                                  </content>
@@ -202,7 +202,7 @@
                                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                  </padding>
                               </TitledPane>
-                              <TitledPane animated="false" collapsible="false" text="Background (Title and Results Screens)">
+                              <TitledPane animated="false" collapsible="false" focusTraversable="false" text="Background (Title and Results Screens)">
                                  <content>
                                     <GridPane hgap="4.0" vgap="4.0">
                                        <columnConstraints>
@@ -218,14 +218,14 @@
                                        </rowConstraints>
                                        <children>
                                           <Label text="Image" />
-                                          <Label text="Logo" GridPane.rowIndex="1" />
-                                          <Label text="Logo Width" GridPane.rowIndex="2" />
                                           <TextField fx:id="txtBackdrop" editable="false" GridPane.columnIndex="1" />
-                                          <TextField fx:id="txtLogo" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                           <Button id="btnBackdrop" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
-                                          <Label text="Logo Height" GridPane.rowIndex="3" />
+                                          <Label text="Logo" GridPane.rowIndex="1" />
+                                          <TextField fx:id="txtLogo" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                           <Button id="btnLogo" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                          <Label text="Logo Width" GridPane.rowIndex="2" />
                                           <TextField fx:id="txtLogoWidth" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                          <Label text="Logo Height" GridPane.rowIndex="3" />
                                           <TextField fx:id="txtLogoHeight" onKeyTyped="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                        </children>
                                     </GridPane>
@@ -234,7 +234,7 @@
                                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                  </padding>
                               </TitledPane>
-                              <TitledPane animated="false" collapsible="false" text="Font">
+                              <TitledPane animated="false" collapsible="false" focusTraversable="false" text="Font">
                                  <content>
                                     <GridPane hgap="4.0" vgap="4.0">
                                        <columnConstraints>
@@ -249,11 +249,11 @@
                                        </rowConstraints>
                                        <children>
                                           <Label text="Font" />
-                                          <Label text="Font Size" GridPane.rowIndex="1" />
-                                          <Label text="Font Color" GridPane.rowIndex="2" />
                                           <TextField fx:id="txtFont" editable="false" GridPane.columnIndex="1" />
-                                          <TextField fx:id="txtFontSize" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                           <Button id="btnFont" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
+                                          <Label text="Font Size" GridPane.rowIndex="1" />
+                                          <TextField fx:id="txtFontSize" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <Label text="Font Color" GridPane.rowIndex="2" />
                                           <ColorPicker fx:id="colorFontColor" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                        </children>
                                     </GridPane>
@@ -262,7 +262,7 @@
                                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                  </padding>
                               </TitledPane>
-                              <TitledPane animated="false" collapsible="false" text="Layout">
+                              <TitledPane animated="false" collapsible="false" focusTraversable="false" text="Layout">
                                  <content>
                                     <GridPane hgap="4.0" vgap="4.0">
                                        <columnConstraints>
@@ -276,8 +276,8 @@
                                        </rowConstraints>
                                        <children>
                                           <Label text="Margin Width" />
-                                          <Label text="Column Margin Width" GridPane.rowIndex="1" />
                                           <TextField fx:id="txtMarginWidth" onKeyReleased="#validateInteger" GridPane.columnIndex="1" />
+                                          <Label text="Column Margin Width" GridPane.rowIndex="1" />
                                           <TextField fx:id="txtColumnMarginWidth" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                           <Label text="Result Lines" GridPane.rowIndex="2" />
                                           <TextField fx:id="txtResultLines" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="2" />
@@ -299,7 +299,7 @@
                     <content>
                         <VBox>
                            <children>
-                              <TitledPane animated="false" collapsible="false" text="Options">
+                              <TitledPane animated="false" collapsible="false" focusTraversable="false" text="Options">
                                  <content>
                                     <GridPane hgap="4.0" vgap="4.0">
                                       <columnConstraints>
@@ -317,16 +317,16 @@
                                       </rowConstraints>
                                        <children>
                                           <Label text="Show Teams?" />
-                                          <Label text="Show Car Classes?" GridPane.rowIndex="1" />
-                                          <Label text="Show Series Champion?" GridPane.rowIndex="2" />
                                           <CheckBox fx:id="cbUseTeams" mnemonicParsing="false" GridPane.columnIndex="1" />
+                                          <Label text="Show Car Classes?" GridPane.rowIndex="1" />
                                           <CheckBox fx:id="cbUseClasses" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <Label text="Show Series Champion?" GridPane.rowIndex="2" />
                                           <CheckBox fx:id="cbShowChampion" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                           <Label text="Use Points Structure?" GridPane.rowIndex="3" />
                                           <CheckBox fx:id="cbUsePoints" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                           <Label text="Fastest Lap Bonus Points" GridPane.rowIndex="4" />
                                           <TextField fx:id="txtBonusPoints" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                          <TableView fx:id="tblPointStructure" editable="true" prefHeight="404.0" prefWidth="254.0" GridPane.columnSpan="2" GridPane.rowIndex="5">
+                                          <TableView fx:id="tblPointStructure" editable="true" focusTraversable="false" prefHeight="404.0" prefWidth="254.0" GridPane.columnSpan="2" GridPane.rowIndex="5">
                                             <columns>
                                               <TableColumn fx:id="colFinishPosition" editable="false" prefWidth="75.0" resizable="false" sortable="false" text="Position" />
                                               <TableColumn fx:id="colPoints" prefWidth="178.0" sortable="false" text="Points" />
@@ -351,9 +351,9 @@
                     <content>
                         <VBox>
                            <children>
-                              <TitledPane collapsible="false" text="Drivers">
+                              <TitledPane animated="false" collapsible="false" focusTraversable="false" text="Drivers">
                                  <content>
-                                    <TableView fx:id="tblDrivers" editable="true" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0">
+                                    <TableView fx:id="tblDrivers" editable="true" focusTraversable="false" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0">
                                       <columns>
                                         <TableColumn fx:id="colName" editable="false" prefWidth="110.0" text="Name" />
                                         <TableColumn fx:id="colDisplayName" prefWidth="110.0" text="Display Name" />
@@ -368,9 +368,9 @@
                                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                  </padding>
                               </TitledPane>
-                              <TitledPane collapsible="false" prefHeight="175.0" prefWidth="620.0" text="Cars">
+                              <TitledPane animated="false" collapsible="false" focusTraversable="false" prefHeight="175.0" prefWidth="620.0" text="Cars">
                                  <content>
-                                    <TableView fx:id="tblCars" prefHeight="200.0" prefWidth="618.0">
+                                    <TableView fx:id="tblCars" focusTraversable="false" prefHeight="200.0" prefWidth="618.0">
                                       <columns>
                                         <TableColumn fx:id="colCarName" prefWidth="75.0" text="Car" />
                                         <TableColumn fx:id="colClassName" prefWidth="75.0" text="Class" />
@@ -382,24 +382,28 @@
                                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                  </padding>
                               </TitledPane>
-                              <TitledPane collapsible="false" text="Additional Drivers">
+                              <TitledPane animated="false" collapsible="false" focusTraversable="false" text="Additional Drivers">
                                  <content>
-                                    <TableView prefHeight="200.0" prefWidth="618.0">
-                                       <columns>
-                                          <TableColumn prefWidth="75.0" text="Name" />
-                                          <TableColumn prefWidth="106.0" text="Display Name" />
-                                          <TableColumn prefWidth="97.0" text="Short Name" />
-                                          <TableColumn prefWidth="53.0" text="Car" />
-                                          <TableColumn prefWidth="71.0" text="Team" />
-                                          <TableColumn prefWidth="110.0" text="Series Points" />
-                                       </columns>
-                                    </TableView>
+                                    <VBox>
+                                       <children>
+                                          <TableView focusTraversable="false" prefHeight="200.0" prefWidth="618.0">
+                                             <columns>
+                                                <TableColumn prefWidth="75.0" text="Name" />
+                                                <TableColumn prefWidth="106.0" text="Display Name" />
+                                                <TableColumn prefWidth="97.0" text="Short Name" />
+                                                <TableColumn prefWidth="53.0" text="Car" />
+                                                <TableColumn prefWidth="71.0" text="Team" />
+                                                <TableColumn prefWidth="110.0" text="Series Points" />
+                                             </columns>
+                                          </TableView>
+                                          <Button mnemonicParsing="false" text="Add Additional Driver" />
+                                       </children>
+                                    </VBox>
                                  </content>
                                  <padding>
                                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                  </padding>
                               </TitledPane>
-                              <Button mnemonicParsing="false" text="Add Additional Driver" />
                            </children>
                            <padding>
                               <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
