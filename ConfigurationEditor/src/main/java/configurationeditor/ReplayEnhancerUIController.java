@@ -5,7 +5,6 @@
  */
 package configurationeditor;
 
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
@@ -19,7 +18,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.effect.Light;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -40,6 +38,8 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -47,18 +47,18 @@ import java.util.Map.Entry;
  * @author SenorPez
  */
 public class ReplayEnhancerUIController implements Initializable {
-    ObservableMap<Integer, PointStructureItem> pointStructure = FXCollections.observableMap(new TreeMap<>());
-    ObservableList<PointStructureItem> listPointStructure = FXCollections.observableArrayList();
+    private ObservableMap<Integer, PointStructureItem> pointStructure = FXCollections.observableMap(new TreeMap<>());
+    private ObservableList<PointStructureItem> listPointStructure = FXCollections.observableArrayList();
 
-    ObservableSet<Driver> drivers = FXCollections.observableSet();
-    ObservableList<Driver> listDrivers = FXCollections.observableArrayList();
+    private ObservableSet<Driver> drivers = FXCollections.observableSet();
+    private ObservableList<Driver> listDrivers = FXCollections.observableArrayList();
 
-    ObservableList<Driver> additionalDrivers = FXCollections.observableArrayList();
+    private ObservableList<Driver> additionalDrivers = FXCollections.observableArrayList();
 
-    ObservableSet<Car> cars = FXCollections.observableSet();
-    ObservableList<Car> listCars = FXCollections.observableArrayList();
+    private ObservableSet<Car> cars = FXCollections.observableSet();
+    private ObservableList<Car> listCars = FXCollections.observableArrayList();
 
-    File JSONFile = null;
+    private File JSONFile = null;
     
     @FXML
     private VBox root;
@@ -196,12 +196,6 @@ public class ReplayEnhancerUIController implements Initializable {
     private Label txtFileName;
     
     @FXML
-    private Label txtStatusBar;
-    
-    @FXML
-    private Label txtValidConfig;
-    
-    @FXML
     private void menuFileNew() {
         JSONFile = null;
         txtFileName.setText("<NONE>");
@@ -216,11 +210,7 @@ public class ReplayEnhancerUIController implements Initializable {
             try {
                 JSONObject data = (JSONObject) parser.parse(new FileReader(file.getCanonicalPath()));
                 setValuesFromJSON(data);
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            } catch (ParseException ex) {
+            } catch (IOException | ParseException ex) {
                 ex.printStackTrace();
             }
         }        
@@ -240,11 +230,7 @@ public class ReplayEnhancerUIController implements Initializable {
                 
                 JSONFile = file;
                 txtFileName.setText(file.getName());
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            } catch (ParseException ex) {
+            } catch (IOException | ParseException ex) {
                 ex.printStackTrace();
             }
         } else {
@@ -345,10 +331,10 @@ public class ReplayEnhancerUIController implements Initializable {
         pointStructure.put(9, new PointStructureItem(9, 2));
         pointStructure.put(10, new PointStructureItem(10, 1));
 
-        drivers.removeAll(drivers);
-        additionalDrivers.removeAll(additionalDrivers);
+        drivers.clear();
+        additionalDrivers.clear();
 
-        cars.removeAll(cars);
+        cars.clear();
     }
     
     private static File chooseJSONFile(Pane root) {
@@ -361,9 +347,8 @@ public class ReplayEnhancerUIController implements Initializable {
         fileChooser.getExtensionFilters().addAll(
             new FileChooser.ExtensionFilter("JSON", "*.json"),
             new FileChooser.ExtensionFilter("All Files", "*.*"));
-        
-        File file = fileChooser.showOpenDialog(stage);
-        return file;
+
+        return fileChooser.showOpenDialog(stage);
     }
     
     private static File createJSONFile(Pane root) {
@@ -375,19 +360,18 @@ public class ReplayEnhancerUIController implements Initializable {
             new File(System.getProperty("user.home")));
         fileChooser.getExtensionFilters().addAll(
             new FileChooser.ExtensionFilter("JSON", "*.json"),
-            new FileChooser.ExtensionFilter("All Files", "*.*"));      
-        
-        File file = fileChooser.showSaveDialog(stage);
-        return file;  
+            new FileChooser.ExtensionFilter("All Files", "*.*"));
+
+        return fileChooser.showSaveDialog(stage);
     }
 
     private void setValuesFromJSON(JSONObject data) {
         txtSourceVideo.setText(data.get("source_video").toString());
         txtSourceTelemetry.setText(data.get("source_telemetry").toString());
-        
-        txtVideoStart.setText(data.get("video_skipstart").toString());
-        txtVideoEnd.setText(data.get("video_skipend").toString());
-        txtVideoSync.setText(data.get("sync_racestart").toString());
+
+        txtVideoStart.setText(convertTime((double) data.get("video_skipstart")));
+        txtVideoEnd.setText(convertTime((double) data.get("video_skipend")));
+        txtVideoSync.setText(convertTime((double) data.get("sync_racestart")));
         
         txtOutputVideo.setText(data.get("output_video").toString());
         
@@ -430,13 +414,11 @@ public class ReplayEnhancerUIController implements Initializable {
             i += 1;
         }
 
-        drivers.removeAll(drivers);
+        drivers.clear();
 
-        JSONObject driversJSON = (JSONObject) data.get("participant_config");
-        Map<String,JSONObject> entries = driversJSON;
+        Map<String,JSONObject> entries = (JSONObject) data.get("participant_config");
 
-        JSONObject carClassesJSON = (JSONObject) data.get("car_classes");
-        Map<String,JSONObject> carClassEntries = carClassesJSON;
+        Map<String,JSONObject> carClassEntries = (JSONObject) data.get("car_classes");
 
         for (Entry<String,JSONObject> entry : entries.entrySet()) {
             Car car = createCar(entry.getValue().get("car").toString(), carClassEntries);
@@ -486,9 +468,8 @@ public class ReplayEnhancerUIController implements Initializable {
         int red = Integer.valueOf(input.get(0).toString());
         int green = Integer.valueOf(input.get(1).toString());
         int blue = Integer.valueOf(input.get(2).toString());
-        
-        Color output = Color.rgb(red, green, blue);
-        return output;
+
+        return Color.rgb(red, green, blue);
     }
     
     private static JSONArray toJSONColor(Color input) {
@@ -499,6 +480,47 @@ public class ReplayEnhancerUIController implements Initializable {
         
         return output;
     }
+
+    private String convertTime(double dblTime) {
+        String returnValue = "";
+        if ((int) (dblTime % 1) > 0) {
+            returnValue = "." + String.format(".%d", (int) (dblTime % 1));
+        }
+
+        if ((int) (dblTime / 3600) > 0) {
+            returnValue = String.format("%d", (int) (dblTime / 3600)) + ":" + String.format("%02d", (int) ((dblTime % 3600) / 60)) + ":" + String.format("%02d", (int) (dblTime % 60)) + returnValue;
+        } else {
+            if ((int) ((dblTime % 3600) / 60) > 0) {
+                returnValue = String.format("%d", (int) ((dblTime % 3600) / 60)) + ":" + String.format("%02d", (int) (dblTime % 60)) + returnValue;
+            } else {
+                returnValue = "0:" + String.format("%02d", (int) (dblTime % 60)) + returnValue;
+            }
+        }
+
+        return returnValue;
+    }
+
+    private Float convertTime(String strTime) {
+        Pattern regex = Pattern.compile("(?:^(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*(?:\\.\\d*)?)$)");
+        Matcher matches = regex.matcher(strTime);
+        matches.matches();
+        Float hours = 0f;
+        Float minutes = 0f;
+        Float seconds = 0f;
+
+        if (matches.group(1) != null) {
+            hours = Float.valueOf(matches.group(1)) * 60 * 60;
+            minutes = Float.valueOf(matches.group(2)) * 60;
+            seconds = Float.valueOf(matches.group(3));
+        } else if (matches.group(4) != null) {
+            minutes = Float.valueOf(matches.group(4)) * 60;
+            seconds = Float.valueOf(matches.group(5));
+        } else if (matches.group(6) != null) {
+            seconds = Float.valueOf(matches.group(6));
+        }
+
+        return hours + minutes + seconds;
+    }
     
     @FXML
     private JSONObject writeJSON() {
@@ -507,9 +529,9 @@ public class ReplayEnhancerUIController implements Initializable {
         output.put("source_video", txtSourceVideo.getText());
         output.put("source_telemetry", txtSourceTelemetry.getText());
 
-        output.put("video_skipstart", Float.valueOf(txtVideoStart.getText()));
-        output.put("video_skipend", Float.valueOf(txtVideoEnd.getText()));
-        output.put("sync_racestart", Float.valueOf(txtVideoSync.getText()));
+        output.put("video_skipstart", convertTime(txtVideoStart.getText()));
+        output.put("video_skipend", convertTime(txtVideoEnd.getText()));
+        output.put("sync_racestart", convertTime(txtVideoSync.getText()));
         
         output.put("output_video", txtOutputVideo.getText());
         
@@ -600,6 +622,19 @@ public class ReplayEnhancerUIController implements Initializable {
             if (!txtSource.getText().equals("")) {
                 txtSource.setStyle("-fx-text-inner-color: red");                        
             }
+        }
+    }
+
+    @FXML
+    private void validateTime(KeyEvent event) {
+        Object source = event.getSource();
+        TextField txtSource = (TextField) source;
+        txtSource.setStyle("-fx-text-inner-color: black");
+
+        Pattern regex = Pattern.compile("(?:^(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*(?:\\.\\d*)?)$)");
+        Matcher match = regex.matcher(txtSource.getText());
+        if (!match.matches()) {
+            txtSource.setStyle("-fx-text-inner-color: red");
         }
     }
 
