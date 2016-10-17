@@ -333,6 +333,7 @@
                                             </columns>
                                           </TableView>
                                           <Button id="btnAddPosition" mnemonicParsing="false" onAction="#handleButtonAction" text="Add Position" GridPane.rowIndex="6" />
+                                          <Button id="btnDeletePosition" mnemonicParsing="false" onAction="#removePosition" text="Delete Position" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                                        </children>
                                     </GridPane>
                                  </content>

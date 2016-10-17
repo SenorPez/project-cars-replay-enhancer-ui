@@ -5,6 +5,7 @@
  */
 package configurationeditor;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
@@ -18,6 +19,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.effect.Light;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -45,7 +47,7 @@ import java.util.Map.Entry;
  * @author SenorPez
  */
 public class ReplayEnhancerUIController implements Initializable {
-    ObservableMap<Integer, PointStructureItem> pointStructure = FXCollections.observableHashMap();
+    ObservableMap<Integer, PointStructureItem> pointStructure = FXCollections.observableMap(new TreeMap<>());
     ObservableList<PointStructureItem> listPointStructure = FXCollections.observableArrayList();
 
     ObservableSet<Driver> drivers = FXCollections.observableSet();
@@ -600,6 +602,29 @@ public class ReplayEnhancerUIController implements Initializable {
             }
         }
     }
+
+    @FXML
+    private void removePosition(ActionEvent event){
+        ObservableList<PointStructureItem> selectedItems = tblPointStructure.getSelectionModel().getSelectedItems();
+        for (PointStructureItem item : selectedItems) {
+            pointStructure.remove(item.getFinishPosition());
+        }
+
+        Iterator<Map.Entry<Integer, PointStructureItem>> iterator = pointStructure.entrySet().iterator();
+        Integer index = 1;
+        TreeMap<Integer, PointStructureItem> newItems = new TreeMap<>();
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, PointStructureItem> entry = iterator.next();
+            if (!entry.getKey().equals(index)) {
+                PointStructureItem old_item = entry.getValue();
+                old_item.setFinishPosition(index);
+                newItems.put(index, old_item);
+                iterator.remove();
+            }
+            index += 1;
+        }
+        pointStructure.putAll(newItems);
+    }
     
     @FXML
     private void handleButtonAction(ActionEvent event) throws IOException {
@@ -810,6 +835,15 @@ public class ReplayEnhancerUIController implements Initializable {
                 PointStructureItem newPoints = change.getValueAdded();
                 listPointStructure.add(newPoints);
             }
+
+            listPointStructure.sort(
+                    new Comparator<PointStructureItem>() {
+                        @Override
+                        public int compare(PointStructureItem o1, PointStructureItem o2) {
+                            return o1.getFinishPosition().compareTo(o2.getFinishPosition());
+                        }
+                    }
+            );
         }
     }
 

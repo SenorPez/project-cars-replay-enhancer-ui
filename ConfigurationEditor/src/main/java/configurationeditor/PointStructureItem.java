@@ -14,22 +14,26 @@ import javafx.beans.property.SimpleIntegerProperty;
  */
 public class PointStructureItem {
     final SimpleIntegerProperty points;
-    final int finishPosition;
+    final SimpleIntegerProperty finishPosition;
 
     public PointStructureItem(int finishPosition, Integer points) {
+        this.finishPosition = new SimpleIntegerProperty(finishPosition);
         this.points = new SimpleIntegerProperty(points);
-        this.finishPosition = finishPosition;
     }
 
-    public int getFinishPosition() {
-        return finishPosition;
+    public Integer getFinishPosition() {
+        return finishPosition.get();
     }
 
-    public void setPoints(Integer value) {
-        points.set(value);
+    public void setFinishPosition(Integer value) {
+        finishPosition.set(value);
     }
 
     public Integer getPoints() {
         return points.get();
+    }
+
+    public void setPoints(Integer value) {
+        points.set(value);
     }
 }
