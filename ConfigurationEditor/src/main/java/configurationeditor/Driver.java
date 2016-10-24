@@ -53,6 +53,16 @@ public class Driver {
         this.seriesPoints = new SimpleIntegerProperty(0);
     }
 
+    public Driver(String name, String displayName, String shortName, Car car, String team, Integer points) {
+        this.name = new SimpleStringProperty(name);
+        this.displayName = new SimpleStringProperty(displayName);
+        this.shortName = new SimpleStringProperty(shortName);
+        this.car = new SimpleObjectProperty<>(car);
+        this.team = new SimpleStringProperty(team);
+        this.seriesPoints = new SimpleIntegerProperty(points);
+    }
+
+
     public Car getCar() {
         return car.get();
     }

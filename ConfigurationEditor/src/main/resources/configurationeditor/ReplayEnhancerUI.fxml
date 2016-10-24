@@ -91,10 +91,10 @@
                                        <children>
                                           <Label text="Source Video" />
                                           <TextField fx:id="txtSourceVideo" editable="false" GridPane.columnIndex="1" />
-                                          <Button id="btnSourceVideo" fx:id="btnSourceVideo" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
+                                          <Button id="btnSourceVideo" fx:id="btnSourceVideo" mnemonicParsing="false" onAction="#buttonSourceVideo" text="Select..." GridPane.columnIndex="2" />
                                           <Label text="Source Telemetry" GridPane.rowIndex="1" />
                                           <TextField fx:id="txtSourceTelemetry" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                          <Button id="btnSourceTelemetry" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                          <Button id="btnSourceTelemetry" mnemonicParsing="false" onAction="#buttonSourceTelemetry" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="1" />
                                        </children>
                                     </GridPane>
                                  </content>
@@ -142,7 +142,7 @@
                                        <children>
                                           <Label text="Output Video" />
                                           <TextField fx:id="txtOutputVideo" editable="false" GridPane.columnIndex="1" />
-                                          <Button id="btnOutputVideo" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
+                                          <Button id="btnOutputVideo" mnemonicParsing="false" onAction="#buttonOutputVideo" text="Select..." GridPane.columnIndex="2" />
                                        </children>
                                     </GridPane>
                                  </content>
@@ -185,7 +185,7 @@
                                           <TextField fx:id="txtSubheadingText" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                           <Label text="Heading Font" GridPane.rowIndex="2" />
                                           <TextField fx:id="txtHeadingFont" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                          <Button id="btnHeadingFont" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                                          <Button id="btnHeadingFont" mnemonicParsing="false" onAction="#buttonHeadingFont" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="2" />
                                           <Label text="Heading Font Size" GridPane.rowIndex="3" />
                                           <TextField fx:id="txtHeadingFontSize" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                           <Label text="Heading Font Color" GridPane.rowIndex="4" />
@@ -194,7 +194,7 @@
                                           <ColorPicker fx:id="colorHeadingColor" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                           <Label text="Heading Logo" GridPane.rowIndex="6" />
                                           <TextField fx:id="txtHeadingLogo" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                                          <Button id="btnHeadingLogo" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="6" />
+                                          <Button id="btnHeadingLogo" mnemonicParsing="false" onAction="#buttonHeadingLogo" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="6" />
                                        </children>
                                     </GridPane>
                                  </content>
@@ -219,10 +219,10 @@
                                        <children>
                                           <Label text="Image" />
                                           <TextField fx:id="txtBackdrop" editable="false" GridPane.columnIndex="1" />
-                                          <Button id="btnBackdrop" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
+                                          <Button id="btnBackdrop" mnemonicParsing="false" onAction="#buttonBackdrop" text="Select..." GridPane.columnIndex="2" />
                                           <Label text="Logo" GridPane.rowIndex="1" />
                                           <TextField fx:id="txtLogo" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                          <Button id="btnLogo" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                          <Button id="btnLogo" mnemonicParsing="false" onAction="#buttonLogo" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="1" />
                                           <Label text="Logo Width" GridPane.rowIndex="2" />
                                           <TextField fx:id="txtLogoWidth" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                           <Label text="Logo Height" GridPane.rowIndex="3" />
@@ -250,7 +250,7 @@
                                        <children>
                                           <Label text="Font" />
                                           <TextField fx:id="txtFont" editable="false" GridPane.columnIndex="1" />
-                                          <Button id="btnFont" mnemonicParsing="false" onAction="#handleButtonAction" text="Select..." GridPane.columnIndex="2" />
+                                          <Button id="btnFont" mnemonicParsing="false" onAction="#buttonFont" text="Select..." GridPane.columnIndex="2" />
                                           <Label text="Font Size" GridPane.rowIndex="1" />
                                           <TextField fx:id="txtFontSize" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                           <Label text="Font Color" GridPane.rowIndex="2" />
@@ -313,7 +313,6 @@
                                           <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                                           <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                                           <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
-                                          <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                                       </rowConstraints>
                                        <children>
                                           <Label text="Show Teams?" />
@@ -322,18 +321,16 @@
                                           <CheckBox fx:id="cbUseClasses" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                           <Label text="Show Series Champion?" GridPane.rowIndex="2" />
                                           <CheckBox fx:id="cbShowChampion" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                          <Label text="Use Points Structure?" GridPane.rowIndex="3" />
-                                          <CheckBox fx:id="cbUsePoints" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                          <Label text="Fastest Lap Bonus Points" GridPane.rowIndex="4" />
-                                          <TextField fx:id="txtBonusPoints" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                          <TableView fx:id="tblPointStructure" editable="true" focusTraversable="false" prefHeight="404.0" prefWidth="254.0" GridPane.columnSpan="2" GridPane.rowIndex="5">
+                                          <Label text="Fastest Lap Bonus Points" GridPane.rowIndex="3" />
+                                          <TextField fx:id="txtBonusPoints" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                          <TableView fx:id="tblPointStructure" editable="true" focusTraversable="false" prefHeight="404.0" prefWidth="254.0" GridPane.columnSpan="2" GridPane.rowIndex="4">
                                             <columns>
                                               <TableColumn fx:id="colFinishPosition" editable="false" prefWidth="75.0" resizable="false" sortable="false" text="Position" />
                                               <TableColumn fx:id="colPoints" prefWidth="178.0" sortable="false" text="Points" />
                                             </columns>
                                           </TableView>
-                                          <Button id="btnAddPosition" mnemonicParsing="false" onAction="#handleButtonAction" text="Add Position" GridPane.rowIndex="6" />
-                                          <Button id="btnDeletePosition" mnemonicParsing="false" onAction="#removePosition" text="Delete Position" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                          <Button id="btnAddPosition" mnemonicParsing="false" onAction="#buttonAddPosition" text="Add Position" GridPane.rowIndex="5" />
+                                          <Button id="btnDeletePosition" mnemonicParsing="false" onAction="#buttonDeletePosition" text="Delete Position" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                        </children>
                                     </GridPane>
                                  </content>
