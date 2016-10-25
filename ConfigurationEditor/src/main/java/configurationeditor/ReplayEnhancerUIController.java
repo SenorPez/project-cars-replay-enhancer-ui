@@ -12,13 +12,10 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyEvent;
@@ -28,7 +25,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.NumberStringConverter;
@@ -264,45 +260,55 @@ public class ReplayEnhancerUIController implements Initializable {
         return fileChooser.showOpenDialog(stage);
     }
 
-    private static String convertTime(double dblTime) {
-        String returnValue = "";
-        if ((int) (dblTime % 1) > 0) {
-            returnValue = "." + String.format(".%d", (int) (dblTime % 1));
-        }
+    private static class ConvertTime extends StringConverter<Number> {
+        @Override
+        public String toString(Number object) {
+            String returnValue = "";
+            Double inputValue = object.doubleValue();
 
-        if ((int) (dblTime / 3600) > 0) {
-            returnValue = String.format("%d", (int) (dblTime / 3600)) + ":" + String.format("%02d", (int) ((dblTime % 3600) / 60)) + ":" + String.format("%02d", (int) (dblTime % 60)) + returnValue;
-        } else {
-            if ((int) ((dblTime % 3600) / 60) > 0) {
-                returnValue = String.format("%d", (int) ((dblTime % 3600) / 60)) + ":" + String.format("%02d", (int) (dblTime % 60)) + returnValue;
-            } else {
-                returnValue = "0:" + String.format("%02d", (int) (dblTime % 60)) + returnValue;
+            if ((int) (inputValue % 1) > 0) {
+                returnValue = "." + String.format(".%d", (int) (inputValue % 1));
             }
+
+            if ((int) (inputValue / 3600) > 0) {
+                returnValue = String.format("%d", (int) (inputValue / 3600)) + ":" + String.format("%02d", (int) ((inputValue % 3600) / 60)) + ":" + String.format("%02d", (int) (inputValue % 60)) + returnValue;
+            } else {
+                if ((int) ((inputValue % 3600) / 60) > 0) {
+                    returnValue = String.format("%d", (int) ((inputValue % 3600) / 60)) + ":" + String.format("%02d", (int) (inputValue % 60)) + returnValue;
+                } else {
+                    returnValue = "0:" + String.format("%02d", (int) (inputValue % 60)) + returnValue;
+                }
+            }
+
+            return returnValue;
         }
 
-        return returnValue;
-    }
+        @Override
+        public Number fromString(String string) {
+            Pattern regex = Pattern.compile("(?:^(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*(?:\\.\\d*)?)$)");
+            Matcher matches = regex.matcher(string);
 
-    private static Float convertTime(String strTime) {
-        Pattern regex = Pattern.compile("(?:^(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*(?:\\.\\d*)?)$)");
-        Matcher matches = regex.matcher(strTime);
-        matches.matches();
-        Float hours = 0f;
-        Float minutes = 0f;
-        Float seconds = 0f;
+            if (!matches.matches()) {
+                return 0;
+            }
 
-        if (matches.group(1) != null) {
-            hours = Float.valueOf(matches.group(1)) * 60 * 60;
-            minutes = Float.valueOf(matches.group(2)) * 60;
-            seconds = Float.valueOf(matches.group(3));
-        } else if (matches.group(4) != null) {
-            minutes = Float.valueOf(matches.group(4)) * 60;
-            seconds = Float.valueOf(matches.group(5));
-        } else if (matches.group(6) != null) {
-            seconds = Float.valueOf(matches.group(6));
+            Double hours = 0d;
+            Double minutes = 0d;
+            Double seconds = 0d;
+
+            if (matches.group(1) != null) {
+                hours = Double.valueOf(matches.group(1)) * 60 * 60;
+                minutes = Double.valueOf(matches.group(2)) * 60;
+                seconds = Double.valueOf(matches.group(3));
+            } else if (matches.group(4) != null) {
+                minutes = Double.valueOf(matches.group(4)) * 60;
+                seconds = Double.valueOf(matches.group(5));
+            } else if (matches.group(6) != null) {
+                seconds = Double.valueOf(matches.group(6));
+            }
+
+            return hours + minutes + seconds;
         }
-
-        return hours + minutes + seconds;
     }
     
     @FXML
@@ -670,9 +676,9 @@ public class ReplayEnhancerUIController implements Initializable {
         });
 
         // Source Parameters
-        txtVideoStart.textProperty().bindBidirectional(configuration.videoStartTimeProperty(), new NumberStringConverter());
-        txtVideoEnd.textProperty().bindBidirectional(configuration.videoEndTimeProperty(), new NumberStringConverter());
-        txtVideoSync.textProperty().bindBidirectional(configuration.syncRacestartProperty(), new NumberStringConverter());
+        txtVideoStart.textProperty().bindBidirectional(configuration.videoStartTimeProperty(), new ConvertTime());
+        txtVideoEnd.textProperty().bindBidirectional(configuration.videoEndTimeProperty(), new ConvertTime());
+        txtVideoSync.textProperty().bindBidirectional(configuration.syncRacestartProperty(), new ConvertTime());
 
         // Output
         txtOutputVideo.textProperty().bindBidirectional(configuration.outputVideoProperty(), new StringConverter<File>() {
