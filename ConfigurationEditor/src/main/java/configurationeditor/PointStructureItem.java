@@ -5,13 +5,8 @@
  */
 package configurationeditor;
 
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
-/**
- *
- * @author SenorPez
- */
 public class PointStructureItem {
     final SimpleIntegerProperty points;
     final SimpleIntegerProperty finishPosition;

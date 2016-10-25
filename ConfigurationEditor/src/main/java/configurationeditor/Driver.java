@@ -9,17 +9,13 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-/**
- *
- * @author SenorPez
- */
 public class Driver {
-    final SimpleStringProperty team;
-    final SimpleStringProperty shortName;
-    final SimpleStringProperty displayName;
-    final SimpleStringProperty name;
-    final SimpleObjectProperty<Car> car;
-    final SimpleIntegerProperty seriesPoints;
+    private final SimpleStringProperty team;
+    private final SimpleStringProperty shortName;
+    private final SimpleStringProperty displayName;
+    private final SimpleStringProperty name;
+    private final SimpleObjectProperty<Car> car;
+    private final SimpleIntegerProperty seriesPoints;
 
     @Override
     public int hashCode() {
@@ -62,56 +58,75 @@ public class Driver {
         this.seriesPoints = new SimpleIntegerProperty(points);
     }
 
-
-    public Car getCar() {
-        return car.get();
-    }
-
-    public String getCarName() {
-        return car.get().getCarName();
-    }
-
     public String getTeam() {
         return team.get();
     }
 
-    public Integer getSeriesPoints() {
-        return seriesPoints.get();
+    public SimpleStringProperty teamProperty() {
+        return team;
     }
 
-    public void setSeriesPoints(Integer value) {
-        seriesPoints.set(value);
-    }
-
-    public void setName(String value) {
-        name.set(value);
-    }
-
-    public void setCar(Car value) {
-        car.set(value);
-    }
-
-    public String getName() {
-        return name.get();
-    }
-
-    public void setTeam(String value) {
-        team.set(value);
-    }
-
-    public void setDisplayName(String value) {
-        displayName.set(value);
-    }
-
-    public void setShortName(String value) {
-        shortName.set(value);
+    public void setTeam(String team) {
+        this.team.set(team);
     }
 
     public String getShortName() {
         return shortName.get();
     }
 
+    public SimpleStringProperty shortNameProperty() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName.set(shortName);
+    }
+
     public String getDisplayName() {
         return displayName.get();
+    }
+
+    public SimpleStringProperty displayNameProperty() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName.set(displayName);
+    }
+
+    public String getName() {
+        return name.get();
+    }
+
+    public SimpleStringProperty nameProperty() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name.set(name);
+    }
+
+    public Car getCar() {
+        return car.get();
+    }
+
+    public SimpleObjectProperty<Car> carProperty() {
+        return car;
+    }
+
+    public void setCar(Car car) {
+        this.car.set(car);
+    }
+
+    public int getSeriesPoints() {
+        return seriesPoints.get();
+    }
+
+    public SimpleIntegerProperty seriesPointsProperty() {
+        return seriesPoints;
+    }
+
+    public void setSeriesPoints(int seriesPoints) {
+        this.seriesPoints.set(seriesPoints);
     }
 }

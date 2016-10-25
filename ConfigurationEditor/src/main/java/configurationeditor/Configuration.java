@@ -1,5 +1,6 @@
 package configurationeditor;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,10 +22,7 @@ import javafx.scene.paint.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-
-/**
- * Created by SenorPez on 10/19/2016.
- */
+import java.util.stream.Collectors;
 
 @JsonPropertyOrder(alphabetic = true)
 // TODO: 10/20/2016 Add functionality for deprecation of old, used properties. For now, here.
@@ -31,99 +30,102 @@ import java.util.*;
 public class Configuration {
     // Source Data
     @JsonProperty(value = "source_video")
-    private SimpleObjectProperty<File> sourceVideo;
+    private final SimpleObjectProperty<File> sourceVideo;
 
     @JsonProperty(value = "source_telemetry")
-    private SimpleObjectProperty<File> sourceTelemetry;
+    private final SimpleObjectProperty<File> sourceTelemetry;
 
     // Source Parameters
     @JsonProperty(value = "video_skipstart")
-    private SimpleDoubleProperty videoStartTime;
+    private final SimpleDoubleProperty videoStartTime;
 
     @JsonProperty(value = "video_skipend")
-    private SimpleDoubleProperty videoEndTime;
+    private final SimpleDoubleProperty videoEndTime;
 
     @JsonProperty(value = "sync_racestart")
-    private SimpleDoubleProperty syncRacestart;
+    private final SimpleDoubleProperty syncRacestart;
 
     // Output
     @JsonProperty(value = "output_video")
-    private SimpleObjectProperty<File> outputVideo;
+    private final SimpleObjectProperty<File> outputVideo;
 
     //Headings
     @JsonProperty(value = "heading_text")
-    private SimpleStringProperty headingText;
+    private final SimpleStringProperty headingText;
 
     @JsonProperty(value = "subheading_text")
-    private SimpleStringProperty subheadingText;
+    private final SimpleStringProperty subheadingText;
 
     @JsonProperty(value = "heading_font")
-    private SimpleObjectProperty<File> headingFont;
+    private final SimpleObjectProperty<File> headingFont;
 
     @JsonProperty(value = "heading_font_size")
-    private SimpleIntegerProperty headingFontSize;
+    private final SimpleIntegerProperty headingFontSize;
 
     @JsonDeserialize(using = Configuration.ColorDeserializer.class)
     @JsonProperty(value = "heading_font_color")
     @JsonSerialize(using = Configuration.ColorSerializer.class)
-    private SimpleObjectProperty<Color> headingFontColor;
+    private final SimpleObjectProperty<Color> headingFontColor;
 
     @JsonDeserialize(using = Configuration.ColorDeserializer.class)
     @JsonProperty(value = "heading_color")
     @JsonSerialize(using = Configuration.ColorSerializer.class)
-    private SimpleObjectProperty<Color> headingColor;
+    private final SimpleObjectProperty<Color> headingColor;
 
     @JsonProperty(value = "series_logo")
-    private SimpleObjectProperty<File> seriesLogo;
+    private final SimpleObjectProperty<File> seriesLogo;
 
     // Backgrounds
     @JsonProperty(value = "backdrop")
-    private SimpleObjectProperty<File> backdrop;
+    private final SimpleObjectProperty<File> backdrop;
 
     @JsonProperty(value = "logo")
-    private SimpleObjectProperty<File> logo;
+    private final SimpleObjectProperty<File> logo;
 
     @JsonProperty(value = "logo_height")
-    private SimpleIntegerProperty logoHeight;
+    private final SimpleIntegerProperty logoHeight;
 
     @JsonProperty(value = "logo_width")
-    private SimpleIntegerProperty logoWidth;
+    private final SimpleIntegerProperty logoWidth;
 
     // Font
     @JsonProperty(value = "font")
-    private SimpleObjectProperty<File> font;
+    private final SimpleObjectProperty<File> font;
 
     @JsonProperty(value = "font_size")
-    private SimpleIntegerProperty fontSize;
+    private final SimpleIntegerProperty fontSize;
 
     @JsonDeserialize(using = Configuration.ColorDeserializer.class)
     @JsonProperty(value = "font_color")
     @JsonSerialize(using = Configuration.ColorSerializer.class)
-    private SimpleObjectProperty<Color> fontColor;
+    private final SimpleObjectProperty<Color> fontColor;
 
     // Layout
     @JsonProperty(value = "margin")
-    private SimpleIntegerProperty margin;
+    private final SimpleIntegerProperty margin;
 
     @JsonProperty(value = "column_margin")
-    private SimpleIntegerProperty columnMargin;
+    private final SimpleIntegerProperty columnMargin;
 
     @JsonProperty(value = "result_lines")
-    private SimpleIntegerProperty resultLines;
+    private final SimpleIntegerProperty resultLines;
 
     // Options
     @JsonProperty(value = "show_champion")
-    private SimpleBooleanProperty showChampion;
+    private final SimpleBooleanProperty showChampion;
 
     @JsonDeserialize(using = Configuration.PointStructureDeserializer.class)
     @JsonProperty(value = "point_structure")
     @JsonSerialize(using = Configuration.PointStructureSerializer.class)
-    private SimpleListProperty<PointStructureItem> pointStructure;
+    private final SimpleListProperty<PointStructureItem> pointStructure;
 
     @JsonDeserialize(using = Configuration.ParticipantConfigurationDeserializer.class)
     @JsonProperty(value = "participant_config")
     @JsonSerialize(using = Configuration.ParticipantConfigurationSerializer.class)
-    private SimpleListProperty<Driver> participantConfiguration;
+    private final SimpleListProperty<Driver> participantConfiguration;
+
+    @JsonIgnore
+    private final SimpleListProperty<Car> cars;
 
     public Configuration() {
         // Source Data
@@ -175,7 +177,12 @@ public class Configuration {
         }
         this.pointStructure = new SimpleListProperty<>(defaultPointStructure);
 
-        this.participantConfiguration = new SimpleListProperty<>();
+        this.participantConfiguration = new SimpleListProperty<>(FXCollections.observableList(new ArrayList<>(), param -> new Observable[]{param.displayNameProperty(), param.getCar().carNameProperty()}));
+        this.cars = new SimpleListProperty<>(FXCollections.observableArrayList(new TreeSet<Car>()));
+        this.participantConfiguration.addListener((observable, oldValue, newValue) ->cars.set(FXCollections.observableArrayList(newValue
+                .stream()
+                .map(Driver::getCar)
+                .collect(Collectors.toSet()))));
     }
 
     public File getSourceVideo() {
@@ -490,6 +497,18 @@ public class Configuration {
         this.participantConfiguration.set(participantConfiguration);
     }
 
+    public ObservableList<Car> getCars() {
+        return cars.get();
+    }
+
+    public SimpleListProperty<Car> carsProperty() {
+        return cars;
+    }
+
+    public void setCars(ObservableList<Car> cars) {
+        this.cars.set(cars);
+    }
+
     private static class ColorDeserializer extends StdDeserializer<Color> {
         public ColorDeserializer() {
             this(null);
@@ -584,7 +603,7 @@ public class Configuration {
         @Override
         public ObservableList<Driver> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             JsonNode node = p.getCodec().readTree(p);
-            ObservableList<Driver> drivers = FXCollections.observableArrayList();
+            ObservableList<Driver> drivers = FXCollections.observableList(new ArrayList<>(), param -> new Observable[]{param.displayNameProperty(), param.getCar().carNameProperty()});
 
             Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
             while (iterator.hasNext()) {
@@ -621,7 +640,7 @@ public class Configuration {
                 gen.writeStartObject();
                 gen.writeStringField("display", driver.getDisplayName());
                 gen.writeStringField("short_display", driver.getShortName());
-                gen.writeStringField("car", driver.getCarName());
+                gen.writeStringField("car", driver.getCar().getCarName());
                 gen.writeStringField("team", driver.getTeam());
                 gen.writeNumberField("points", driver.getSeriesPoints());
                 gen.writeEndObject();

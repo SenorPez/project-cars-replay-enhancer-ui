@@ -10,13 +10,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.paint.Color;
 
-/**
- *
- * @author SenorPez
- */
 public class CarClass {
-    final SimpleStringProperty className;
-    final SimpleObjectProperty<Color> classColor;
+    private final SimpleStringProperty className;
+    private final SimpleObjectProperty<Color> classColor;
 
     @Override
     public int hashCode() {
@@ -34,22 +30,30 @@ public class CarClass {
 
     public CarClass(String className, Color classColor) {
         this.className = new SimpleStringProperty(className);
-        this.classColor = new SimpleObjectProperty<Color>(classColor);
+        this.classColor = new SimpleObjectProperty<>(classColor);
     }
-    
+
     public String getClassName() {
         return className.get();
     }
-    
+
+    public SimpleStringProperty classNameProperty() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className.set(className);
+    }
+
     public Color getClassColor() {
         return classColor.get();
     }
-    
-    public void setClassName(String value) {
-        className.set(value);
+
+    public SimpleObjectProperty<Color> classColorProperty() {
+        return classColor;
     }
-    
-    public void setClassColor(Color value) {
-        classColor.set(value);
+
+    public void setClassColor(Color classColor) {
+        this.classColor.set(classColor);
     }
 }

@@ -8,13 +8,9 @@ package configurationeditor;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-/**
- *
- * @author SenorPez
- */
 public class Car {
-    final SimpleStringProperty carName;
-    final SimpleObjectProperty<CarClass> carClass;
+    private final SimpleStringProperty carName;
+    private final SimpleObjectProperty<CarClass> carClass;
 
     @Override
     public int hashCode() {
@@ -37,22 +33,30 @@ public class Car {
     
     public Car(String name, CarClass carClass) {
         this.carName = new SimpleStringProperty(name);
-        this.carClass = new SimpleObjectProperty<CarClass>(carClass);
+        this.carClass = new SimpleObjectProperty<>(carClass);
     }
-    
+
     public String getCarName() {
         return carName.get();
     }
-    
+
+    public SimpleStringProperty carNameProperty() {
+        return carName;
+    }
+
+    public void setCarName(String carName) {
+        this.carName.set(carName);
+    }
+
     public CarClass getCarClass() {
         return carClass.get();
     }
-    
-    public void setCarName(String value) {
-        carName.set(value);
+
+    public SimpleObjectProperty<CarClass> carClassProperty() {
+        return carClass;
     }
-    
-    public void setCarClass(CarClass value) {
-        carClass.set(value);
+
+    public void setCarClass(CarClass carClass) {
+        this.carClass.set(carClass);
     }
 }

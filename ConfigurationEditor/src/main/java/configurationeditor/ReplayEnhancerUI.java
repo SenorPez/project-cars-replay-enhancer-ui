@@ -13,10 +13,6 @@ import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-/**
- *
- * @author SenorPez
- */
 public class ReplayEnhancerUI extends Application {
     
     @Override

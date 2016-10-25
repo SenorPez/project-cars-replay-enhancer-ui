@@ -5,9 +5,7 @@
  */
 package configurationeditor;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,16 +15,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
-/**
- *
- * @author SenorPez
- */
 public abstract class Packet {
 
     private final SimpleIntegerProperty buildVersionNumber;
     private final SimpleIntegerProperty packetType;    
     
-    private SimpleSetProperty<SimpleStringProperty> names;
+    private final SimpleSetProperty<SimpleStringProperty> names;
     
     private static Integer toInt(byte[] bytes) {
         int returnValue = 0;
@@ -40,32 +34,32 @@ public abstract class Packet {
     protected Packet(ByteBuffer data) {
         this.buildVersionNumber = new SimpleIntegerProperty(ReadShort(data));
         this.packetType = new SimpleIntegerProperty(ReadChar(data));
-        this.names = new SimpleSetProperty<SimpleStringProperty>(FXCollections.observableSet());
+        this.names = new SimpleSetProperty<>(FXCollections.observableSet());
     }
      
-    protected final static Integer ReadShort(ByteBuffer data) {
+    protected static Integer ReadShort(ByteBuffer data) {
         byte[] readBytes = new byte[2];
         data.get(readBytes);
         return toInt(readBytes);
     }
     
-    protected final static Integer ReadChar(ByteBuffer data) {
+    protected static Integer ReadChar(ByteBuffer data) {
         byte[] readBytes = new byte[1];
         data.get(readBytes);
         return toInt(readBytes);
     }
     
-    protected final static Integer ReadByte(ByteBuffer data) {
+    protected static Integer ReadByte(ByteBuffer data) {
         return ReadChar(data);
     }
     
-    protected final static Float ReadFloat(ByteBuffer data) {
+    protected static Float ReadFloat(ByteBuffer data) {
         byte[] readBytes = new byte[4];
         data.get(readBytes);
         return ByteBuffer.wrap(readBytes).getFloat();
     }
     
-    protected final static String ReadString(ByteBuffer data, Integer length) {
+    protected static String ReadString(ByteBuffer data, Integer length) {
         byte[] readBytes = new byte[length];
         data.get(readBytes);
         try {

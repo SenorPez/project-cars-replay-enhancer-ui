@@ -1,17 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package configurationeditor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -39,10 +33,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
-/**
- *
- * @author SenorPez
- */
 public class ReplayEnhancerUIController implements Initializable {
     private SimpleObjectProperty<File> JSONFile;
     private Configuration configuration;
@@ -193,8 +183,8 @@ public class ReplayEnhancerUIController implements Initializable {
     private void menuFileOpen() throws IOException {
         File file = chooseJSONFile(root);
         if (file != null && file.isFile()) {
+            menuFileNew();
             updateConfiguration(file, configuration);
-
             JSONFile.set(file);
         }
     }
@@ -505,129 +495,96 @@ public class ReplayEnhancerUIController implements Initializable {
         addListeners();
 
         colFinishPosition.setCellValueFactory(
-            new PropertyValueFactory<>("finishPosition")
+                new PropertyValueFactory<>("finishPosition")
         );
         colPoints.setCellValueFactory(
-            new PropertyValueFactory<>("points")
+                new PropertyValueFactory<>("points")
         );
         colPoints.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         colPoints.setOnEditCommit(
                 t -> (t.getTableView().getItems().get(
-                    t.getTablePosition().getRow())
-                        ).setPoints(t.getNewValue())
+                        t.getTablePosition().getRow())
+                ).setPoints(t.getNewValue())
         );
 
         colName.setCellValueFactory(
                 new PropertyValueFactory<>("name")
         );
         colDisplayName.setCellValueFactory(
-            new PropertyValueFactory<>("displayName")
+                new PropertyValueFactory<>("displayName")
         );
         colDisplayName.setCellFactory(TextFieldTableCell.forTableColumn());
         colDisplayName.setOnEditCommit(
                 t -> (t.getTableView().getItems().get(
-                    t.getTablePosition().getRow())
-                        ).setName(t.getNewValue())
+                        t.getTablePosition().getRow())
+                ).setDisplayName(t.getNewValue())
         );
         colShortName.setCellValueFactory(
-            new PropertyValueFactory<>("shortName")
+                new PropertyValueFactory<>("shortName")
         );
         colShortName.setCellFactory(TextFieldTableCell.forTableColumn());
         colShortName.setOnEditCommit(
                 t -> (t.getTableView().getItems().get(
-                    t.getTablePosition().getRow())
-                        ).setShortName(t.getNewValue())
+                        t.getTablePosition().getRow())
+                ).setShortName(t.getNewValue())
         );
         colCar.setCellValueFactory(
-                param -> {
-                    Car car = param.getValue().getCar();
-                    if (car == null) {
-                        return new SimpleStringProperty("");
-                    } else {
-                        return new SimpleStringProperty(car.getCarName());
-                    }
-                }
+                param -> param.getValue().getCar() == null ?
+                        new SimpleStringProperty("") :
+                        new SimpleStringProperty(param.getValue().getCar().getCarName())
         );
         colCar.setCellFactory(TextFieldTableCell.forTableColumn());
         colCar.setOnEditCommit(
                 t -> (t.getTableView().getItems().get(
-                    t.getTablePosition().getRow())
-                        ).setCar(new Car(t.getNewValue()))
+                        t.getTablePosition().getRow())
+                ).getCar().setCarName(t.getNewValue())
         );
         colTeam.setCellValueFactory(
-            new PropertyValueFactory<>("team")
+                new PropertyValueFactory<>("team")
         );
         colTeam.setCellFactory(TextFieldTableCell.forTableColumn());
         colTeam.setOnEditCommit(
                 t -> (t.getTableView().getItems().get(
-                    t.getTablePosition().getRow())
-                        ).setTeam(t.getNewValue())
+                        t.getTablePosition().getRow())
+                ).setTeam(t.getNewValue())
         );
         colSeriesPoints.setCellValueFactory(
-            new PropertyValueFactory<>("seriesPoints")
+                new PropertyValueFactory<>("seriesPoints")
         );
         colSeriesPoints.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         colSeriesPoints.setOnEditCommit(
                 t -> (t.getTableView().getItems().get(
-                    t.getTablePosition().getRow())
-                        ).setSeriesPoints(t.getNewValue())
+                        t.getTablePosition().getRow())
+                ).setSeriesPoints(t.getNewValue())
         );
 
-//        colCarName.setCellValueFactory(
-//                new PropertyValueFactory<Car, String>("carName")
-//        );
-//        colCarName.setCellFactory(TextFieldTableCell.forTableColumn());
-//        colCarName.setOnEditCommit(
-//                new EventHandler<CellEditEvent<Car, String>>() {
-//                    @Override
-//                    public void handle(CellEditEvent<Car, String> event) {
-//                        ((Car) event.getTableView().getItems().get(
-//                                event.getTablePosition().getRow())
-//                        ).setCarName(event.getNewValue());
-//                    }
-//                }
-//        );
-//
-//        colClassName.setCellValueFactory(
-//                new Callback<TableColumn.CellDataFeatures<Car, String>, ObservableValue<String>>() {
-//                    @Override
-//                    public ObservableValue<String> call(TableColumn.CellDataFeatures<Car, String> param) {
-//                        if (param.getValue().getCarClass() == null) {
-//                            return new SimpleStringProperty("");
-//                        }
-//                        return new SimpleStringProperty(param.getValue().getCarClass().getClassName());
-//                    }
-//                }
-//        );
-//        colClassName.setCellFactory(TextFieldTableCell.forTableColumn());
-//        colClassName.setOnEditCommit(
-//                new EventHandler<CellEditEvent<Car, String>>() {
-//                    @Override
-//                    public void handle(CellEditEvent<Car, String> event) {
-//                        ((Car) event.getTableView().getItems().get(
-//                                event.getTablePosition().getRow())
-//                        ).setCarName(event.getNewValue());
-//                    }
-//                }
-//        );
-//        colClassColor.setCellValueFactory(
-//                new Callback<TableColumn.CellDataFeatures<Car, Color>, ObservableValue<Color>>() {
-//                    @Override
-//                    public ObservableValue<Color> call(TableColumn.CellDataFeatures<Car, Color> param) {
-//                        if (param.getValue().getCarClass() == null) {
-//                            return new SimpleObjectProperty<Color>(null);
-//                        }
-//                        return new SimpleObjectProperty<Color>(param.getValue().getCarClass().getClassColor());
-//                    }
-//                }
-//        );
-//        colClassColor.setCellFactory(new Callback<TableColumn<Car, Color>, TableCell<Car, Color>>() {
-//            @Override
-//            public TableCell<Car, Color> call(TableColumn<Car, Color> column) {
-//                return new ColorTableCell<Car>(column);
-//            }
-//        });
-//        tblCars.setItems(listCars);
+        colCarName.setCellValueFactory(
+                new PropertyValueFactory<>("carName")
+        );
+        colCarName.setCellFactory(TextFieldTableCell.forTableColumn());
+
+        colClassName.setCellValueFactory(
+                param -> param.getValue().getCarClass() == null ?
+                        new SimpleStringProperty("") :
+                        new SimpleStringProperty(param.getValue().getCarClass().getClassName())
+        );
+        colClassName.setCellFactory(TextFieldTableCell.forTableColumn());
+        colClassName.setOnEditCommit(
+                event -> (event.getTableView().getItems().get(
+                        event.getTablePosition().getRow())
+                ).getCarClass().setClassName(event.getNewValue())
+        );
+        colClassColor.setCellValueFactory(
+                param -> param.getValue().getCarClass() == null ?
+                        new SimpleObjectProperty<>(null) :
+                        new SimpleObjectProperty<>(param.getValue().getCarClass().getClassColor())
+        );
+        colClassColor.setCellFactory(ColorTableCell::new);
+        colClassColor.setOnEditCommit(
+                event -> (event.getTableView().getItems().get(
+                        event.getTablePosition().getRow())
+                ).getCarClass().setClassColor(event.getNewValue())
+        );
     }
 
     private void addListeners() {
@@ -823,6 +780,7 @@ public class ReplayEnhancerUIController implements Initializable {
 
         // Drivers (and teams, and cars, oh my!)
         tblDrivers.setItems(configuration.participantConfigurationProperty());
+        tblCars.setItems(configuration.carsProperty());
     }
 
     private void populateDrivers() {
@@ -867,12 +825,14 @@ public class ReplayEnhancerUIController implements Initializable {
             }
         }
 
-        configuration.setParticipantConfiguration(names
+        ObservableList<Driver> drivers = FXCollections.observableArrayList(param -> new javafx.beans.Observable[]{param.getCar().carNameProperty()});
+        drivers.addAll(names
                 .stream()
                 .filter(name -> name.length() > 0)
                 .map(Driver::new)
-                .collect(Collectors.toCollection(FXCollections::observableArrayList))
-        );
+                .collect(Collectors.toList()));
+
+        configuration.setParticipantConfiguration(drivers);
     }
 
     /*
@@ -965,13 +925,9 @@ public class ReplayEnhancerUIController implements Initializable {
         private void createTextField() {
             textField = new TextField(getString());
             textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
-            textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> arg0,
-                        Boolean arg1, Boolean arg2) {
-                    if (!arg2) {
-                        commitEdit(Integer.valueOf(textField.getText()));
-                    }
+            textField.focusedProperty().addListener((arg0, arg1, arg2) -> {
+                if (!arg2) {
+                    commitEdit(Integer.valueOf(textField.getText()));
                 }
             });
         }

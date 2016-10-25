@@ -9,10 +9,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import javafx.beans.property.SimpleIntegerProperty;
 
-/**
- *
- * @author SenorPez
- */
 public class AdditionalParticipantPacket extends Packet {
     private final SimpleIntegerProperty offset;
     

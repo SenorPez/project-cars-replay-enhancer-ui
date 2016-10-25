@@ -14,10 +14,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-/**
- *
- * @author SenorPez
- */
 public class ParticipantPacket extends Packet {
     private final SimpleStringProperty carName;
     private final SimpleStringProperty carClass;
@@ -34,7 +30,7 @@ public class ParticipantPacket extends Packet {
         this.trackLocation = new SimpleStringProperty(ReadString(data, 64).trim());
         this.trackVariation = new SimpleStringProperty(ReadString(data, 64).trim());
         
-        this.fastestLapTimes = new SimpleListProperty<SimpleFloatProperty>(FXCollections.observableList(new ArrayList<SimpleFloatProperty>()));
+        this.fastestLapTimes = new SimpleListProperty<>(FXCollections.observableList(new ArrayList<>()));
         
         super.setNames(data);
         
