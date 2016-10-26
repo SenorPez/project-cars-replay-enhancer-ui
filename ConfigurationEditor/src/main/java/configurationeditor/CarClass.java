@@ -28,6 +28,11 @@ public class CarClass {
         return false;
     }
 
+    public CarClass() {
+        this.className = new SimpleStringProperty("");
+        this.classColor = new SimpleObjectProperty<>(null);
+    }
+
     public CarClass(String className, Color classColor) {
         this.className = new SimpleStringProperty(className);
         this.classColor = new SimpleObjectProperty<>(classColor);

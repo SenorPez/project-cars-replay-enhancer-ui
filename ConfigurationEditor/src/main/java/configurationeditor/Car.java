@@ -26,9 +26,14 @@ public class Car {
         return false;
     }
 
+    public Car() {
+        this.carName = new SimpleStringProperty("");
+        this.carClass = new SimpleObjectProperty<>(new CarClass());
+    }
+
     public Car(String name) {
         this.carName = new SimpleStringProperty(name);
-        this.carClass = new SimpleObjectProperty<>(null);
+        this.carClass = new SimpleObjectProperty<>(new CarClass());
     }
     
     public Car(String name, CarClass carClass) {

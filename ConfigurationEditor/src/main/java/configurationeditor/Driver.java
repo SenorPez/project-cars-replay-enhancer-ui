@@ -35,8 +35,8 @@ public class Driver {
         this.name = new SimpleStringProperty(name);
         this.displayName = new SimpleStringProperty(name);
         this.shortName = new SimpleStringProperty(name);
-        this.car = new SimpleObjectProperty<>(null);
-        this.team = new SimpleStringProperty(null);
+        this.car = new SimpleObjectProperty<>(new Car());
+        this.team = new SimpleStringProperty("");
         this.seriesPoints = new SimpleIntegerProperty(0);
     }
 
@@ -45,7 +45,7 @@ public class Driver {
         this.displayName = new SimpleStringProperty(displayName);
         this.shortName = new SimpleStringProperty(shortName);
         this.car = new SimpleObjectProperty<>(car);
-        this.team = new SimpleStringProperty(null);
+        this.team = new SimpleStringProperty("");
         this.seriesPoints = new SimpleIntegerProperty(0);
     }
 
