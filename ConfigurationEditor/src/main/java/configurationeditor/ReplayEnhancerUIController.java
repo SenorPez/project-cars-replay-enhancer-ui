@@ -1,6 +1,7 @@
 package configurationeditor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -528,14 +529,19 @@ public class ReplayEnhancerUIController implements Initializable {
         );
         colCar.setCellValueFactory(
                 param -> param.getValue().getCar() == null ?
-                        new SimpleStringProperty("") :
+                        new SimpleStringProperty(null) :
                         new SimpleStringProperty(param.getValue().getCar().getCarName())
         );
         colCar.setCellFactory(param -> CustomCell.createStringEditCell());
         colCar.setOnEditCommit(
-                t -> (t.getTableView().getItems().get(
-                        t.getTablePosition().getRow())
-                ).getCar().setCarName(t.getNewValue())
+                t -> {
+                    Driver driver = t.getTableView().getItems().get(t.getTablePosition().getRow());
+                    if (driver.getCar() == null) {
+                        driver.setCar(new Car(t.getNewValue()));
+                    } else {
+                        driver.getCar().setCarName(t.getNewValue());
+                    }
+                }
         );
         colTeam.setCellValueFactory(
                 new PropertyValueFactory<>("team")
@@ -560,8 +566,8 @@ public class ReplayEnhancerUIController implements Initializable {
                 new PropertyValueFactory<>("carName")
         );
         colClassName.setCellValueFactory(
-                param -> param.getValue().getCarClass() == null ?
-                        new SimpleStringProperty("") :
+                param -> param.getValue() == null || param.getValue().getCarClass() == null ?
+                        new SimpleStringProperty(null) :
                         new SimpleStringProperty(param.getValue().getCarClass().getClassName())
         );
         colClassName.setCellFactory(param -> CustomCell.createStringEditCell());
@@ -571,7 +577,7 @@ public class ReplayEnhancerUIController implements Initializable {
                 ).getCarClass().setClassName(event.getNewValue())
         );
         colClassColor.setCellValueFactory(
-                param -> param.getValue().getCarClass() == null ?
+                param -> param.getValue() == null || param.getValue().getCarClass() == null ?
                         new SimpleObjectProperty<>(null) :
                         new SimpleObjectProperty<>(param.getValue().getCarClass().getClassColor())
         );
@@ -824,7 +830,7 @@ public class ReplayEnhancerUIController implements Initializable {
             }
         }
 
-        ObservableList<Driver> drivers = FXCollections.observableArrayList(param -> new javafx.beans.Observable[]{param.getCar().carNameProperty()});
+        ObservableList<Driver> drivers = FXCollections.observableArrayList(param -> new Observable[]{param.carProperty()});
         drivers.addAll(names
                 .stream()
                 .filter(name -> name.length() > 0)

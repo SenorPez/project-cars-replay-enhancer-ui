@@ -17,6 +17,7 @@ import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.scene.paint.Color;
 
 import java.io.File;
@@ -177,9 +178,9 @@ public class Configuration {
         }
         this.pointStructure = new SimpleListProperty<>(defaultPointStructure);
 
-        this.participantConfiguration = new SimpleListProperty<>(FXCollections.observableList(new ArrayList<>(), param -> new Observable[]{param.displayNameProperty(), param.getCar().carNameProperty()}));
+        this.participantConfiguration = new SimpleListProperty<>(FXCollections.observableList(new ArrayList<Driver>(), param -> new Observable[]{param.carProperty()}));
         this.cars = new SimpleListProperty<>(FXCollections.observableArrayList(new TreeSet<Car>()));
-        this.participantConfiguration.addListener((observable, oldValue, newValue) ->cars.set(FXCollections.observableArrayList(newValue
+        this.participantConfiguration.addListener((observable, oldValue, newValue) -> cars.set(FXCollections.observableArrayList(newValue
                 .stream()
                 .map(Driver::getCar)
                 .collect(Collectors.toSet()))));
@@ -640,7 +641,11 @@ public class Configuration {
                 gen.writeStartObject();
                 gen.writeStringField("display", driver.getDisplayName());
                 gen.writeStringField("short_display", driver.getShortName());
-                gen.writeStringField("car", driver.getCar().getCarName());
+                if (driver.getCar() == null) {
+                    gen.writeStringField("car", null);
+                } else {
+                    gen.writeStringField("car", driver.getCar().getCarName());
+                }
                 gen.writeStringField("team", driver.getTeam());
                 gen.writeNumberField("points", driver.getSeriesPoints());
                 gen.writeEndObject();
