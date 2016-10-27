@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -19,6 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.NumberStringConverter;
@@ -500,7 +502,7 @@ public class ReplayEnhancerUIController implements Initializable {
         colPoints.setCellValueFactory(
                 new PropertyValueFactory<>("points")
         );
-        colPoints.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        colPoints.setCellFactory(param -> CustomCell.createIntegerEditCell());
         colPoints.setOnEditCommit(
                 t -> (t.getTableView().getItems().get(
                         t.getTablePosition().getRow())
@@ -513,7 +515,7 @@ public class ReplayEnhancerUIController implements Initializable {
         colDisplayName.setCellValueFactory(
                 new PropertyValueFactory<>("displayName")
         );
-        colDisplayName.setCellFactory(TextFieldTableCell.forTableColumn());
+        colDisplayName.setCellFactory(param -> CustomCell.createStringEditCell());
         colDisplayName.setOnEditCommit(
                 t -> (t.getTableView().getItems().get(
                         t.getTablePosition().getRow())
@@ -522,7 +524,7 @@ public class ReplayEnhancerUIController implements Initializable {
         colShortName.setCellValueFactory(
                 new PropertyValueFactory<>("shortName")
         );
-        colShortName.setCellFactory(TextFieldTableCell.forTableColumn());
+        colShortName.setCellFactory(param -> CustomCell.createStringEditCell());
         colShortName.setOnEditCommit(
                 t -> (t.getTableView().getItems().get(
                         t.getTablePosition().getRow())
@@ -533,7 +535,7 @@ public class ReplayEnhancerUIController implements Initializable {
                         new SimpleStringProperty("") :
                         new SimpleStringProperty(param.getValue().getCar().getCarName())
         );
-        colCar.setCellFactory(TextFieldTableCell.forTableColumn());
+        colCar.setCellFactory(param -> CustomCell.createStringEditCell());
         colCar.setOnEditCommit(
                 t -> (t.getTableView().getItems().get(
                         t.getTablePosition().getRow())
@@ -542,7 +544,7 @@ public class ReplayEnhancerUIController implements Initializable {
         colTeam.setCellValueFactory(
                 new PropertyValueFactory<>("team")
         );
-        colTeam.setCellFactory(TextFieldTableCell.forTableColumn());
+        colTeam.setCellFactory(param -> CustomCell.createStringEditCell());
         colTeam.setOnEditCommit(
                 t -> (t.getTableView().getItems().get(
                         t.getTablePosition().getRow())
@@ -551,7 +553,7 @@ public class ReplayEnhancerUIController implements Initializable {
         colSeriesPoints.setCellValueFactory(
                 new PropertyValueFactory<>("seriesPoints")
         );
-        colSeriesPoints.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        colSeriesPoints.setCellFactory(param -> CustomCell.createIntegerEditCell());
         colSeriesPoints.setOnEditCommit(
                 t -> (t.getTableView().getItems().get(
                         t.getTablePosition().getRow())
@@ -561,14 +563,12 @@ public class ReplayEnhancerUIController implements Initializable {
         colCarName.setCellValueFactory(
                 new PropertyValueFactory<>("carName")
         );
-        colCarName.setCellFactory(TextFieldTableCell.forTableColumn());
-
         colClassName.setCellValueFactory(
                 param -> param.getValue().getCarClass() == null ?
                         new SimpleStringProperty("") :
                         new SimpleStringProperty(param.getValue().getCarClass().getClassName())
         );
-        colClassName.setCellFactory(TextFieldTableCell.forTableColumn());
+        colClassName.setCellFactory(param -> CustomCell.createStringEditCell());
         colClassName.setOnEditCommit(
                 event -> (event.getTableView().getItems().get(
                         event.getTablePosition().getRow())
@@ -869,71 +869,6 @@ public class ReplayEnhancerUIController implements Initializable {
                 this.colorPicker.setValue(item);
                 this.setGraphic(this.colorPicker);
             }
-        }
-    }
-
-    /*
-    * From http://docs.oracle.com/javafx/2/ui_controls/table-view.htm
-    */
-    class EditingCell extends TableCell<PointStructureItem, Integer> {
-        private TextField textField;
-        
-        public EditingCell() {
-            
-        }
-        
-        @Override
-        public void startEdit() {
-            if (!isEmpty()) {
-                super.startEdit();
-                createTextField();
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-            }
-        }
-        
-        @Override
-        public void cancelEdit() {
-            super.cancelEdit();
-            
-            setText(getItem().toString());
-            setGraphic(null);
-        }
-        
-        @Override
-        public void updateItem(Integer item, boolean empty) {
-            super.updateItem(item, empty);
-            
-            if (empty) {
-                setText(null);
-                setGraphic(null);
-            } else {
-                if (isEditing()) {
-                    if (textField != null) {
-                        textField.setText(getString());
-                    }
-                    setText(null);
-                    setGraphic(textField);
-                } else {
-                    setText(getString());
-                    setGraphic(null);
-                }
-            }
-        }
-        
-        private void createTextField() {
-            textField = new TextField(getString());
-            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
-            textField.focusedProperty().addListener((arg0, arg1, arg2) -> {
-                if (!arg2) {
-                    commitEdit(Integer.valueOf(textField.getText()));
-                }
-            });
-        }
-        
-        private String getString() {
-            return getItem() == null ? "" : getItem().toString();
         }
     }
 }
