@@ -5,7 +5,6 @@
  */
 package configurationeditor;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import javafx.beans.property.SimpleFloatProperty;
@@ -22,7 +21,7 @@ public class ParticipantPacket extends Packet {
         
     private final SimpleListProperty<SimpleFloatProperty> fastestLapTimes;
     
-    public ParticipantPacket(ByteBuffer data) throws UnsupportedEncodingException {
+    public ParticipantPacket(ByteBuffer data) {
         super(data);
       
         this.carName = new SimpleStringProperty(ReadString(data, 64).trim());

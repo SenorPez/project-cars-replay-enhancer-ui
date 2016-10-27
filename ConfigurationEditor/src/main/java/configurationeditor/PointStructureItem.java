@@ -8,27 +8,35 @@ package configurationeditor;
 import javafx.beans.property.SimpleIntegerProperty;
 
 public class PointStructureItem {
-    final SimpleIntegerProperty points;
-    final SimpleIntegerProperty finishPosition;
+    private final SimpleIntegerProperty points;
+    private final SimpleIntegerProperty finishPosition;
 
     public PointStructureItem(int finishPosition, Integer points) {
         this.finishPosition = new SimpleIntegerProperty(finishPosition);
         this.points = new SimpleIntegerProperty(points);
     }
 
-    public Integer getFinishPosition() {
-        return finishPosition.get();
-    }
-
-    public void setFinishPosition(Integer value) {
-        finishPosition.set(value);
-    }
-
-    public Integer getPoints() {
+    public int getPoints() {
         return points.get();
     }
 
-    public void setPoints(Integer value) {
-        points.set(value);
+    public SimpleIntegerProperty pointsProperty() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points.set(points);
+    }
+
+    public int getFinishPosition() {
+        return finishPosition.get();
+    }
+
+    public SimpleIntegerProperty finishPositionProperty() {
+        return finishPosition;
+    }
+
+    public void setFinishPosition(int finishPosition) {
+        this.finishPosition.set(finishPosition);
     }
 }

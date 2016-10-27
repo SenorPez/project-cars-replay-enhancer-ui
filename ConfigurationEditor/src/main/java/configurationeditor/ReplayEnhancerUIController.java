@@ -7,12 +7,10 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -20,9 +18,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import javafx.util.StringConverter;
-import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.NumberStringConverter;
 
 import java.io.*;
@@ -238,7 +234,7 @@ public class ReplayEnhancerUIController implements Initializable {
         stage.close();
     }
 
-    private static File chooseJSONFile(Pane root) throws IOException {
+    private static File chooseJSONFile(Pane root) {
         Stage stage = (Stage) root.getScene().getWindow();
               
         FileChooser fileChooser = new FileChooser();
@@ -478,7 +474,7 @@ public class ReplayEnhancerUIController implements Initializable {
         List<PointStructureItem> newItems = new ArrayList<>();
         while (iterator.hasNext()) {
             PointStructureItem entry = iterator.next();
-            if (!entry.getFinishPosition().equals(index)) {
+            if (!(entry.getFinishPosition() == index)) {
                 entry.setFinishPosition(index);
                 newItems.add(entry);
                 iterator.remove();
@@ -775,7 +771,7 @@ public class ReplayEnhancerUIController implements Initializable {
 
         // Options
         cbShowChampion.selectedProperty().bindBidirectional(configuration.showChampionProperty());
-        txtBonusPoints.textProperty().bindBidirectional(configuration.pointStructureProperty().get(0).points, new NumberStringConverter());
+        txtBonusPoints.textProperty().bindBidirectional(configuration.pointStructureProperty().get(0).pointsProperty(), new NumberStringConverter());
         tblPointStructure.setItems(configuration.pointStructureProperty().filtered(pointStructureItem -> pointStructureItem.getFinishPosition() > 0));
 
         // Drivers (and teams, and cars, oh my!)
@@ -785,6 +781,9 @@ public class ReplayEnhancerUIController implements Initializable {
 
     private void populateDrivers() {
         File[] files = new File(txtSourceTelemetry.getText()).listFiles((dir, name) -> name.matches(".*pdata.*"));
+
+        if (files == null) return;
+
         Arrays.sort(files, (file1, file2) -> {
             Integer n1 = Integer.valueOf(file1.getName().replaceAll("[^\\d]", ""));
             Integer n2 = Integer.valueOf(file2.getName().replaceAll("[^\\d]", ""));

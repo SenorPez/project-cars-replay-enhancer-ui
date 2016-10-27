@@ -5,14 +5,13 @@
  */
 package configurationeditor;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import javafx.beans.property.SimpleIntegerProperty;
 
 public class AdditionalParticipantPacket extends Packet {
     private final SimpleIntegerProperty offset;
     
-    public AdditionalParticipantPacket(ByteBuffer data) throws UnsupportedEncodingException {
+    public AdditionalParticipantPacket(ByteBuffer data) {
         super(data);          
         
         this.offset = new SimpleIntegerProperty(ReadChar(data));

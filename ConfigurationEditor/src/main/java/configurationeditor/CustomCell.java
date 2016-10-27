@@ -1,6 +1,5 @@
 package configurationeditor;
 
-import com.sun.xml.internal.bind.v2.TODO;
 import javafx.event.Event;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
