@@ -196,7 +196,7 @@ public class ReplayEnhancerUIController implements Initializable {
     
     @FXML
     private void menuFileSave() throws IOException {
-        if (JSONFile == null) {
+        if (JSONFile.get() == null) {
             menuFileSaveAs();
         }
         writeJSONFile(JSONFile.get(), configuration);
