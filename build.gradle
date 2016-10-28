@@ -1,7 +1,5 @@
 import org.gradle.api.artifacts.*
 
-ext.mainClass = 'configurationeditor.ReplayEnhancerUI'
-
 apply plugin: 'base' // To add "clean" task to the root project.
 apply plugin: 'idea'
 

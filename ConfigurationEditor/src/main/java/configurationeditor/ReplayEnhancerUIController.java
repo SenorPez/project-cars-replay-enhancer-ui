@@ -255,8 +255,11 @@ public class ReplayEnhancerUIController implements Initializable {
             String returnValue = "";
             Double inputValue = object.doubleValue();
 
-            if ((int) (inputValue % 1) > 0) {
-                returnValue = "." + String.format(".%d", (int) (inputValue % 1));
+            String fractionalPart = object.toString().substring(object.toString().indexOf('.') + 1);
+            if (fractionalPart.equals("0")) {
+                returnValue = ".00";
+            } else {
+                returnValue = "." + fractionalPart;
             }
 
             if ((int) (inputValue / 3600) > 0) {
