@@ -39,7 +39,7 @@ public class PointStructureItemTest {
         Integer value = 25;
         PointStructureItem instance = new PointStructureItem(1, 15);
         instance.setPoints(value);
-        assertEquals(value, instance.getPoints());
+        assertEquals(value, (Integer) instance.getPoints());
     }
 
     /**
@@ -63,7 +63,7 @@ public class PointStructureItemTest {
         Integer value = 1;
         PointStructureItem instance = new PointStructureItem(5, 25);
         instance.setFinishPosition(value);
-        assertEquals(value, instance.getFinishPosition());
+        assertEquals(value, (Object) instance.getFinishPosition());
     }
     
 }

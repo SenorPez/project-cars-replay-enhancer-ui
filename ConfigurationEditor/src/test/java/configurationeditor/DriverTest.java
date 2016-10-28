@@ -86,7 +86,7 @@ public class DriverTest {
         Integer value = 50;
         Driver instance = new Driver("Kobernulf Monnur");
         instance.setSeriesPoints(value);
-        assertEquals(value, instance.getSeriesPoints());
+        assertEquals(value, (Integer) instance.getSeriesPoints());
     }
 
     /**

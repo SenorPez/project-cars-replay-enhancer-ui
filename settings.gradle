@@ -1,2 +1,5 @@
-include 'ConfigurationEditor',
-    'PacketCapture'
+rootProject.name = 'replayenhancerui'
+include 'ConfigurationEditor'
+findProject(':ConfigurationEditor')?.name = 'configurationeditor'
+include 'PacketCapture'
+findProject(':PacketCapture')?.name = 'packetcapture'
