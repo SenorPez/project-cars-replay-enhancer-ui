@@ -780,7 +780,19 @@ public class ReplayEnhancerUIController implements Initializable {
 
         // Options
         cbShowChampion.selectedProperty().bindBidirectional(configuration.showChampionProperty());
-        txtBonusPoints.textProperty().bindBidirectional(configuration.pointStructureProperty().get(0).pointsProperty(), new NumberStringConverter());
+        txtBonusPoints.textProperty().bindBidirectional(configuration.pointStructureProperty(), new StringConverter<ObservableList<PointStructureItem>>() {
+            @Override
+            public String toString(ObservableList<PointStructureItem> object) {
+                return Integer.toString(object.get(0).getPoints());
+            }
+
+            @Override
+            public ObservableList<PointStructureItem> fromString(String string) {
+                ObservableList<PointStructureItem> list = configuration.getPointStructure();
+                list.set(0, new PointStructureItem(0, Integer.valueOf(string)));
+                return list;
+            }
+        });
         tblPointStructure.setItems(configuration.pointStructureProperty().filtered(pointStructureItem -> pointStructureItem.getFinishPosition() > 0));
 
         // Drivers (and teams, and cars, oh my!)
