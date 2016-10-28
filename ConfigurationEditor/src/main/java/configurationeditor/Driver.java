@@ -8,6 +8,7 @@ package configurationeditor;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.paint.Color;
 
 public class Driver {
     private final SimpleStringProperty team;
@@ -35,7 +36,7 @@ public class Driver {
         this.name = new SimpleStringProperty(name);
         this.displayName = new SimpleStringProperty(name);
         this.shortName = new SimpleStringProperty(name);
-        this.car = new SimpleObjectProperty<>(new Car());
+        this.car = new SimpleObjectProperty<>(new Car("", new CarClass("", Color.rgb(255, 0, 0))));
         this.team = new SimpleStringProperty("");
         this.seriesPoints = new SimpleIntegerProperty(0);
     }

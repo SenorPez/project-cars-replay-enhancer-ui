@@ -540,7 +540,7 @@ public class ReplayEnhancerUIController implements Initializable {
                 t -> {
                     Driver driver = t.getTableView().getItems().get(t.getTablePosition().getRow());
                     if (driver.getCar() == null) {
-                        driver.setCar(new Car(t.getNewValue()));
+                        driver.setCar(new Car(t.getNewValue(), new CarClass("", Color.rgb(255, 0, 0))));
                     } else {
                         driver.getCar().setCarName(t.getNewValue());
                     }
@@ -833,7 +833,7 @@ public class ReplayEnhancerUIController implements Initializable {
             }
         }
 
-        ObservableList<Driver> drivers = FXCollections.observableArrayList(param -> new Observable[]{param.carProperty()});
+        ObservableList<Driver> drivers = FXCollections.observableArrayList(param -> new Observable[]{param.getCar().carNameProperty()});
         drivers.addAll(names
                 .stream()
                 .filter(name -> name.length() > 0)
@@ -846,7 +846,7 @@ public class ReplayEnhancerUIController implements Initializable {
     /*
      * From http://info.michael-simons.eu/2014/10/27/custom-editor-components-in-javafx-tablecells/
      */
-    class ColorTableCell<T> extends TableCell<T, Color> {
+    private class ColorTableCell<T> extends TableCell<T, Color> {
         private final ColorPicker colorPicker;
 
         public ColorTableCell(TableColumn<T, Color> column) {

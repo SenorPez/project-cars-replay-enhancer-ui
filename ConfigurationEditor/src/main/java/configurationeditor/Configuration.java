@@ -178,7 +178,7 @@ public class Configuration {
         }
         this.pointStructure = new SimpleListProperty<>(defaultPointStructure);
 
-        this.participantConfiguration = new SimpleListProperty<>(FXCollections.observableList(new ArrayList<Driver>(), param -> new Observable[]{param.carProperty()}));
+        this.participantConfiguration = new SimpleListProperty<>(FXCollections.observableList(new ArrayList<Driver>(), param -> new Observable[]{param.getCar().carNameProperty()}));
         this.cars = new SimpleListProperty<>(FXCollections.observableArrayList(new TreeSet<Car>()));
         this.participantConfiguration.addListener((observable, oldValue, newValue) -> cars.set(FXCollections.observableArrayList(newValue
                 .stream()
@@ -613,7 +613,7 @@ public class Configuration {
                         entry.getKey(),
                         entry.getValue().findValue("display").textValue(),
                         entry.getValue().findValue("short_display").textValue(),
-                        new Car(entry.getValue().findValue("car").textValue()),
+                        new Car(entry.getValue().findValue("car").textValue(), new CarClass("", Color.rgb(255, 0, 0))),
                         entry.getValue().findValue("team").textValue(),
                         entry.getValue().findValue("points").intValue()
                 );
