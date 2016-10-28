@@ -280,7 +280,7 @@ public class ReplayEnhancerUIController implements Initializable {
             Pattern regex = Pattern.compile("(?:^(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*(?:\\.\\d*)?)$)");
             Matcher matches = regex.matcher(string);
 
-            if (!matches.matches()) {
+            if (!matches.matches() || string.equals("")) {
                 return 0;
             }
 
