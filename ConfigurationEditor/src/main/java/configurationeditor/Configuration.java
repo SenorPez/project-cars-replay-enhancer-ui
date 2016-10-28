@@ -636,7 +636,7 @@ public class Configuration {
         @Override
         public void serialize(ObservableList<Driver> value, JsonGenerator gen, SerializerProvider provider) throws IOException {
             gen.writeStartObject();
-            for (Driver driver : value) {
+            for (Driver driver : value.sorted(Comparator.comparing(Driver::getName))) {
                 gen.writeFieldName(driver.getName());
                 gen.writeStartObject();
                 gen.writeStringField("display", driver.getDisplayName());
