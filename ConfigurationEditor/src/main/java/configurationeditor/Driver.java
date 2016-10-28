@@ -35,7 +35,16 @@ public class Driver {
     public Driver(String name) {
         this.name = new SimpleStringProperty(name);
         this.displayName = new SimpleStringProperty(name);
-        this.shortName = new SimpleStringProperty(name);
+
+        String[] nameChunks = name.split(" ");
+        if (nameChunks.length == 1) {
+            this.shortName = new SimpleStringProperty(name);
+        } else {
+            String firstName = nameChunks[0];
+            String lastName = nameChunks[nameChunks.length - 1];
+            this.shortName = new SimpleStringProperty(firstName.charAt(0) + ". " + lastName);
+        }
+
         this.car = new SimpleObjectProperty<>(new Car("", new CarClass("", Color.rgb(255, 0, 0))));
         this.team = new SimpleStringProperty("");
         this.seriesPoints = new SimpleIntegerProperty(0);
