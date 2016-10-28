@@ -185,6 +185,9 @@ public class ReplayEnhancerUIController implements Initializable {
             menuFileNew();
             updateConfiguration(file, configuration);
             JSONFile.set(file);
+
+            // TODO: 10/28/2016 Figure out why we need to do this for this sequence: Open -> Select Tele -> Open. Without, no Driver refresh.
+            tblDrivers.refresh();
         }
     }
 
