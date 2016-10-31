@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 
 public class ReplayEnhancerUIController implements Initializable {
-    private SimpleObjectProperty<File> JSONFile;
+    private final SimpleObjectProperty<File> JSONFile = new SimpleObjectProperty<>();
     private Configuration configuration;
 
     @FXML
@@ -166,7 +166,7 @@ public class ReplayEnhancerUIController implements Initializable {
     private void menuFileNew() {
         configuration = new Configuration();
         addListeners();
-        JSONFile = new SimpleObjectProperty<>();
+        JSONFile.set(null);
     }
     
     @FXML
@@ -201,8 +201,9 @@ public class ReplayEnhancerUIController implements Initializable {
     private void menuFileSave() throws IOException {
         if (JSONFile.get() == null) {
             menuFileSaveAs();
+        } else {
+            writeJSONFile(JSONFile.get(), configuration);
         }
-        writeJSONFile(JSONFile.get(), configuration);
     }
 
     private void writeJSONFile(File file, Configuration configuration) throws IOException {
@@ -493,7 +494,7 @@ public class ReplayEnhancerUIController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        JSONFile = new SimpleObjectProperty<>();
+        JSONFile.set(null);
         txtFileName.textProperty().bind(Bindings.convert(JSONFile));
 
         configuration = new Configuration();
