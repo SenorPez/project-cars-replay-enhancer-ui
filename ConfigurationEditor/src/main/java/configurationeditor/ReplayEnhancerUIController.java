@@ -791,6 +791,7 @@ public class ReplayEnhancerUIController implements Initializable {
 
             @Override
             public ObservableList<PointStructureItem> fromString(String string) {
+                if (string.equals("")) return configuration.getPointStructure();
                 ObservableList<PointStructureItem> list = configuration.getPointStructure();
                 list.set(0, new PointStructureItem(0, Integer.valueOf(string)));
                 return list;
