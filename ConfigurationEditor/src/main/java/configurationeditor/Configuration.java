@@ -17,7 +17,6 @@ import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.SortedList;
 import javafx.scene.paint.Color;
 
 import java.io.File;
@@ -190,324 +189,324 @@ public class Configuration {
         return sourceVideo.get();
     }
 
-    public SimpleObjectProperty<File> sourceVideoProperty() {
-        return sourceVideo;
-    }
-
     public void setSourceVideo(File sourceVideo) {
         this.sourceVideo.set(sourceVideo);
+    }
+
+    public SimpleObjectProperty<File> sourceVideoProperty() {
+        return sourceVideo;
     }
 
     public File getSourceTelemetry() {
         return sourceTelemetry.get();
     }
 
-    public SimpleObjectProperty<File> sourceTelemetryProperty() {
-        return sourceTelemetry;
-    }
-
     public void setSourceTelemetry(File sourceTelemetry) {
         this.sourceTelemetry.set(sourceTelemetry);
+    }
+
+    public SimpleObjectProperty<File> sourceTelemetryProperty() {
+        return sourceTelemetry;
     }
 
     public double getVideoStartTime() {
         return videoStartTime.get();
     }
 
-    public SimpleDoubleProperty videoStartTimeProperty() {
-        return videoStartTime;
-    }
-
     public void setVideoStartTime(double videoStartTime) {
         this.videoStartTime.set(videoStartTime);
+    }
+
+    public SimpleDoubleProperty videoStartTimeProperty() {
+        return videoStartTime;
     }
 
     public double getVideoEndTime() {
         return videoEndTime.get();
     }
 
-    public SimpleDoubleProperty videoEndTimeProperty() {
-        return videoEndTime;
-    }
-
     public void setVideoEndTime(double videoEndTime) {
         this.videoEndTime.set(videoEndTime);
+    }
+
+    public SimpleDoubleProperty videoEndTimeProperty() {
+        return videoEndTime;
     }
 
     public double getSyncRacestart() {
         return syncRacestart.get();
     }
 
-    public SimpleDoubleProperty syncRacestartProperty() {
-        return syncRacestart;
-    }
-
     public void setSyncRacestart(double syncRacestart) {
         this.syncRacestart.set(syncRacestart);
+    }
+
+    public SimpleDoubleProperty syncRacestartProperty() {
+        return syncRacestart;
     }
 
     public File getOutputVideo() {
         return outputVideo.get();
     }
 
-    public SimpleObjectProperty<File> outputVideoProperty() {
-        return outputVideo;
-    }
-
     public void setOutputVideo(File outputVideo) {
         this.outputVideo.set(outputVideo);
+    }
+
+    public SimpleObjectProperty<File> outputVideoProperty() {
+        return outputVideo;
     }
 
     public String getHeadingText() {
         return headingText.get();
     }
 
-    public SimpleStringProperty headingTextProperty() {
-        return headingText;
-    }
-
     public void setHeadingText(String headingText) {
         this.headingText.set(headingText);
+    }
+
+    public SimpleStringProperty headingTextProperty() {
+        return headingText;
     }
 
     public String getSubheadingText() {
         return subheadingText.get();
     }
 
-    public SimpleStringProperty subheadingTextProperty() {
-        return subheadingText;
-    }
-
     public void setSubheadingText(String subheadingText) {
         this.subheadingText.set(subheadingText);
+    }
+
+    public SimpleStringProperty subheadingTextProperty() {
+        return subheadingText;
     }
 
     public File getHeadingFont() {
         return headingFont.get();
     }
 
-    public SimpleObjectProperty<File> headingFontProperty() {
-        return headingFont;
-    }
-
     public void setHeadingFont(File headingFont) {
         this.headingFont.set(headingFont);
+    }
+
+    public SimpleObjectProperty<File> headingFontProperty() {
+        return headingFont;
     }
 
     public int getHeadingFontSize() {
         return headingFontSize.get();
     }
 
-    public SimpleIntegerProperty headingFontSizeProperty() {
-        return headingFontSize;
-    }
-
     public void setHeadingFontSize(int headingFontSize) {
         this.headingFontSize.set(headingFontSize);
+    }
+
+    public SimpleIntegerProperty headingFontSizeProperty() {
+        return headingFontSize;
     }
 
     public Color getHeadingFontColor() {
         return headingFontColor.get();
     }
 
-    public SimpleObjectProperty<Color> headingFontColorProperty() {
-        return headingFontColor;
-    }
-
     public void setHeadingFontColor(Color headingFontColor) {
         this.headingFontColor.set(headingFontColor);
+    }
+
+    public SimpleObjectProperty<Color> headingFontColorProperty() {
+        return headingFontColor;
     }
 
     public Color getHeadingColor() {
         return headingColor.get();
     }
 
-    public SimpleObjectProperty<Color> headingColorProperty() {
-        return headingColor;
-    }
-
     public void setHeadingColor(Color headingColor) {
         this.headingColor.set(headingColor);
+    }
+
+    public SimpleObjectProperty<Color> headingColorProperty() {
+        return headingColor;
     }
 
     public File getSeriesLogo() {
         return seriesLogo.get();
     }
 
-    public SimpleObjectProperty<File> seriesLogoProperty() {
-        return seriesLogo;
-    }
-
     public void setSeriesLogo(File seriesLogo) {
         this.seriesLogo.set(seriesLogo);
+    }
+
+    public SimpleObjectProperty<File> seriesLogoProperty() {
+        return seriesLogo;
     }
 
     public File getBackdrop() {
         return backdrop.get();
     }
 
-    public SimpleObjectProperty<File> backdropProperty() {
-        return backdrop;
-    }
-
     public void setBackdrop(File backdrop) {
         this.backdrop.set(backdrop);
+    }
+
+    public SimpleObjectProperty<File> backdropProperty() {
+        return backdrop;
     }
 
     public File getLogo() {
         return logo.get();
     }
 
-    public SimpleObjectProperty<File> logoProperty() {
-        return logo;
-    }
-
     public void setLogo(File logo) {
         this.logo.set(logo);
+    }
+
+    public SimpleObjectProperty<File> logoProperty() {
+        return logo;
     }
 
     public int getLogoHeight() {
         return logoHeight.get();
     }
 
-    public SimpleIntegerProperty logoHeightProperty() {
-        return logoHeight;
-    }
-
     public void setLogoHeight(int logoHeight) {
         this.logoHeight.set(logoHeight);
+    }
+
+    public SimpleIntegerProperty logoHeightProperty() {
+        return logoHeight;
     }
 
     public int getLogoWidth() {
         return logoWidth.get();
     }
 
-    public SimpleIntegerProperty logoWidthProperty() {
-        return logoWidth;
-    }
-
     public void setLogoWidth(int logoWidth) {
         this.logoWidth.set(logoWidth);
+    }
+
+    public SimpleIntegerProperty logoWidthProperty() {
+        return logoWidth;
     }
 
     public File getFont() {
         return font.get();
     }
 
-    public SimpleObjectProperty<File> fontProperty() {
-        return font;
-    }
-
     public void setFont(File font) {
         this.font.set(font);
+    }
+
+    public SimpleObjectProperty<File> fontProperty() {
+        return font;
     }
 
     public int getFontSize() {
         return fontSize.get();
     }
 
-    public SimpleIntegerProperty fontSizeProperty() {
-        return fontSize;
-    }
-
     public void setFontSize(int fontSize) {
         this.fontSize.set(fontSize);
+    }
+
+    public SimpleIntegerProperty fontSizeProperty() {
+        return fontSize;
     }
 
     public Color getFontColor() {
         return fontColor.get();
     }
 
-    public SimpleObjectProperty<Color> fontColorProperty() {
-        return fontColor;
-    }
-
     public void setFontColor(Color fontColor) {
         this.fontColor.set(fontColor);
+    }
+
+    public SimpleObjectProperty<Color> fontColorProperty() {
+        return fontColor;
     }
 
     public int getMargin() {
         return margin.get();
     }
 
-    public SimpleIntegerProperty marginProperty() {
-        return margin;
-    }
-
     public void setMargin(int margin) {
         this.margin.set(margin);
+    }
+
+    public SimpleIntegerProperty marginProperty() {
+        return margin;
     }
 
     public int getColumnMargin() {
         return columnMargin.get();
     }
 
-    public SimpleIntegerProperty columnMarginProperty() {
-        return columnMargin;
-    }
-
     public void setColumnMargin(int columnMargin) {
         this.columnMargin.set(columnMargin);
+    }
+
+    public SimpleIntegerProperty columnMarginProperty() {
+        return columnMargin;
     }
 
     public int getResultLines() {
         return resultLines.get();
     }
 
-    public SimpleIntegerProperty resultLinesProperty() {
-        return resultLines;
-    }
-
     public void setResultLines(int resultLines) {
         this.resultLines.set(resultLines);
+    }
+
+    public SimpleIntegerProperty resultLinesProperty() {
+        return resultLines;
     }
 
     public boolean isShowChampion() {
         return showChampion.get();
     }
 
-    public SimpleBooleanProperty showChampionProperty() {
-        return showChampion;
-    }
-
     public void setShowChampion(boolean showChampion) {
         this.showChampion.set(showChampion);
+    }
+
+    public SimpleBooleanProperty showChampionProperty() {
+        return showChampion;
     }
 
     public ObservableList<PointStructureItem> getPointStructure() {
         return pointStructure.get();
     }
 
-    public SimpleListProperty<PointStructureItem> pointStructureProperty() {
-        return pointStructure;
-    }
-
     public void setPointStructure(ObservableList<PointStructureItem> pointStructure) {
         this.pointStructure.set(pointStructure);
+    }
+
+    public SimpleListProperty<PointStructureItem> pointStructureProperty() {
+        return pointStructure;
     }
 
     public ObservableList<Driver> getParticipantConfiguration() {
         return participantConfiguration.get();
     }
 
-    public SimpleListProperty<Driver> participantConfigurationProperty() {
-        return participantConfiguration;
-    }
-
     public void setParticipantConfiguration(ObservableList<Driver> participantConfiguration) {
         this.participantConfiguration.set(participantConfiguration);
+    }
+
+    public SimpleListProperty<Driver> participantConfigurationProperty() {
+        return participantConfiguration;
     }
 
     public ObservableList<Car> getCars() {
         return cars.get();
     }
 
-    public SimpleListProperty<Car> carsProperty() {
-        return cars;
-    }
-
     public void setCars(ObservableList<Car> cars) {
         this.cars.set(cars);
+    }
+
+    public SimpleListProperty<Car> carsProperty() {
+        return cars;
     }
 
     private static class ColorDeserializer extends StdDeserializer<Color> {

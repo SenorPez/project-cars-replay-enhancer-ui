@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package configurationeditor;
 
 import javafx.beans.property.SimpleIntegerProperty;
@@ -20,23 +15,23 @@ public class PointStructureItem {
         return points.get();
     }
 
-    public SimpleIntegerProperty pointsProperty() {
-        return points;
-    }
-
     public void setPoints(int points) {
         this.points.set(points);
+    }
+
+    public SimpleIntegerProperty pointsProperty() {
+        return points;
     }
 
     public int getFinishPosition() {
         return finishPosition.get();
     }
 
-    public SimpleIntegerProperty finishPositionProperty() {
-        return finishPosition;
-    }
-
     public void setFinishPosition(int finishPosition) {
         this.finishPosition.set(finishPosition);
+    }
+
+    public SimpleIntegerProperty finishPositionProperty() {
+        return finishPosition;
     }
 }

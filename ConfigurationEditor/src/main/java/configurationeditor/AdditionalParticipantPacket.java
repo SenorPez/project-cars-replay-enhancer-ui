@@ -1,12 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package configurationeditor;
 
-import java.nio.ByteBuffer;
 import javafx.beans.property.SimpleIntegerProperty;
+
+import java.nio.ByteBuffer;
 
 public class AdditionalParticipantPacket extends Packet {
     private final SimpleIntegerProperty offset;

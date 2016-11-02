@@ -9,6 +9,28 @@ import javafx.util.StringConverter;
 /* Adapted from: https://gist.github.com/james-d/be5bbd6255a4640a5357
  */
 public class CustomCell<S, T> extends TableCell<S, T> {
+    private static final StringConverter<Integer> INTEGER_CONVERTER = new StringConverter<Integer>() {
+        @Override
+        public String toString(Integer object) {
+            return object.toString();
+        }
+
+        @Override
+        public Integer fromString(String string) {
+            return Integer.valueOf(string);
+        }
+    };
+    private static final StringConverter<String> STRING_CONVERTER = new StringConverter<String>() {
+        @Override
+        public String toString(String object) {
+            return object;
+        }
+
+        @Override
+        public String fromString(String string) {
+            return string;
+        }
+    };
     private final TextField textField = new TextField();
     private final StringConverter<T> converter;
 
@@ -39,30 +61,6 @@ public class CustomCell<S, T> extends TableCell<S, T> {
             }
         });
     }
-
-    private static final StringConverter<Integer> INTEGER_CONVERTER = new StringConverter<Integer>() {
-        @Override
-        public String toString(Integer object) {
-            return object.toString();
-        }
-
-        @Override
-        public Integer fromString(String string) {
-            return Integer.valueOf(string);
-        }
-    };
-
-    private static final StringConverter<String> STRING_CONVERTER = new StringConverter<String>() {
-        @Override
-        public String toString(String object) {
-            return object;
-        }
-
-        @Override
-        public String fromString(String string) {
-            return string;
-        }
-    };
 
     public static <S> CustomCell<S, Integer> createIntegerEditCell() {
         return new CustomCell<>(INTEGER_CONVERTER);

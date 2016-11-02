@@ -31,7 +31,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-
 public class ReplayEnhancerUIController implements Initializable {
     private final SimpleObjectProperty<File> JSONFile = new SimpleObjectProperty<>();
     private Configuration configuration;
@@ -162,13 +161,33 @@ public class ReplayEnhancerUIController implements Initializable {
     @FXML
     private Label txtFileName;
 
+    private static void updateConfiguration(File file, Configuration configuration) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        String data = Files.lines(file.toPath()).collect(Collectors.joining());
+        mapper.readerForUpdating(configuration).readValue(data);
+    }
+    
+    private static File chooseJSONFile(Pane root) {
+        Stage stage = (Stage) root.getScene().getWindow();
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Configuration File");
+        fileChooser.setInitialDirectory(
+                new File(System.getProperty("user.home")));
+        fileChooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("JSON", "*.json"),
+            new FileChooser.ExtensionFilter("All Files", "*.*"));
+
+        return fileChooser.showOpenDialog(stage);
+    }
+    
     @FXML
     private void menuFileNew() {
         configuration = new Configuration();
         addListeners();
         JSONFile.set(null);
     }
-    
+
     @FXML
     private void menuFileNewFrom() throws IOException {
         File file = chooseJSONFile(root);
@@ -191,12 +210,6 @@ public class ReplayEnhancerUIController implements Initializable {
         }
     }
 
-    private static void updateConfiguration(File file, Configuration configuration) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        String data = Files.lines(file.toPath()).collect(Collectors.joining());
-        mapper.readerForUpdating(configuration).readValue(data);
-    }
-    
     @FXML
     private void menuFileSave() throws IOException {
         if (JSONFile.get() == null) {
@@ -205,7 +218,7 @@ public class ReplayEnhancerUIController implements Initializable {
             writeJSONFile(JSONFile.get(), configuration);
         }
     }
-
+    
     private void writeJSONFile(File file, Configuration configuration) throws IOException {
         if (file != null) {
             ObjectMapper mapper = new ObjectMapper();
@@ -232,81 +245,13 @@ public class ReplayEnhancerUIController implements Initializable {
 
         writeJSONFile(JSONFile.get(), configuration);
     }
-    
+
     @FXML
     private void menuFileExit() {
         Stage stage = (Stage) root.getScene().getWindow();
         stage.close();
     }
 
-    private static File chooseJSONFile(Pane root) {
-        Stage stage = (Stage) root.getScene().getWindow();
-              
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Configuration File");
-        fileChooser.setInitialDirectory(
-                new File(System.getProperty("user.home")));
-        fileChooser.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("JSON", "*.json"),
-            new FileChooser.ExtensionFilter("All Files", "*.*"));
-
-        return fileChooser.showOpenDialog(stage);
-    }
-
-    private static class ConvertTime extends StringConverter<Number> {
-        @Override
-        public String toString(Number object) {
-            String returnValue = "";
-            Double inputValue = object.doubleValue();
-
-            String fractionalPart = object.toString().substring(object.toString().indexOf('.') + 1);
-            if (fractionalPart.equals("0")) {
-                returnValue = ".00";
-            } else {
-                returnValue = "." + fractionalPart;
-            }
-
-            if ((int) (inputValue / 3600) > 0) {
-                returnValue = String.format("%d", (int) (inputValue / 3600)) + ":" + String.format("%02d", (int) ((inputValue % 3600) / 60)) + ":" + String.format("%02d", (int) (inputValue % 60)) + returnValue;
-            } else {
-                if ((int) ((inputValue % 3600) / 60) > 0) {
-                    returnValue = String.format("%d", (int) ((inputValue % 3600) / 60)) + ":" + String.format("%02d", (int) (inputValue % 60)) + returnValue;
-                } else {
-                    returnValue = "0:" + String.format("%02d", (int) (inputValue % 60)) + returnValue;
-                }
-            }
-
-            return returnValue;
-        }
-
-        @Override
-        public Number fromString(String string) {
-            Pattern regex = Pattern.compile("(?:^(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*(?:\\.\\d*)?)$)");
-            Matcher matches = regex.matcher(string);
-
-            if (!matches.matches() || string.equals("")) {
-                return 0;
-            }
-
-            Double hours = 0d;
-            Double minutes = 0d;
-            Double seconds = 0d;
-
-            if (matches.group(1) != null) {
-                hours = Double.valueOf(matches.group(1)) * 60 * 60;
-                minutes = Double.valueOf(matches.group(2)) * 60;
-                seconds = Double.valueOf(matches.group(3));
-            } else if (matches.group(4) != null) {
-                minutes = Double.valueOf(matches.group(4)) * 60;
-                seconds = Double.valueOf(matches.group(5));
-            } else if (matches.group(6) != null) {
-                seconds = Double.valueOf(matches.group(6));
-            }
-
-            return hours + minutes + seconds;
-        }
-    }
-    
     @FXML
     private void validateInteger(KeyEvent event) {
         Object source = event.getSource();
@@ -321,7 +266,7 @@ public class ReplayEnhancerUIController implements Initializable {
             }
         }
     }
-
+    
     @FXML
     private void validateTime(KeyEvent event) {
         Object source = event.getSource();
@@ -334,7 +279,6 @@ public class ReplayEnhancerUIController implements Initializable {
             txtSource.setStyle("-fx-text-inner-color: red");
         }
     }
-
 
     @FXML
     private void buttonSourceVideo(ActionEvent event) {
@@ -471,7 +415,6 @@ public class ReplayEnhancerUIController implements Initializable {
         int next_index = configuration.getPointStructure().size();
         configuration.getPointStructure().add(new PointStructureItem(next_index, 0));
     }
-
 
     @FXML
     private void buttonDeletePosition (ActionEvent event) {
@@ -816,48 +759,160 @@ public class ReplayEnhancerUIController implements Initializable {
             return Integer.compare(n1, n2);
         });
 
-        Set<String> names = new TreeSet<>();
+        List<List<String>> allNames = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        Integer numParticipants = null;
 
         for (File file : files) {
-            if (file.length() == 1347) {
+            if (file.length() == 1367) {
+                try {
+                    TelemetryDataPacket packet = new TelemetryDataPacket(
+                            ByteBuffer.wrap(Files.readAllBytes(file.toPath()))
+                    );
+                    if (packet.getRaceState() == 2) {
+                        if (numParticipants == null || numParticipants != packet.getNumParticipants()) {
+                            System.out.println(packet.getNumParticipants());
+                            numParticipants = packet.getNumParticipants();
+                            names = new ArrayList<>();
+                        }
+                    } else {
+                        numParticipants = null;
+                        names = new ArrayList<>();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else if (file.length() == 1347) {
                 try {
                     ParticipantPacket packet = new ParticipantPacket(
-                            ByteBuffer.wrap(Files.readAllBytes(file.toPath())));
-                    for (SimpleStringProperty name : packet.getNames()) {
-                        String trimmedName = name.get().trim();
-                        if (trimmedName.length() > 0) {
-                            names.add(trimmedName);
-                        }
+                            ByteBuffer.wrap(Files.readAllBytes(file.toPath()))
+                    );
+
+                    if (numParticipants != null && names.size() < numParticipants) {
+                        names.addAll(packet.getNames().stream()
+                                .limit(numParticipants)
+                                .map(simpleStringProperty -> simpleStringProperty.get().trim())
+                                .collect(Collectors.toList()));
+
+                        System.out.println(String.format("Participants: %1$d", names.size()));
                     }
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             } else if (file.length() == 1028) {
                 try {
                     AdditionalParticipantPacket packet = new AdditionalParticipantPacket(
-                        ByteBuffer.wrap(Files.readAllBytes(file.toPath())));
-                    for (SimpleStringProperty name : packet.getNames()) {
-                        String trimmedName = name.get().trim();
-                        if (trimmedName.length() > 0) {
-                            names.add(trimmedName);
-                        }
+                            ByteBuffer.wrap(Files.readAllBytes(file.toPath()))
+                    );
+
+                    if (numParticipants != null && names.size() < numParticipants) {
+                        names.addAll(packet.getNames().stream()
+                                .limit(numParticipants)
+                                .map(simpleStringProperty -> simpleStringProperty.get().trim())
+                                .collect(Collectors.toList()));
+
+                        System.out.println(String.format("Participants: %1$d", names.size()));
                     }
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } else if (file.length() != 1367) {
-                System.out.println(file.length());
+            }
+
+            if (numParticipants != null && names.size() >= numParticipants) {
+                if (allNames.size() == 0 || !allNames.get(allNames.size() - 1).equals(names)) {
+                    allNames.add(names);
+                }
             }
         }
 
+        Set<String> masterNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        masterNames.addAll(allNames.get(0));
+
+        List<String> oldNames = allNames.get(0);
+        for (List<String> newNames : allNames.subList(1, allNames.size())) {
+            ListIterator<String> iterator = newNames.listIterator();
+            while (iterator.hasNext()) {
+                int nextIndex = iterator.nextIndex();
+                String newName = iterator.next();
+
+                if (!oldNames.get(nextIndex).equals(newName)) {
+                    String oldName = oldNames.get(oldNames.size() - 1);
+                    String name = oldName;
+                    int minLength = Math.min(oldName.length(), newName.length());
+                    for (int i = 0; i < minLength; i++) {
+                        if (oldName.charAt(i) != newName.charAt(i)) {
+                            name = oldName.substring(0, i);
+                            break;
+                        }
+                    }
+                    masterNames.remove(oldName);
+                    masterNames.add(name);
+                }
+            }
+            oldNames = newNames;
+        }
+
         ObservableList<Driver> drivers = FXCollections.observableArrayList(param -> new Observable[]{param.getCar().carNameProperty()});
-        drivers.addAll(names
+        drivers.addAll(masterNames
                 .stream()
-                .filter(name -> name.length() > 0)
                 .map(Driver::new)
                 .collect(Collectors.toList()));
 
         configuration.setParticipantConfiguration(drivers);
+    }
+
+    private static class ConvertTime extends StringConverter<Number> {
+        @Override
+        public String toString(Number object) {
+            String returnValue = "";
+            Double inputValue = object.doubleValue();
+
+            String fractionalPart = object.toString().substring(object.toString().indexOf('.') + 1);
+            if (fractionalPart.equals("0")) {
+                returnValue = ".00";
+            } else {
+                returnValue = "." + fractionalPart;
+            }
+
+            if ((int) (inputValue / 3600) > 0) {
+                returnValue = String.format("%d", (int) (inputValue / 3600)) + ":" + String.format("%02d", (int) ((inputValue % 3600) / 60)) + ":" + String.format("%02d", (int) (inputValue % 60)) + returnValue;
+            } else {
+                if ((int) ((inputValue % 3600) / 60) > 0) {
+                    returnValue = String.format("%d", (int) ((inputValue % 3600) / 60)) + ":" + String.format("%02d", (int) (inputValue % 60)) + returnValue;
+                } else {
+                    returnValue = "0:" + String.format("%02d", (int) (inputValue % 60)) + returnValue;
+                }
+            }
+
+            return returnValue;
+        }
+
+        @Override
+        public Number fromString(String string) {
+            Pattern regex = Pattern.compile("(?:^(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*(?:\\.\\d*)?)$)");
+            Matcher matches = regex.matcher(string);
+
+            if (!matches.matches() || string.equals("")) {
+                return 0;
+            }
+
+            Double hours = 0d;
+            Double minutes = 0d;
+            Double seconds = 0d;
+
+            if (matches.group(1) != null) {
+                hours = Double.valueOf(matches.group(1)) * 60 * 60;
+                minutes = Double.valueOf(matches.group(2)) * 60;
+                seconds = Double.valueOf(matches.group(3));
+            } else if (matches.group(4) != null) {
+                minutes = Double.valueOf(matches.group(4)) * 60;
+                seconds = Double.valueOf(matches.group(5));
+            } else if (matches.group(6) != null) {
+                seconds = Double.valueOf(matches.group(6));
+            }
+
+            return hours + minutes + seconds;
+        }
     }
 
     /*

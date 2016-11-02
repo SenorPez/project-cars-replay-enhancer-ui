@@ -1,26 +1,28 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package configurationeditor;
+
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleSetProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
 
 public abstract class Packet {
 
     private final SimpleIntegerProperty buildVersionNumber;
     private final SimpleIntegerProperty packetType;    
     
-    private final SimpleSetProperty<SimpleStringProperty> names;
+    private final SimpleListProperty<SimpleStringProperty> names;
+    
+    protected Packet(ByteBuffer data) {
+        this.buildVersionNumber = new SimpleIntegerProperty(ReadShort(data));
+        this.packetType = new SimpleIntegerProperty(ReadChar(data));
+        this.names = new SimpleListProperty<>(FXCollections.observableArrayList());
+    }
     
     private static Integer toInt(byte[] bytes) {
         int returnValue = 0;
@@ -29,12 +31,6 @@ public abstract class Packet {
             returnValue |= (int)chunk & 0xFF;
         }
         return returnValue;
-    }
-    
-    protected Packet(ByteBuffer data) {
-        this.buildVersionNumber = new SimpleIntegerProperty(ReadShort(data));
-        this.packetType = new SimpleIntegerProperty(ReadChar(data));
-        this.names = new SimpleSetProperty<>(FXCollections.observableSet());
     }
      
     protected static Integer ReadShort(ByteBuffer data) {
@@ -78,7 +74,7 @@ public abstract class Packet {
         return packetType.get();
     }
 
-    public ObservableSet<SimpleStringProperty> getNames() {
+    public ObservableList<SimpleStringProperty> getNames() {
         return names.get();
     }
     
