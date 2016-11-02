@@ -27,6 +27,9 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -763,7 +766,21 @@ public class ReplayEnhancerUIController implements Initializable {
         List<String> names = new ArrayList<>();
         Integer numParticipants = null;
 
+        int fileNumber = 0;
+
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        DriverProgress progress = new DriverProgress(fileNumber, files.length);
+        executorService.scheduleWithFixedDelay(progress, 0L, 5000L, TimeUnit.MILLISECONDS);
+
         for (File file : files) {
+            fileNumber += 1;
+            progress.setFileNumber(fileNumber);
+//            executorService.scheduleAtFixedRate(new DriverProgressTask(fileNumber, files.length), 0L, 5000L, TimeUnit.MILLISECONDS);
+//            executorService.scheduleWithFixedDelay(new DriverProgressTask(fileNumber, files.length), 0L, 5000L, TimeUnit.MILLISECONDS);
+//            ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+//            executorService.schedule(new DriverProgressTask(fileNumber, files.length), 5000L, TimeUnit.MILLISECONDS);
+//            Timer timer = new Timer();
+//            timer.schedule(new DriverProgressTask(fileNumber, files.length), 5000L);
             if (file.length() == 1367) {
                 try {
                     TelemetryDataPacket packet = new TelemetryDataPacket(
@@ -771,7 +788,6 @@ public class ReplayEnhancerUIController implements Initializable {
                     );
                     if (packet.getRaceState() == 2) {
                         if (numParticipants == null || numParticipants != packet.getNumParticipants()) {
-                            System.out.println(packet.getNumParticipants());
                             numParticipants = packet.getNumParticipants();
                             names = new ArrayList<>();
                         }
@@ -793,8 +809,6 @@ public class ReplayEnhancerUIController implements Initializable {
                                 .limit(numParticipants)
                                 .map(simpleStringProperty -> simpleStringProperty.get().trim())
                                 .collect(Collectors.toList()));
-
-                        System.out.println(String.format("Participants: %1$d", names.size()));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -810,8 +824,6 @@ public class ReplayEnhancerUIController implements Initializable {
                                 .limit(numParticipants)
                                 .map(simpleStringProperty -> simpleStringProperty.get().trim())
                                 .collect(Collectors.toList()));
-
-                        System.out.println(String.format("Participants: %1$d", names.size()));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -824,6 +836,8 @@ public class ReplayEnhancerUIController implements Initializable {
                 }
             }
         }
+
+        executorService.shutdown();
 
         Set<String> masterNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         masterNames.addAll(allNames.get(0));
@@ -912,6 +926,25 @@ public class ReplayEnhancerUIController implements Initializable {
             }
 
             return hours + minutes + seconds;
+        }
+    }
+
+    private class DriverProgress implements Runnable {
+        private final int fileCount;
+        private int fileNumber;
+
+        public DriverProgress(int fileNumber, int fileCount) {
+            this.fileNumber = fileNumber;
+            this.fileCount = fileCount;
+        }
+
+        @Override
+        public void run() {
+            System.out.println(String.format("Processing Telemetry: %1$.2f%%", ((double) fileNumber / (double) fileCount) * 100));
+        }
+
+        public void setFileNumber(int fileNumber) {
+            this.fileNumber = fileNumber;
         }
     }
 
