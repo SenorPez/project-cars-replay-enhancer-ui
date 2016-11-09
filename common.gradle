@@ -30,3 +30,9 @@ jacocoTestReport {
         html.enabled false
     }
 }
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'configurationeditor.ReplayEnhancerUI'
+    }
+}
