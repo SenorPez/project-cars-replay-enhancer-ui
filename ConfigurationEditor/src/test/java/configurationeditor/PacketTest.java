@@ -24,12 +24,12 @@ import static org.junit.Assert.assertEquals;
  * @author SenorPez
  */
 public class PacketTest {
-    private static File packet;
-    
-    @BeforeClass
-    public static void setUpClass() {
-        packet = new File("src/test/resources/assets/race21/pdata4");
-    }
+//    private static File packet;
+
+//    @BeforeClass
+//    public static void setUpClass() {
+//        packet = new File("src/test/resources/assets/race21/pdata4");
+//    }
     
     /**
      * Test of ReadShort method, of class Packet.
@@ -102,69 +102,69 @@ public class PacketTest {
      * Test of getBuildVersionNumber method, of class Packet.
      * @throws java.io.IOException
      */
-    @Test
-    public void testGetBuildVersionNumber() throws IOException {
-        System.out.println("getBuildVersionNumber");
-        Packet instance = new ParticipantPacket(
-            ByteBuffer.wrap(Files.readAllBytes(packet.toPath())));
-        Integer expResult = 38404;
-        Integer result = instance.getBuildVersionNumber();
-        assertEquals(expResult, result);
-    }
+//    @Test
+//    public void testGetBuildVersionNumber() throws IOException {
+//        System.out.println("getBuildVersionNumber");
+//        Packet instance = new ParticipantPacket(
+//            ByteBuffer.wrap(Files.readAllBytes(packet.toPath())));
+//        Integer expResult = 38404;
+//        Integer result = instance.getBuildVersionNumber();
+//        assertEquals(expResult, result);
+//    }
 
     /**
      * Test of getPacketType method, of class Packet.
      * @throws java.io.IOException
      */
-    @Test
-    public void testGetPacketType() throws IOException {
-        System.out.println("getPacketType");
-        Packet instance = new ParticipantPacket(
-            ByteBuffer.wrap(Files.readAllBytes(packet.toPath())));
-        Integer expResult = 49;
-        Integer result = instance.getPacketType();
-        assertEquals(expResult, result);
-    }
+//    @Test
+//    public void testGetPacketType() throws IOException {
+//        System.out.println("getPacketType");
+//        Packet instance = new ParticipantPacket(
+//            ByteBuffer.wrap(Files.readAllBytes(packet.toPath())));
+//        Integer expResult = 49;
+//        Integer result = instance.getPacketType();
+//        assertEquals(expResult, result);
+//    }
 
     /**
      * Test of getNames method, of class Packet.
      * @throws java.io.IOException
      */
-    @Test
-    public void testGetNames() throws IOException {
-        System.out.println("getNames");
-        Packet instance = new ParticipantPacket(
-            ByteBuffer.wrap(Files.readAllBytes(packet.toPath())));
-        
-        String[] expResult = new String[16];
-        expResult[0] = "Darian May";
-        expResult[1] = "José Javier Buisán";
-        expResult[2] = "Kobernulf Monnur";
-        expResult[3] = "Steven Toth";
-        expResult[4] = "Murray Smith";
-        expResult[5] = "Adam Viljoen";
-        expResult[6] = "Forest Herve";
-        expResult[7] = "Matthew Mul";
-        expResult[8] = "Antti Sipola";
-        expResult[9] = "Thomas Einöder";
-        expResult[10] = "Arnaud Puiravaud";
-        expResult[11] = "Elliot Teague";
-        expResult[12] = "Mauricio Matos";
-        expResult[13] = "Nevil Wigbels";
-        expResult[14] = "Daniele Di Genni";
-        expResult[15] = "Iain Chalmers";
-        
-        ObservableList<SimpleStringProperty> result = instance.getNames();
-        String[] resultValues = new String[16];
-        int i = 0;
-        for (SimpleStringProperty stringProp : result) {
-            resultValues[i++] = stringProp.getValue();
-        }
-        
-        Arrays.sort(expResult);
-        Arrays.sort(resultValues);
-        assertArrayEquals(expResult, resultValues);
-    }
+//    @Test
+//    public void testGetNames() throws IOException {
+//        System.out.println("getNames");
+//        Packet instance = new ParticipantPacket(
+//            ByteBuffer.wrap(Files.readAllBytes(packet.toPath())));
+//
+//        String[] expResult = new String[16];
+//        expResult[0] = "Darian May";
+//        expResult[1] = "José Javier Buisán";
+//        expResult[2] = "Kobernulf Monnur";
+//        expResult[3] = "Steven Toth";
+//        expResult[4] = "Murray Smith";
+//        expResult[5] = "Adam Viljoen";
+//        expResult[6] = "Forest Herve";
+//        expResult[7] = "Matthew Mul";
+//        expResult[8] = "Antti Sipola";
+//        expResult[9] = "Thomas Einöder";
+//        expResult[10] = "Arnaud Puiravaud";
+//        expResult[11] = "Elliot Teague";
+//        expResult[12] = "Mauricio Matos";
+//        expResult[13] = "Nevil Wigbels";
+//        expResult[14] = "Daniele Di Genni";
+//        expResult[15] = "Iain Chalmers";
+//
+//        ObservableList<SimpleStringProperty> result = instance.getNames();
+//        String[] resultValues = new String[16];
+//        int i = 0;
+//        for (SimpleStringProperty stringProp : result) {
+//            resultValues[i++] = stringProp.getValue();
+//        }
+//
+//        Arrays.sort(expResult);
+//        Arrays.sort(resultValues);
+//        assertArrayEquals(expResult, resultValues);
+//    }
 
 //    public class PacketImpl extends Packet {
 //        public PacketImpl() {
