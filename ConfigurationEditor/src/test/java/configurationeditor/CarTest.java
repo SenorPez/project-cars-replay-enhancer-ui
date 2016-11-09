@@ -5,11 +5,11 @@
  */
 package configurationeditor;
 
-import configurationeditor.Car;
-import configurationeditor.CarClass;
 import javafx.scene.paint.Color;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -22,7 +22,7 @@ public class CarTest {
     @Test
     public void testGetCarName() {
         System.out.println("getCarName");
-        Car instance = new Car("Lotus 98T");
+        Car instance = new Car("Lotus 98T", new CarClass("", Color.RED));
         String expResult = "Lotus 98T";
         String result = instance.getCarName();
         assertEquals(expResult, result);
@@ -49,7 +49,7 @@ public class CarTest {
     public void testSetCarName() {
         System.out.println("setCarName");
         String value = "Lotus 98T";
-        Car instance = new Car("125cc Shifter Kart");
+        Car instance = new Car("125cc Shifter Kart", new CarClass("", Color.RED));
         instance.setCarName(value);
         assertEquals(value, instance.getCarName());
     }

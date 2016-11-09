@@ -5,13 +5,10 @@
  */
 package configurationeditor;
 
-import configurationeditor.Driver;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javafx.scene.paint.Color;
+import org.junit.*;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -45,7 +42,7 @@ public class DriverTest {
     public void testGetCar() {
         System.out.println("getCar");
         Driver instance = new Driver("Kobernulf Monnur");
-        Car expResult = new Car("Lotus 98T");
+        Car expResult = new Car("Lotus 98T", new CarClass("", Color.RED));
         instance.setCar(expResult);
         Car result = instance.getCar();
         assertEquals(expResult, result);
@@ -107,7 +104,7 @@ public class DriverTest {
     @Test
     public void testSetCar() {
         System.out.println("setCar");
-        Car value = new Car("Lotus 98T");
+        Car value = new Car("Lotus 98T", new CarClass("", Color.RED));
         Driver instance = new Driver("Kobernulf Monnur");
         instance.setCar(value);
         assertEquals(value, instance.getCar());

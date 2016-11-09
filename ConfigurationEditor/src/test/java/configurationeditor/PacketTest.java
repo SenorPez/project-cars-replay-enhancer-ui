@@ -5,18 +5,19 @@
  */
 package configurationeditor;
 
-import configurationeditor.ParticipantPacket;
-import configurationeditor.Packet;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.Arrays;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ObservableSet;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.BeforeClass;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -153,7 +154,7 @@ public class PacketTest {
         expResult[14] = "Daniele Di Genni";
         expResult[15] = "Iain Chalmers";
         
-        ObservableSet<SimpleStringProperty> result = instance.getNames();
+        ObservableList<SimpleStringProperty> result = instance.getNames();
         String[] resultValues = new String[16];
         int i = 0;
         for (SimpleStringProperty stringProp : result) {
