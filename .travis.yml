@@ -11,16 +11,11 @@ cache:
         
 before_install:
  - chmod +x gradlew
- - "export DISPLAY=:99.0"
- - "sh -e /etc/init.d/xvfb start"
 
 jdk:
     - oraclejdk8
     
 script:
-    - wget http://senorpez.servebeer.com/pcars/races/testdata.tar.gz
-    - mkdir ConfigurationEditor/src/test/resources/assets
-    - tar -zxf testdata.tar.gz -C ConfigurationEditor/src/test/resources/assets/
     - ./gradlew assemble
     - ./gradlew check
     
