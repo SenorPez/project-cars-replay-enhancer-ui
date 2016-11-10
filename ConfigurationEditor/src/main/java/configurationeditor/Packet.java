@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,13 +16,10 @@ public abstract class Packet {
 
     private final SimpleIntegerProperty buildVersionNumber;
     private final SimpleIntegerProperty packetType;    
-    
-    private final SimpleListProperty<SimpleStringProperty> names;
-    
+
     protected Packet(ByteBuffer data) {
         this.buildVersionNumber = new SimpleIntegerProperty(ReadShort(data));
         this.packetType = new SimpleIntegerProperty(ReadChar(data));
-        this.names = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
     
     private static Integer toInt(byte[] bytes) {
@@ -33,10 +31,10 @@ public abstract class Packet {
         return returnValue;
     }
      
-    protected static Integer ReadShort(ByteBuffer data) {
+    protected static Short ReadShort(ByteBuffer data) {
         byte[] readBytes = new byte[2];
         data.get(readBytes);
-        return toInt(readBytes);
+        return toInt(readBytes).shortValue();
     }
     
     protected static Integer ReadChar(ByteBuffer data) {
@@ -58,12 +56,7 @@ public abstract class Packet {
     protected static String ReadString(ByteBuffer data, Integer length) {
         byte[] readBytes = new byte[length];
         data.get(readBytes);
-        try {
-            return new String(readBytes, "UTF-8");
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Packet.class.getName()).log(Level.SEVERE, null, ex);
-            return "";
-        }
+        return new String(readBytes, StandardCharsets.UTF_8);
     }
     
     public Integer getBuildVersionNumber() {
@@ -72,15 +65,5 @@ public abstract class Packet {
     
     public Integer getPacketType() {
         return packetType.get();
-    }
-
-    public ObservableList<SimpleStringProperty> getNames() {
-        return names.get();
-    }
-    
-    protected void setNames(ByteBuffer data) {
-        for (int i=0; i<16; i++) {
-            this.names.add(new SimpleStringProperty(ReadString(data, 64).trim()));
-        }
     }
 }

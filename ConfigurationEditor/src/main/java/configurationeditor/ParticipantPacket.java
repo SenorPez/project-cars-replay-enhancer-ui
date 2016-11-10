@@ -15,8 +15,9 @@ public class ParticipantPacket extends Packet {
     private final SimpleStringProperty trackLocation;
     private final SimpleStringProperty trackVariation;
         
+    private final SimpleListProperty<SimpleStringProperty> names;
     private final SimpleListProperty<SimpleFloatProperty> fastestLapTimes;
-    
+
     public ParticipantPacket(ByteBuffer data) {
         super(data);
       
@@ -25,11 +26,14 @@ public class ParticipantPacket extends Packet {
         this.trackLocation = new SimpleStringProperty(ReadString(data, 64).trim());
         this.trackVariation = new SimpleStringProperty(ReadString(data, 64).trim());
         
+
+        this.names = new SimpleListProperty<>(FXCollections.observableArrayList());
+        for (int i = 0; i < 16 ; i++) {
+            this.names.add(new SimpleStringProperty(ReadString(data, 64).trim()));
+        }
+
         this.fastestLapTimes = new SimpleListProperty<>(FXCollections.observableList(new ArrayList<>()));
-        
-        super.setNames(data);
-        
-        for (int i=0; i<16; i++) {
+        for (int i = 0; i < 16; i++) {
             this.fastestLapTimes.add(new SimpleFloatProperty(ReadFloat(data)));
         }
     }
@@ -49,7 +53,11 @@ public class ParticipantPacket extends Packet {
     public String getTrackVariation() {
         return trackVariation.get();
     }
-    
+
+    public ObservableList<SimpleStringProperty> getNames() {
+        return names.get();
+    }
+
     public ObservableList<SimpleFloatProperty> getFastestLapTimes() {
         return fastestLapTimes.get();
     }
