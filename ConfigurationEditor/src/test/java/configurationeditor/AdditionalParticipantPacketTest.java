@@ -20,11 +20,8 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-/**
- *
- * @author SenorPez
- */
 public class AdditionalParticipantPacketTest {
+    private final static Byte packetType = 2;
     private final static Byte offset = 16;
     private final static List<String> names = Arrays.asList(
             "Nico Rosberg",
@@ -43,14 +40,14 @@ public class AdditionalParticipantPacketTest {
             "Daniil Kvyat",
             "Jenson Button",
             "Kevin Magnussen");
-    private static AdditionalParticipantPacket packet = null;
+    private static AdditionalParticipantPacket packet;
 
     @Before
     public void setUp() throws Exception {
         ByteBuffer packetData = ByteBuffer.allocate(1028);
 
         packetData.putShort(Short.MAX_VALUE);
-        packetData.put(new Byte("2"));
+        packetData.put(packetType);
         packetData.put(offset);
         names.forEach(string -> packetData.put(Arrays.copyOf(string.getBytes(StandardCharsets.UTF_8), 64)));
         packetData.rewind();

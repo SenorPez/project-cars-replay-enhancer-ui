@@ -17,6 +17,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
 public class ParticipantPacketTest {
+    private final static Byte packetType = 1;
     private final static String carName = "Lotus 98T";
     private final static String carClass = "Vintage F1 C";
     private final static String trackLocation = "Monaco";
@@ -59,14 +60,14 @@ public class ParticipantPacketTest {
             81.342F
     );
 
-    private static ParticipantPacket packet = null;
+    private static ParticipantPacket packet;
 
     @Before
     public void setUp() throws Exception {
         ByteBuffer packetData = ByteBuffer.allocate(1347);
 
         packetData.putShort(Short.MAX_VALUE);
-        packetData.put(new Byte("1"));
+        packetData.put(packetType);
         packetData.put(Arrays.copyOf(carName.getBytes(StandardCharsets.UTF_8), 64));
         packetData.put(Arrays.copyOf(carClass.getBytes(StandardCharsets.UTF_8), 64));
         packetData.put(Arrays.copyOf(trackLocation.getBytes(StandardCharsets.UTF_8), 64));
