@@ -36,6 +36,7 @@ public class DriverTest {
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
                 {new Driver(name), name, name, "A. Senna", Car.class, "", 0},
+                {new Driver(displayName), displayName, displayName, displayName, Car.class, "", 0},
                 {new Driver(name, displayName, shortName, car), name, displayName, shortName, Car.class, "", 0},
                 {new Driver(name, displayName, shortName, car, team, points), name, displayName, shortName, Car.class, team, 55}
         });
