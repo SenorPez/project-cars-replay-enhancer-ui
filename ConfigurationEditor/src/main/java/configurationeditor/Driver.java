@@ -49,20 +49,6 @@ public class Driver {
         this.seriesPoints = new SimpleIntegerProperty(points);
     }
 
-    @Override
-    public int hashCode() {
-        return this.getName().hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj.getClass() == this.getClass()) {
-            Driver driverObj = (Driver) obj;
-            return this.getName().equals(driverObj.getName());
-        }
-        return false;
-    }
-
     public String getTeam() {
         return team.get();
     }

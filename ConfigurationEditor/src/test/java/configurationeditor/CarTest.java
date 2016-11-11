@@ -1,69 +1,62 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package configurationeditor;
 
-import javafx.scene.paint.Color;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import java.util.List;
 
-/**
- *
- * @author senor
- */
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.mockito.Mockito.mock;
+
+
 public class CarTest {
-    /**
-     * Test of getCarName method, of class Car.
-     */
+    private static final String carName = "Lotus 98T";
+    private static Car instance;
+
+    @Before
+    public void setUp() throws Exception {
+        instance = new Car(carName, mock(CarClass.class));
+    }
+
     @Test
-    public void testGetCarName() {
-        System.out.println("getCarName");
-        Car instance = new Car("Lotus 98T", new CarClass("", Color.RED));
-        String expResult = "Lotus 98T";
+    public void getCarName() throws Exception {
+        String expResult = carName;
         String result = instance.getCarName();
-        assertEquals(expResult, result);
+        assertThat(result, equalTo(expResult));
     }
 
-    /**
-     * Test of getCarClass method, of class Car.
-     */
     @Test
-    public void testGetCarClass() {
-        System.out.println("getCarClass");
-        Car instance = new Car("Lotus 98T", new CarClass("Historic Formula", Color.RED));
-        CarClass expResult = new CarClass("Historic Formula", Color.RED);
+    public void setCarName() throws Exception {
+        instance.setCarName("New Car");
+    }
+
+    @Test
+    public void carNameProperty() throws Exception {
+        SimpleStringProperty expResult = new SimpleStringProperty();
+        SimpleStringProperty result = instance.carNameProperty();
+        assertThat(result, instanceOf(expResult.getClass()));
+    }
+
+    @Test
+    public void getCarClass() throws Exception {
+        CarClass expResult = mock(CarClass.class);
         CarClass result = instance.getCarClass();
-        assertTrue(
-            result.getClassName().equals(expResult.getClassName())
-            && result.getClassColor() == expResult.getClassColor());
+        assertThat(result, instanceOf(expResult.getClass()));
     }
 
-    /**
-     * Test of setCarName method, of class Car.
-     */
     @Test
-    public void testSetCarName() {
-        System.out.println("setCarName");
-        String value = "Lotus 98T";
-        Car instance = new Car("125cc Shifter Kart", new CarClass("", Color.RED));
-        instance.setCarName(value);
-        assertEquals(value, instance.getCarName());
+    public void setCarClass() throws Exception {
+        instance.setCarClass(mock(CarClass.class));
     }
 
-    /**
-     * Test of setCarClass method, of class Car.
-     */
     @Test
-    public void testSetCarClass() {
-        System.out.println("setCarClass");
-        CarClass value = new CarClass("Historic Formula", Color.RED);
-        Car instance = new Car("Lotus 98T", new CarClass("Kart 1", Color.BLUE));
-        instance.setCarClass(value);
-        assertEquals(value, instance.getCarClass());
+    public void carClassProperty() throws Exception {
+        SimpleObjectProperty<CarClass> expResult = new SimpleObjectProperty<>();
+        SimpleObjectProperty<CarClass> result = instance.carClassProperty();
+        assertThat(result, instanceOf(expResult.getClass()));
     }
-    
 }

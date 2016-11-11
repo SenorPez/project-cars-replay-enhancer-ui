@@ -13,20 +13,6 @@ public class CarClass {
         this.classColor = new SimpleObjectProperty<>(classColor);
     }
 
-    @Override
-    public int hashCode() {
-        return this.getClassName().hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj.getClass() == this.getClass()) {
-            CarClass newCarClass = (CarClass) obj;
-            return newCarClass.getClassName().equals(this.getClassName());
-        }
-        return false;
-    }
-
     public String getClassName() {
         return className.get();
     }

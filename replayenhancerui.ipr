@@ -51,8 +51,6 @@
       <module filepath="$PROJECT_DIR$/replayenhancerui.iml" fileurl="file://$PROJECT_DIR$/replayenhancerui.iml"/>
       <module filepath="$PROJECT_DIR$/ConfigurationEditor/ConfigurationEditor.iml" fileurl="file://$PROJECT_DIR$/ConfigurationEditor/ConfigurationEditor.iml"/>
       <module filepath="$PROJECT_DIR$/PacketCapture/PacketCapture.iml" fileurl="file://$PROJECT_DIR$/PacketCapture/PacketCapture.iml"/>
-      <module filepath="$PROJECT_DIR$/ConfigurationEditor/ConfigurationEditor.iml" fileurl="file://$PROJECT_DIR$/ConfigurationEditor/ConfigurationEditor.iml"/>
-      <module filepath="$PROJECT_DIR$/PacketCapture/PacketCapture.iml" fileurl="file://$PROJECT_DIR$/PacketCapture/PacketCapture.iml"/>
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" assert-keyword="true" jdk-15="true" project-jdk-type="JavaSDK" assert-jdk-15="true" project-jdk-name="1.8">
