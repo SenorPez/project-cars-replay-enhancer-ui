@@ -1,6 +1,6 @@
-apply plugin: 'application'
-mainClassName = "configurationeditor.ReplayEnhancerUI"
-
-dependencies {
-    compile 'org.python:jython:2.7.0'
+plugins {
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
 }
+
+apply plugin: 'application'
+mainClassName = "configurationeditor.ConfigurationEditor"
