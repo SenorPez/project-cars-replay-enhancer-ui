@@ -3,4 +3,4 @@ plugins {
 }
 
 apply plugin: 'application'
-mainClassName = "configurationeditor.ConfigurationEditor"
+mainClassName = "com.senorpez.replayenhancer.configurationeditor.ConfigurationEditor"
