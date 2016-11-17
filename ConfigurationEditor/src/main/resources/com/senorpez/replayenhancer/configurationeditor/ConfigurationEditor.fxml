@@ -15,6 +15,7 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.input.KeyCodeCombination?>
@@ -171,6 +172,21 @@
                                  <padding>
                                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                  </padding>
+                              </TitledPane>
+                              <TitledPane animated="false" collapsible="false" focusTraversable="false" layoutX="12.0" layoutY="274.0" text="Video Creation">
+                                 <padding>
+                                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                 </padding>
+                                 <content>
+                                    <VBox spacing="10.0">
+                                       <children>
+                                          <Button fx:id="btnMakeSyncVideo" mnemonicParsing="false" onAction="#buttonMakeSyncVideo" text="Create Telemetry Sync Video" />
+                                          <Button fx:id="btnMakeVideo" mnemonicParsing="false" onAction="#buttonMakeVideo" text="Create Video" />
+                                          <ProgressBar fx:id="prgPython" focusTraversable="false" prefWidth="200.0" />
+                                          <TextArea fx:id="txtPythonOutput" editable="false" prefHeight="200.0" prefWidth="200.0" />
+                                       </children>
+                                    </VBox>
+                                 </content>
                               </TitledPane>
                            </children>
                            <padding>

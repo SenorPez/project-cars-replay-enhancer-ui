@@ -64,6 +64,9 @@ public class ConfigurationEditorController implements Initializable {
     
     @FXML
     private TextField txtOutputVideo;
+
+    @FXML
+    private TextArea txtPythonOutput;
     
     @FXML
     private TextField txtHeadingFont;
@@ -172,6 +175,9 @@ public class ConfigurationEditorController implements Initializable {
 
     @FXML
     private ProgressBar prgProgress;
+
+    @FXML
+    private ProgressBar prgPython;
 
     private static void updateConfiguration(File file, Configuration configuration) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -348,6 +354,22 @@ public class ConfigurationEditorController implements Initializable {
     }
 
     @FXML
+    private void buttonMakeSyncVideo(ActionEvent event) {
+        String command = "replayenhancer -s " + txtFileName.getText();
+        PythonExecutor pythonExecutor = new PythonExecutor(command);
+        pythonExecutor.setOnRunning(serviceEvent -> prgPython.setVisible(true));
+        pythonExecutor.start();
+    }
+
+    @FXML
+    private void buttonMakeVideo(ActionEvent event) throws IOException {
+        String command = "replayenhancer " + txtFileName.getText();
+        PythonExecutor pythonExecutor = new PythonExecutor(command);
+        pythonExecutor.setOnRunning(serviceEvent -> prgPython.setVisible(true));
+        pythonExecutor.start();
+    }
+
+    @FXML
     private void buttonHeadingFont(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select Heading Font");
@@ -462,6 +484,9 @@ public class ConfigurationEditorController implements Initializable {
 
         gridProgress.managedProperty().bind(gridProgress.visibleProperty());
         gridProgress.setVisible(false);
+
+        prgPython.managedProperty().bind(prgPython.visibleProperty());
+        prgPython.setVisible(false);
 
         configuration = new Configuration();
         addListeners();
@@ -774,7 +799,7 @@ public class ConfigurationEditorController implements Initializable {
     private static class ConvertTime extends StringConverter<Number> {
         @Override
         public String toString(Number object) {
-            String returnValue = "";
+            String returnValue;
             Double inputValue = object.doubleValue();
 
             String fractionalPart = object.toString().substring(object.toString().indexOf('.') + 1);
@@ -981,6 +1006,48 @@ public class ConfigurationEditorController implements Initializable {
 
         public void setFileNumber(int fileNumber) {
             this.fileNumber = fileNumber;
+        }
+    }
+
+    private class PythonExecutor extends Service<String> {
+        private final String command;
+
+        public PythonExecutor(String command) {
+            this.command = command;
+        }
+
+        @Override
+        protected Task<String> createTask() {
+            return new Task<String>() {
+                @Override
+                protected String call() throws Exception {
+                    txtPythonOutput.clear();
+                    String scriptOutput = null;
+                    String scriptError = null;
+                    try {
+                        txtPythonOutput.appendText("Running Command:\n" + command + "\n\n");
+                        Process p = Runtime.getRuntime().exec(command);
+                        BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                        BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+                        while (((scriptOutput = stdInput.readLine()) != null) || ((scriptError = stdError.readLine()) != null)) {
+                            if (scriptOutput != null) {
+                                txtPythonOutput.appendText(scriptOutput);
+                                txtPythonOutput.appendText("\n");
+                            }
+
+                            if (scriptError != null) {
+                                txtPythonOutput.appendText(scriptError);
+                                txtPythonOutput.appendText("\n");
+                            }
+                        }
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+
+                    return "";
+                }
+            };
         }
     }
 
