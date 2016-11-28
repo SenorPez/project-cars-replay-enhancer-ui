@@ -58,14 +58,9 @@
               <MenuItem mnemonicParsing="false" onAction="#menuFileExit" onMenuValidation="#menuFileExit" text="Exit" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Tools">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Telemetry Capture..." />
-            </items>
-          </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+              <MenuItem mnemonicParsing="false" text="Version 0.1" />
             </items>
           </Menu>
         </menus>
@@ -456,8 +451,6 @@
             <Label text="Output File:" />
             <Label fx:id="txtFileName" text="&lt;NONE&gt;" />
             <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-            <Label alignment="CENTER_RIGHT" text="Configuration Status: " />
-            <Label fx:id="txtValidConfig" text="Valid" />
          </children>
          <VBox.margin>
             <Insets left="14.0" right="14.0" />

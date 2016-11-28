@@ -179,6 +179,12 @@ public class ConfigurationEditorController implements Initializable {
     @FXML
     private ProgressBar prgPython;
 
+    @FXML
+    private Button btnMakeSyncVideo;
+
+    @FXML
+    private Button btnMakeVideo;
+
     private static void updateConfiguration(File file, Configuration configuration) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         String data = Files.lines(file.toPath()).collect(Collectors.joining());
@@ -355,17 +361,39 @@ public class ConfigurationEditorController implements Initializable {
 
     @FXML
     private void buttonMakeSyncVideo(ActionEvent event) {
-        String command = "replayenhancer -s " + txtFileName.getText();
+        String[] command = {"replayenhancer", "-s", txtFileName.getText()};
         PythonExecutor pythonExecutor = new PythonExecutor(command);
-        pythonExecutor.setOnRunning(serviceEvent -> prgPython.setVisible(true));
+        pythonExecutor.setOnRunning(serviceEvent -> {
+            prgPython.setVisible(true);
+            btnMakeSyncVideo.disableProperty().unbind();
+            btnMakeVideo.disableProperty().unbind();
+            btnMakeSyncVideo.setDisable(true);
+            btnMakeVideo.setDisable(true);
+        });
+        pythonExecutor.setOnSucceeded(serviceEvent -> {
+            prgPython.setVisible(false);
+            btnMakeSyncVideo.setDisable(false);
+            btnMakeVideo.setDisable(false);
+            btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull());
+            btnMakeVideo.disableProperty().bind(JSONFile.isNull());
+        });
         pythonExecutor.start();
     }
 
     @FXML
     private void buttonMakeVideo(ActionEvent event) throws IOException {
-        String command = "replayenhancer " + txtFileName.getText();
+        String[] command = {"replayenhancer", txtFileName.getText()};
         PythonExecutor pythonExecutor = new PythonExecutor(command);
-        pythonExecutor.setOnRunning(serviceEvent -> prgPython.setVisible(true));
+        pythonExecutor.setOnRunning(serviceEvent -> {
+            prgPython.setVisible(true);
+            btnMakeSyncVideo.setDisable(true);
+            btnMakeVideo.setDisable(true);
+        });
+        pythonExecutor.setOnSucceeded(serviceEvent -> {
+            prgPython.setVisible(false);
+            btnMakeSyncVideo.setDisable(false);
+            btnMakeVideo.setDisable(false);
+        });
         pythonExecutor.start();
     }
 
@@ -487,6 +515,9 @@ public class ConfigurationEditorController implements Initializable {
 
         prgPython.managedProperty().bind(prgPython.visibleProperty());
         prgPython.setVisible(false);
+
+        btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull());
+        btnMakeVideo.disableProperty().bind(JSONFile.isNull());
 
         configuration = new Configuration();
         addListeners();
@@ -1009,43 +1040,39 @@ public class ConfigurationEditorController implements Initializable {
         }
     }
 
-    private class PythonExecutor extends Service<String> {
-        private final String command;
+    private class PythonExecutor extends Service<Integer> {
+        private final String[] command;
 
-        public PythonExecutor(String command) {
+        public PythonExecutor(String[] command) {
             this.command = command;
         }
 
         @Override
-        protected Task<String> createTask() {
-            return new Task<String>() {
+        protected Task<Integer> createTask() {
+            return new Task<Integer>() {
                 @Override
-                protected String call() throws Exception {
+                protected Integer call() {
                     txtPythonOutput.clear();
-                    String scriptOutput = null;
-                    String scriptError = null;
-                    try {
-                        txtPythonOutput.appendText("Running Command:\n" + command + "\n\n");
-                        Process p = Runtime.getRuntime().exec(command);
-                        BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                        BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-
-                        while (((scriptOutput = stdInput.readLine()) != null) || ((scriptError = stdError.readLine()) != null)) {
-                            if (scriptOutput != null) {
-                                txtPythonOutput.appendText(scriptOutput);
-                                txtPythonOutput.appendText("\n");
-                            }
-
-                            if (scriptError != null) {
-                                txtPythonOutput.appendText(scriptError);
-                                txtPythonOutput.appendText("\n");
-                            }
-                        }
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
+                    String commandString = "";
+                    for (String string : command) {
+                        commandString += " " + string;
                     }
+                    txtPythonOutput.appendText("Running Command:\n" + commandString + "\n\n");
+                    System.out.println("Running Command: " + commandString);
 
-                    return "";
+                    try {
+                        Process p = new ProcessBuilder(command).redirectErrorStream(true).start();
+                        BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                        String s;
+                        while ((s = br.readLine()) != null) {
+                            txtPythonOutput.setText(s + "\n");
+                            System.out.println(s);
+                        }
+                        return p.waitFor();
+                    } catch (IOException | InterruptedException ex) {
+                        ex.printStackTrace();
+                        return -1;
+                    }
                 }
             };
         }
