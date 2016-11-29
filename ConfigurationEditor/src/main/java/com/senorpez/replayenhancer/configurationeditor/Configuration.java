@@ -22,6 +22,7 @@ import javafx.scene.paint.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @JsonPropertyOrder(alphabetic = true)
@@ -178,11 +179,15 @@ public class Configuration {
         this.pointStructure = new SimpleListProperty<>(defaultPointStructure);
 
         this.participantConfiguration = new SimpleListProperty<>(FXCollections.observableList(new ArrayList<Driver>(), param -> new Observable[]{param.getCar().carNameProperty()}));
-        this.cars = new SimpleListProperty<>(FXCollections.observableArrayList(new TreeSet<Car>()));
+
+        this.cars = new SimpleListProperty<>(FXCollections.observableArrayList(new TreeSet<>()));
+
         this.participantConfiguration.addListener((observable, oldValue, newValue) -> cars.set(FXCollections.observableArrayList(newValue
                 .stream()
                 .map(Driver::getCar)
-                .collect(Collectors.toSet()))));
+                .collect(Collectors.toCollection(
+                        () -> new TreeSet<>(
+                                (o1, o2) -> o1.getCarName().compareTo(o2.getCarName())))))));
     }
 
     public File getSourceVideo() {
