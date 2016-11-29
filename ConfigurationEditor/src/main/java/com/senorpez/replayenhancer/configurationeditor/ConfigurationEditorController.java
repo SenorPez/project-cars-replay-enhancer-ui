@@ -160,6 +160,21 @@ public class ConfigurationEditorController implements Initializable {
     private TableColumn<Driver, Integer> colSeriesPoints;
 
     @FXML
+    private TableView<Driver> tblAddDrivers;
+
+    @FXML
+    private TableColumn<Driver, String> colAddName;
+
+    @FXML
+    private TableColumn<Driver, String> colAddCar;
+
+    @FXML
+    private TableColumn<Driver, String> colAddTeam;
+
+    @FXML
+    private TableColumn<Driver, Integer> colAddSeriesPoints;
+
+    @FXML
     private TableView<Car> tblCars;
 
     @FXML
@@ -491,6 +506,14 @@ public class ConfigurationEditorController implements Initializable {
     }
 
     @FXML
+    private void buttonAddAdditionalDriver (ActionEvent event) {
+        configuration.getAdditionalParticipantConfiguration().add(
+                new Driver("Additional Driver")
+        );
+        Integer test = 3;
+    }
+
+    @FXML
     private void buttonDeletePosition (ActionEvent event) {
         configuration.getPointStructure().removeAll(tblPointStructure.getSelectionModel().getSelectedItems());
 
@@ -590,6 +613,56 @@ public class ConfigurationEditorController implements Initializable {
         );
         colSeriesPoints.setCellFactory(param -> CustomCell.createIntegerEditCell());
         colSeriesPoints.setOnEditCommit(
+                t -> (t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                ).setSeriesPoints(t.getNewValue())
+        );
+
+        colAddName.setCellValueFactory(
+                new PropertyValueFactory<Driver, String>("name")
+        );
+        colAddName.setCellFactory(param -> CustomCell.createStringEditCell());
+        colAddName.setOnEditCommit(
+                t -> {
+                    Driver item = (t.getTableView().getItems().get(t.getTablePosition().getRow()));
+                    item.setName(t.getNewValue());
+                    item.setDisplayName(t.getNewValue());
+                    item.setShortName(t.getNewValue());
+                }
+        );
+
+        colAddCar.setCellValueFactory(
+                param -> param.getValue().getCar() == null ?
+                        new SimpleStringProperty(null) :
+                        new SimpleStringProperty(param.getValue().getCar().getCarName())
+        );
+        colAddCar.setCellFactory(param -> CustomCell.createStringEditCell());
+        colAddCar.setOnEditCommit(
+                t -> {
+                    Driver driver = t.getTableView().getItems().get(t.getTablePosition().getRow());
+                    if (driver.getCar() == null) {
+                        driver.setCar(new Car(t.getNewValue(), new CarClass("", Color.rgb(255, 0, 0))));
+                    } else {
+                        driver.getCar().setCarName(t.getNewValue());
+                    }
+                }
+        );
+
+        colAddTeam.setCellValueFactory(
+                new PropertyValueFactory<Driver, String>("team")
+        );
+        colAddTeam.setCellFactory(param -> CustomCell.createStringEditCell());
+        colAddTeam.setOnEditCommit(
+                t -> (t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                ).setTeam(t.getNewValue())
+        );
+
+        colAddSeriesPoints.setCellValueFactory(
+                new PropertyValueFactory<Driver, Integer>("seriesPoints")
+        );
+        colAddSeriesPoints.setCellFactory(param -> CustomCell.createIntegerEditCell());
+        colAddSeriesPoints.setOnEditCommit(
                 t -> (t.getTableView().getItems().get(
                         t.getTablePosition().getRow())
                 ).setSeriesPoints(t.getNewValue())
@@ -830,6 +903,7 @@ public class ConfigurationEditorController implements Initializable {
 
         // Drivers (and teams, and cars, oh my!)
         tblDrivers.setItems(configuration.participantConfigurationProperty());
+        tblAddDrivers.setItems(configuration.additionalParticipantConfigurationProperty());
         tblCars.setItems(configuration.carsProperty());
     }
 

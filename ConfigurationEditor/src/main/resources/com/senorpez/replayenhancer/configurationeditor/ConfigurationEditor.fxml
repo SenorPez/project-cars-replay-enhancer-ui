@@ -414,17 +414,15 @@
                                  <content>
                                     <VBox>
                                        <children>
-                                          <TableView focusTraversable="false" prefHeight="200.0" prefWidth="618.0">
+                                          <TableView fx:id="tblAddDrivers" editable="true" focusTraversable="false" prefHeight="200.0" prefWidth="618.0">
                                              <columns>
-                                                <TableColumn prefWidth="75.0" text="Name" />
-                                                <TableColumn prefWidth="106.0" text="Display Name" />
-                                                <TableColumn prefWidth="97.0" text="Short Name" />
-                                                <TableColumn prefWidth="53.0" text="Car" />
-                                                <TableColumn prefWidth="71.0" text="Team" />
-                                                <TableColumn prefWidth="110.0" text="Series Points" />
+                                                <TableColumn fx:id="colAddName" prefWidth="75.0" text="Name" />
+                                                <TableColumn fx:id="colAddCar" prefWidth="53.0" text="Car" />
+                                                <TableColumn fx:id="colAddTeam" prefWidth="71.0" text="Team" />
+                                                <TableColumn fx:id="colAddSeriesPoints" prefWidth="110.0" text="Series Points" />
                                              </columns>
                                           </TableView>
-                                          <Button mnemonicParsing="false" text="Add Additional Driver" />
+                                          <Button mnemonicParsing="false" onAction="#buttonAddAdditionalDriver" text="Add Additional Driver" />
                                        </children>
                                     </VBox>
                                  </content>

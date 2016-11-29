@@ -23,10 +23,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @JsonPropertyOrder(alphabetic = true)
 // TODO: 10/20/2016 Add functionality for deprecation of old, used properties. For now, here.
-@JsonIgnoreProperties(value = {"additional_participant_config", "video_cache", "video_gaptime", "video_threshold"})
+@JsonIgnoreProperties(value = {"video_cache", "video_gaptime", "video_threshold"})
 public class Configuration {
     // Source Data
     @JsonProperty(value = "source_video")
@@ -127,6 +128,11 @@ public class Configuration {
     @JsonSerialize(using = Configuration.ParticipantConfigurationSerializer.class)
     private final SimpleListProperty<Driver> participantConfiguration;
 
+    @JsonDeserialize(using = Configuration.ParticipantConfigurationDeserializer.class)
+    @JsonProperty(value = "additional_participant_config")
+    @JsonSerialize(using = Configuration.ParticipantConfigurationSerializer.class)
+    private final SimpleListProperty<Driver> additionalParticipantConfiguration;
+
     @JsonIgnore
     private final SimpleListProperty<Car> cars;
 
@@ -182,15 +188,40 @@ public class Configuration {
         this.pointStructure = new SimpleListProperty<>(defaultPointStructure);
 
         this.participantConfiguration = new SimpleListProperty<>(FXCollections.observableList(new ArrayList<Driver>(), param -> new Observable[]{param.getCar().carNameProperty()}));
+        this.additionalParticipantConfiguration = new SimpleListProperty<>(FXCollections.observableList(new ArrayList<Driver>(), param -> new Observable[]{param.getCar().carNameProperty()}));
 
         this.cars = new SimpleListProperty<>(FXCollections.observableArrayList(new TreeSet<>()));
 
-        this.participantConfiguration.addListener((observable, oldValue, newValue) -> cars.set(FXCollections.observableArrayList(newValue
-                .stream()
-                .map(Driver::getCar)
+//        this.participantConfiguration.addListener((observable, oldValue, newValue) -> cars.set(FXCollections.observableArrayList(newValue
+//                .stream()
+//                .map(Driver::getCar)
+//                .collect(Collectors.toCollection(
+//                        () -> new TreeSet<>(
+//                                (o1, o2) -> o1.getCarName().compareTo(o2.getCarName())))))));
+
+//        this.additionalParticipantConfiguration.addListener((observable, oldValue, newValue) -> cars.set(FXCollections.observableArrayList(newValue
+//                .stream()
+//                .map(Driver::getCar)
+//                .collect(Collectors.toCollection(
+//                        () -> new TreeSet<>(
+//                                (o1, o2) -> o1.getCarName().compareTo(o2.getCarName())))))));
+
+        this.participantConfiguration.addListener(((observable, oldValue, newValue) -> cars.set(FXCollections.observableArrayList(Stream.concat(
+                newValue.stream().map(Driver::getCar), additionalParticipantConfiguration.stream().map(Driver::getCar))
                 .collect(Collectors.toCollection(
                         () -> new TreeSet<>(
-                                (o1, o2) -> o1.getCarName().compareTo(o2.getCarName())))))));
+                                (o1, o2) -> o1.getCarName().compareTo(o2.getCarName())
+                        )
+                ))
+        ))));
+        this.additionalParticipantConfiguration.addListener(((observable, oldValue, newValue) -> cars.set(FXCollections.observableArrayList(Stream.concat(
+                newValue.stream().map(Driver::getCar), participantConfiguration.stream().map(Driver::getCar))
+                .collect(Collectors.toCollection(
+                        () -> new TreeSet<>(
+                                (o1, o2) -> o1.getCarName().compareTo(o2.getCarName())
+                        )
+                ))
+        ))));
     }
 
     public File getSourceVideo() {
@@ -515,6 +546,18 @@ public class Configuration {
 
     public SimpleListProperty<Driver> participantConfigurationProperty() {
         return participantConfiguration;
+    }
+
+    public ObservableList<Driver> getAdditionalParticipantConfiguration() {
+        return additionalParticipantConfiguration.get();
+    }
+
+    public SimpleListProperty<Driver> additionalParticipantConfigurationProperty() {
+        return additionalParticipantConfiguration;
+    }
+
+    public void setAdditionalParticipantConfiguration(ObservableList<Driver> additionalParticipantConfiguration) {
+        this.additionalParticipantConfiguration.set(additionalParticipantConfiguration);
     }
 
     public ObservableList<Car> getCars() {
