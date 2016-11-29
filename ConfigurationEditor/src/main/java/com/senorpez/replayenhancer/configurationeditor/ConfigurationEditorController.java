@@ -405,6 +405,8 @@ public class ConfigurationEditorController implements Initializable {
         PythonExecutor pythonExecutor = new PythonExecutor(command);
         pythonExecutor.setOnRunning(serviceEvent -> {
             prgPython.setVisible(true);
+            btnMakeSyncVideo.disableProperty().unbind();
+            btnMakeVideo.disableProperty().unbind();
             btnMakeSyncVideo.setDisable(true);
             btnMakeVideo.setDisable(true);
         });
@@ -412,6 +414,8 @@ public class ConfigurationEditorController implements Initializable {
             prgPython.setVisible(false);
             btnMakeSyncVideo.setDisable(false);
             btnMakeVideo.setDisable(false);
+            btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull());
+            btnMakeVideo.disableProperty().bind(JSONFile.isNull());
         });
         pythonExecutor.start();
     }
