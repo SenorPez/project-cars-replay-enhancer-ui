@@ -5,6 +5,7 @@ import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringPropertyBase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
@@ -945,7 +946,7 @@ public class ConfigurationEditorController implements Initializable {
                                 if (numParticipants != null && names.size() < numParticipants) {
                                     names.addAll(packet.getNames().stream()
                                             .limit(numParticipants)
-                                            .map(simpleStringProperty -> simpleStringProperty.get().trim())
+                                            .map(SimpleStringProperty::get)
                                             .collect(Collectors.toList()));
                                 }
                             } catch (IOException e) {
@@ -960,7 +961,7 @@ public class ConfigurationEditorController implements Initializable {
                                 if (numParticipants != null && names.size() < numParticipants) {
                                     names.addAll(packet.getNames().stream()
                                             .limit(numParticipants)
-                                            .map(simpleStringProperty -> simpleStringProperty.get().trim())
+                                            .map(SimpleStringProperty::get)
                                             .collect(Collectors.toList()));
                                 }
                             } catch (IOException e) {

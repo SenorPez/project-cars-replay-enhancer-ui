@@ -19,7 +19,7 @@ public class AdditionalParticipantPacket extends Packet {
 
         this.names = new SimpleListProperty<>(FXCollections.observableArrayList());
         for (int i = 0; i < 16 ; i++) {
-            this.names.add(new SimpleStringProperty(ReadString(data, 64).trim()));
+            this.names.add(new SimpleStringProperty(ReadString(data, 64).split("\u0000", 2)[0]));
         }
     }
     
