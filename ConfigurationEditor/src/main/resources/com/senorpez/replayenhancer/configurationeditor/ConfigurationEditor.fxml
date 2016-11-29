@@ -341,29 +341,26 @@
                                       </columnConstraints>
                                       <rowConstraints>
                                         <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                                           <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                                           <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                          <RowConstraints maxHeight="399.0" minHeight="-Infinity" prefHeight="287.0" vgrow="SOMETIMES" />
                                           <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                                       </rowConstraints>
                                        <children>
-                                          <Label text="Show Teams?" />
-                                          <CheckBox fx:id="cbUseTeams" mnemonicParsing="false" GridPane.columnIndex="1" />
-                                          <Label text="Show Car Classes?" GridPane.rowIndex="1" />
-                                          <CheckBox fx:id="cbUseClasses" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                          <Label text="Show Series Champion?" GridPane.rowIndex="2" />
-                                          <CheckBox fx:id="cbShowChampion" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                          <Label text="Fastest Lap Bonus Points" GridPane.rowIndex="3" />
-                                          <TextField fx:id="txtBonusPoints" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                          <TableView fx:id="tblPointStructure" editable="true" focusTraversable="false" prefHeight="404.0" prefWidth="254.0" GridPane.columnSpan="2" GridPane.rowIndex="4">
+                                          <Label text="Show Series Champion?" />
+                                          <CheckBox fx:id="cbShowChampion" mnemonicParsing="false" GridPane.columnIndex="1" />
+                                          <Label text="Fastest Lap Bonus Points" GridPane.rowIndex="2" />
+                                          <TextField fx:id="txtBonusPoints" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                          <TableView fx:id="tblPointStructure" editable="true" focusTraversable="false" prefHeight="404.0" prefWidth="254.0" GridPane.columnSpan="2" GridPane.rowIndex="3">
                                             <columns>
                                               <TableColumn fx:id="colFinishPosition" editable="false" prefWidth="75.0" resizable="false" sortable="false" text="Position" />
                                               <TableColumn fx:id="colPoints" prefWidth="178.0" sortable="false" text="Points" />
                                             </columns>
                                           </TableView>
-                                          <Button id="btnAddPosition" mnemonicParsing="false" onAction="#buttonAddPosition" text="Add Position" GridPane.rowIndex="5" />
-                                          <Button id="btnDeletePosition" mnemonicParsing="false" onAction="#buttonDeletePosition" text="Delete Position" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                          <Button id="btnAddPosition" mnemonicParsing="false" onAction="#buttonAddPosition" text="Add Position" GridPane.rowIndex="4" />
+                                          <Button id="btnDeletePosition" mnemonicParsing="false" onAction="#buttonDeletePosition" text="Delete Position" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                          <Label text="Hide Drivers With 0 Points&#10;in Series Standings?" wrapText="true" GridPane.rowIndex="1" />
+                                          <CheckBox fx:id="cbHideSeriesZeros" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                        </children>
                                     </GridPane>
                                  </content>

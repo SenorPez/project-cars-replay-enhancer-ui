@@ -114,6 +114,9 @@ public class Configuration {
     @JsonProperty(value = "show_champion")
     private final SimpleBooleanProperty showChampion;
 
+    @JsonProperty(value = "hide_series_zeros")
+    private final SimpleBooleanProperty hideSeriesZeros;
+
     @JsonDeserialize(using = Configuration.PointStructureDeserializer.class)
     @JsonProperty(value = "point_structure")
     @JsonSerialize(using = Configuration.PointStructureSerializer.class)
@@ -167,6 +170,7 @@ public class Configuration {
 
         // Options
         this.showChampion = new SimpleBooleanProperty(false);
+        this.hideSeriesZeros = new SimpleBooleanProperty(false);
 
         List<Integer> defaultPoints = new ArrayList<>(Arrays.asList(5, 25, 18, 15, 12, 10, 8, 6, 4, 2, 1));
         ObservableList<PointStructureItem> defaultPointStructure = FXCollections.observableArrayList();
@@ -475,6 +479,18 @@ public class Configuration {
 
     public SimpleBooleanProperty showChampionProperty() {
         return showChampion;
+    }
+
+    public boolean isHideSeriesZeros() {
+        return hideSeriesZeros.get();
+    }
+
+    public SimpleBooleanProperty hideSeriesZerosProperty() {
+        return hideSeriesZeros;
+    }
+
+    public void setHideSeriesZeros(boolean hideSeriesZeros) {
+        this.hideSeriesZeros.set(hideSeriesZeros);
     }
 
     public ObservableList<PointStructureItem> getPointStructure() {

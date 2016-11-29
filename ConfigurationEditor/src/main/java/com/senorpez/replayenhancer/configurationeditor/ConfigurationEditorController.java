@@ -124,6 +124,9 @@ public class ConfigurationEditorController implements Initializable {
     private CheckBox cbShowChampion;
 
     @FXML
+    private CheckBox cbHideSeriesZeros;
+
+    @FXML
     private TextField txtBonusPoints;
     
     @FXML
@@ -807,6 +810,8 @@ public class ConfigurationEditorController implements Initializable {
 
         // Options
         cbShowChampion.selectedProperty().bindBidirectional(configuration.showChampionProperty());
+        cbHideSeriesZeros.selectedProperty().bindBidirectional(configuration.hideSeriesZerosProperty());
+
         txtBonusPoints.textProperty().bindBidirectional(configuration.pointStructureProperty(), new StringConverter<ObservableList<PointStructureItem>>() {
             @Override
             public String toString(ObservableList<PointStructureItem> object) {
