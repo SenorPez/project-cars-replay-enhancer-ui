@@ -192,20 +192,6 @@ public class Configuration {
 
         this.cars = new SimpleListProperty<>(FXCollections.observableArrayList(new TreeSet<>()));
 
-//        this.participantConfiguration.addListener((observable, oldValue, newValue) -> cars.set(FXCollections.observableArrayList(newValue
-//                .stream()
-//                .map(Driver::getCar)
-//                .collect(Collectors.toCollection(
-//                        () -> new TreeSet<>(
-//                                (o1, o2) -> o1.getCarName().compareTo(o2.getCarName())))))));
-
-//        this.additionalParticipantConfiguration.addListener((observable, oldValue, newValue) -> cars.set(FXCollections.observableArrayList(newValue
-//                .stream()
-//                .map(Driver::getCar)
-//                .collect(Collectors.toCollection(
-//                        () -> new TreeSet<>(
-//                                (o1, o2) -> o1.getCarName().compareTo(o2.getCarName())))))));
-
         this.participantConfiguration.addListener(((observable, oldValue, newValue) -> cars.set(FXCollections.observableArrayList(Stream.concat(
                 newValue.stream().map(Driver::getCar), additionalParticipantConfiguration.stream().map(Driver::getCar))
                 .collect(Collectors.toCollection(

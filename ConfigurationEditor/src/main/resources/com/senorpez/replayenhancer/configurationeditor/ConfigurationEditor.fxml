@@ -422,7 +422,13 @@
                                                 <TableColumn fx:id="colAddSeriesPoints" prefWidth="110.0" text="Series Points" />
                                              </columns>
                                           </TableView>
-                                          <Button mnemonicParsing="false" onAction="#buttonAddAdditionalDriver" text="Add Additional Driver" />
+                                          <HBox>
+                                             <children>
+                                                <Button mnemonicParsing="false" onAction="#buttonAddAdditionalDriver" text="Add Additional Driver" />
+                                                <Pane prefWidth="10.0" />
+                                                <Button mnemonicParsing="false" onAction="#buttonDeleteAdditionalDriver" text="Delete Additional Driver" />
+                                             </children>
+                                          </HBox>
                                        </children>
                                     </VBox>
                                  </content>

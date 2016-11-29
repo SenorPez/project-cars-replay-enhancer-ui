@@ -510,7 +510,11 @@ public class ConfigurationEditorController implements Initializable {
         configuration.getAdditionalParticipantConfiguration().add(
                 new Driver("Additional Driver")
         );
-        Integer test = 3;
+    }
+
+    @FXML
+    private void buttonDeleteAdditionalDriver (ActionEvent event) {
+        configuration.getAdditionalParticipantConfiguration().removeAll(tblAddDrivers.getSelectionModel().getSelectedItems());
     }
 
     @FXML
