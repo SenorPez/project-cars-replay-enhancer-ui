@@ -22,7 +22,6 @@ import javafx.scene.paint.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @JsonPropertyOrder(alphabetic = true)
@@ -639,6 +638,7 @@ public class Configuration {
 
         @Override
         public void serialize(ObservableList<Driver> value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+            gen.configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);
             gen.writeStartObject();
             for (Driver driver : value.sorted(Comparator.comparing(Driver::getName))) {
                 gen.writeFieldName(driver.getName());
