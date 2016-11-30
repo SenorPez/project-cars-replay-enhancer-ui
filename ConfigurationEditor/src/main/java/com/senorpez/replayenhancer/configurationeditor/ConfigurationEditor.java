@@ -8,8 +8,30 @@ import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class ConfigurationEditor extends Application {
+    private static final Logger LOGGER;
+
+    static {
+        Logger tmp = Logger.getLogger("com.senorpez.replayenhancer");
+        try {
+            tmp.addHandler(new FileHandler("replayenhancer.log"));
+        } catch (IOException e) {
+            tmp.addHandler(new ConsoleHandler());
+        }
+        LOGGER = tmp;
+    }
+
     public static void main(String[] args) {
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+            LOGGER.log(Level.SEVERE, "Exception in thread: " + t, e);
+            System.exit(1);
+        });
         launch(args);
     }
 
