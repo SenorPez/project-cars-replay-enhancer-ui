@@ -111,6 +111,12 @@ public class Configuration {
     @JsonProperty(value = "result_lines")
     private final SimpleIntegerProperty resultLines;
 
+    @JsonProperty(value = "leader_window_size")
+    private final SimpleIntegerProperty leaderStandingsLines;
+
+    @JsonProperty(value = "field_window_size")
+    private final SimpleIntegerProperty windowStandingsLines;
+
     // Options
     @JsonProperty(value = "show_champion")
     private final SimpleBooleanProperty showChampion;
@@ -173,6 +179,8 @@ public class Configuration {
         this.margin = new SimpleIntegerProperty(20);
         this.columnMargin = new SimpleIntegerProperty(10);
         this.resultLines = new SimpleIntegerProperty(10);
+        this.leaderStandingsLines = new SimpleIntegerProperty(10);
+        this.windowStandingsLines = new SimpleIntegerProperty(0);
 
         // Options
         this.showChampion = new SimpleBooleanProperty(false);
@@ -484,6 +492,30 @@ public class Configuration {
 
     public SimpleIntegerProperty resultLinesProperty() {
         return resultLines;
+    }
+
+    public int getLeaderStandingsLines() {
+        return leaderStandingsLines.get();
+    }
+
+    public SimpleIntegerProperty leaderStandingsLinesProperty() {
+        return leaderStandingsLines;
+    }
+
+    public void setLeaderStandingsLines(int leaderStandingsLines) {
+        this.leaderStandingsLines.set(leaderStandingsLines);
+    }
+
+    public int getWindowStandingsLines() {
+        return windowStandingsLines.get();
+    }
+
+    public SimpleIntegerProperty windowStandingsLinesProperty() {
+        return windowStandingsLines;
+    }
+
+    public void setWindowStandingsLines(int windowStandingsLines) {
+        this.windowStandingsLines.set(windowStandingsLines);
     }
 
     public boolean isShowChampion() {

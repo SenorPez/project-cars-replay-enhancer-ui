@@ -306,6 +306,8 @@
                                           <RowConstraints vgrow="SOMETIMES" />
                                           <RowConstraints vgrow="SOMETIMES" />
                                           <RowConstraints vgrow="SOMETIMES" />
+                                          <RowConstraints vgrow="SOMETIMES" />
+                                          <RowConstraints vgrow="SOMETIMES" />
                                        </rowConstraints>
                                        <children>
                                           <Label text="Margin Width" />
@@ -314,6 +316,10 @@
                                           <TextField fx:id="txtColumnMarginWidth" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                           <Label text="Result Lines" GridPane.rowIndex="2" />
                                           <TextField fx:id="txtResultLines" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                          <Label text="Leader Standings Lines" GridPane.rowIndex="3" />
+                                          <TextField fx:id="txtLeaderStandingsLines" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                          <Label text="Target Standings Lines" GridPane.rowIndex="4" />
+                                          <TextField fx:id="txtWindowStandingsLines" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                                        </children>
                                     </GridPane>
                                  </content>

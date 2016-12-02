@@ -5,7 +5,6 @@ import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringPropertyBase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
@@ -95,6 +94,12 @@ public class ConfigurationEditorController implements Initializable {
     
     @FXML
     private TextField txtResultLines;
+
+    @FXML
+    private TextField txtLeaderStandingsLines;
+
+    @FXML
+    private TextField txtWindowStandingsLines;
     
     @FXML
     private TextField txtBackdrop;
@@ -888,6 +893,8 @@ public class ConfigurationEditorController implements Initializable {
         txtMarginWidth.textProperty().bindBidirectional(configuration.marginProperty(), new NumberStringConverter());
         txtColumnMarginWidth.textProperty().bindBidirectional(configuration.columnMarginProperty(), new NumberStringConverter());
         txtResultLines.textProperty().bindBidirectional(configuration.resultLinesProperty(), new NumberStringConverter());
+        txtLeaderStandingsLines.textProperty().bindBidirectional(configuration.leaderStandingsLinesProperty(), new NumberStringConverter());
+        txtWindowStandingsLines.textProperty().bindBidirectional(configuration.windowStandingsLinesProperty(), new NumberStringConverter());
 
         // Options
         cbShowChampion.selectedProperty().bindBidirectional(configuration.showChampionProperty());
@@ -1034,6 +1041,7 @@ public class ConfigurationEditorController implements Initializable {
                                     names.addAll(packet.getNames().stream()
                                             .limit(numParticipants)
                                             .map(SimpleStringProperty::get)
+                                            .filter(name -> !name.equals(""))
                                             .collect(Collectors.toList()));
                                 }
                             } catch (IOException e) {
@@ -1049,6 +1057,7 @@ public class ConfigurationEditorController implements Initializable {
                                     names.addAll(packet.getNames().stream()
                                             .limit(numParticipants)
                                             .map(SimpleStringProperty::get)
+                                            .filter(name -> !name.equals(""))
                                             .collect(Collectors.toList()));
                                 }
                             } catch (IOException e) {
