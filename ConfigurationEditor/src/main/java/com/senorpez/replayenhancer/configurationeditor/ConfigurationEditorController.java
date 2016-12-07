@@ -5,6 +5,8 @@ import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
@@ -388,6 +390,7 @@ public class ConfigurationEditorController implements Initializable {
         String[] command = {"replayenhancer", "-s", txtFileName.getText()};
         PythonExecutor pythonExecutor = new PythonExecutor(command);
         pythonExecutor.setOnRunning(serviceEvent -> {
+            txtPythonOutput.textProperty().bind(pythonExecutor.messageProperty());
             prgPython.setVisible(true);
             btnMakeSyncVideo.disableProperty().unbind();
             btnMakeVideo.disableProperty().unbind();
@@ -395,6 +398,7 @@ public class ConfigurationEditorController implements Initializable {
             btnMakeVideo.setDisable(true);
         });
         pythonExecutor.setOnSucceeded(serviceEvent -> {
+            txtPythonOutput.textProperty().unbind();
             prgPython.setVisible(false);
             btnMakeSyncVideo.setDisable(false);
             btnMakeVideo.setDisable(false);
@@ -408,7 +412,13 @@ public class ConfigurationEditorController implements Initializable {
     private void buttonMakeVideo(ActionEvent event) throws IOException {
         String[] command = {"replayenhancer", txtFileName.getText()};
         PythonExecutor pythonExecutor = new PythonExecutor(command);
+        ChangeListener<String> messageListener = (observable, oldValue, newValue) -> {
+            txtPythonOutput.clear();
+            txtPythonOutput.appendText(newValue);
+        };
+
         pythonExecutor.setOnRunning(serviceEvent -> {
+            pythonExecutor.messageProperty().addListener(messageListener);
             prgPython.setVisible(true);
             btnMakeSyncVideo.disableProperty().unbind();
             btnMakeVideo.disableProperty().unbind();
@@ -416,6 +426,7 @@ public class ConfigurationEditorController implements Initializable {
             btnMakeVideo.setDisable(true);
         });
         pythonExecutor.setOnSucceeded(serviceEvent -> {
+            pythonExecutor.messageProperty().removeListener(messageListener);
             prgPython.setVisible(false);
             btnMakeSyncVideo.setDisable(false);
             btnMakeVideo.setDisable(false);
@@ -1137,7 +1148,7 @@ public class ConfigurationEditorController implements Initializable {
         }
     }
 
-    private class PythonExecutor extends Service<Integer> {
+    private static class PythonExecutor extends Service<Integer> {
         private final String[] command;
 
         public PythonExecutor(String[] command) {
@@ -1149,12 +1160,14 @@ public class ConfigurationEditorController implements Initializable {
             return new Task<Integer>() {
                 @Override
                 protected Integer call() {
-                    txtPythonOutput.clear();
+                    updateMessage("");
+                    String outputText = "";
                     String commandString = "";
                     for (String string : command) {
                         commandString += " " + string;
                     }
-                    txtPythonOutput.appendText("Running Command:\n" + commandString + "\n\n");
+                    outputText += commandString + "\n\n";
+                    updateMessage(outputText);
                     System.out.println("Running Command: " + commandString);
 
                     try {
@@ -1162,7 +1175,8 @@ public class ConfigurationEditorController implements Initializable {
                         BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
                         String s;
                         while ((s = br.readLine()) != null) {
-                            txtPythonOutput.setText(s + "\n");
+                            outputText += s + "\n";
+                            updateMessage(outputText);
                             System.out.println(s);
                         }
                         return p.waitFor();
