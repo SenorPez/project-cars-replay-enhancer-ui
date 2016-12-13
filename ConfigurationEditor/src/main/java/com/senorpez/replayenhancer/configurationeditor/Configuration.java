@@ -178,8 +178,8 @@ public class Configuration {
         // Layout
         this.margin = new SimpleIntegerProperty(20);
         this.columnMargin = new SimpleIntegerProperty(10);
-        this.resultLines = new SimpleIntegerProperty(10);
-        this.leaderStandingsLines = new SimpleIntegerProperty(10);
+        this.resultLines = new SimpleIntegerProperty(16);
+        this.leaderStandingsLines = new SimpleIntegerProperty(16);
         this.windowStandingsLines = new SimpleIntegerProperty(0);
 
         // Options
