@@ -167,6 +167,9 @@ public class ConfigurationEditorController implements Initializable {
     private TableColumn<Driver, Integer> colSeriesPoints;
 
     @FXML
+    private TableColumn<Driver, String> colPointsAdjust;
+
+    @FXML
     private TableView<Driver> tblAddDrivers;
 
     @FXML
@@ -632,6 +635,7 @@ public class ConfigurationEditorController implements Initializable {
                         t.getTablePosition().getRow())
                 ).setTeam(t.getNewValue())
         );
+
         colSeriesPoints.setCellValueFactory(
                 new PropertyValueFactory<>("seriesPoints")
         );
@@ -640,6 +644,16 @@ public class ConfigurationEditorController implements Initializable {
                 t -> (t.getTableView().getItems().get(
                         t.getTablePosition().getRow())
                 ).setSeriesPoints(t.getNewValue())
+        );
+
+        colPointsAdjust.setCellValueFactory(
+                new PropertyValueFactory<>("pointsAdjust")
+        );
+        colPointsAdjust.setCellFactory(param -> CustomCell.createStringEditCell());
+        colPointsAdjust.setOnEditCommit(
+                t -> (t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                ).setPointsAdjust(t.getNewValue())
         );
 
         colAddName.setCellValueFactory(

@@ -204,7 +204,7 @@ public class Configuration {
                 newValue.stream().map(Driver::getCar), additionalParticipantConfiguration.stream().map(Driver::getCar))
                 .collect(Collectors.toCollection(
                         () -> new TreeSet<>(
-                                (o1, o2) -> o1.getCarName().compareTo(o2.getCarName())
+                                Comparator.comparing(Car::getCarName)
                         )
                 ))
         ))));
@@ -212,7 +212,7 @@ public class Configuration {
                 newValue.stream().map(Driver::getCar), participantConfiguration.stream().map(Driver::getCar))
                 .collect(Collectors.toCollection(
                         () -> new TreeSet<>(
-                                (o1, o2) -> o1.getCarName().compareTo(o2.getCarName())
+                                Comparator.comparing(Car::getCarName)
                         )
                 ))
         ))));
@@ -697,6 +697,12 @@ public class Configuration {
                         entry.getValue().findValue("team").textValue(),
                         entry.getValue().findValue("points").intValue()
                 );
+                if (entry.getValue().findValue("points_adjust") != null) {
+                    driver.setPointsAdjust(entry.getValue().findValue("points_adjust").textValue());
+                } else {
+                    driver.setPointsAdjust("");
+                }
+
                 drivers.add(driver);
             }
 
@@ -729,6 +735,7 @@ public class Configuration {
                 }
                 gen.writeStringField("team", driver.getTeam());
                 gen.writeNumberField("points", driver.getSeriesPoints());
+                gen.writeStringField("points_adjust", driver.getPointsAdjust());
                 gen.writeEndObject();
             }
             gen.writeEndObject();

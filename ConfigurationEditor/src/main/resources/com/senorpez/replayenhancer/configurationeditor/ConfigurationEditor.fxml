@@ -395,6 +395,7 @@
                                           <TableColumn fx:id="colCar" prefWidth="110.0" text="Car" />
                                           <TableColumn fx:id="colTeam" prefWidth="110.0" text="Team" />
                                           <TableColumn fx:id="colSeriesPoints" text="Series Points" />
+                                          <TableColumn fx:id="colPointsAdjust" prefWidth="75.0" text="Points Adjust" />
                                       </columns>
                                     </TableView>
                                  </content>
