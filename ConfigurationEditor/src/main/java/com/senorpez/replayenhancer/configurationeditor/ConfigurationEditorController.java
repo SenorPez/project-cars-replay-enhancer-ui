@@ -411,7 +411,9 @@ public class ConfigurationEditorController implements Initializable {
     }
 
     @FXML
-    private void buttonMakeSyncVideo(ActionEvent event) {
+    private void buttonMakeSyncVideo(ActionEvent event) throws IOException {
+        menuFileSave();
+
         Integer fps;
         try {
             fps = Integer.valueOf(txtFPS.getText());
@@ -459,6 +461,8 @@ public class ConfigurationEditorController implements Initializable {
 
     @FXML
     private void buttonMakeVideo(ActionEvent event) throws IOException {
+        menuFileSave();
+
         Integer fps;
         try {
             fps = Integer.valueOf(txtFPS.getText());
@@ -633,8 +637,8 @@ public class ConfigurationEditorController implements Initializable {
         prgPython.managedProperty().bind(prgPython.visibleProperty());
         prgPython.setVisible(false);
 
-        btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull());
-        btnMakeVideo.disableProperty().bind(JSONFile.isNull());
+        btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull().or(txtSourceTelemetry.textProperty().isEmpty().or(txtOutputVideo.textProperty().isEmpty())));
+        btnMakeVideo.disableProperty().bind(JSONFile.isNull().or(txtSourceTelemetry.textProperty().isEmpty().or(txtOutputVideo.textProperty().isEmpty())));
 
         configuration = new Configuration();
         addListeners();
