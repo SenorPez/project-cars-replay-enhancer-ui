@@ -86,14 +86,22 @@
                                              <rowConstraints>
                                                 <RowConstraints fillHeight="false" vgrow="NEVER" />
                                                 <RowConstraints vgrow="NEVER" />
+                                                <RowConstraints vgrow="NEVER" />
                                              </rowConstraints>
                                              <children>
                                                 <Label text="Source Video" />
                                                 <TextField fx:id="txtSourceVideo" editable="false" GridPane.columnIndex="1" />
                                                 <Button id="btnSourceVideo" fx:id="btnSourceVideo" mnemonicParsing="false" onAction="#buttonSourceVideo" text="Select..." GridPane.columnIndex="2" />
-                                                <Label text="Source Telemetry" GridPane.rowIndex="1" />
-                                                <TextField fx:id="txtSourceTelemetry" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <Button id="btnSourceTelemetry" mnemonicParsing="false" onAction="#buttonSourceTelemetry" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                                <Label text="Source Telemetry" GridPane.rowIndex="2" />
+                                                <TextField fx:id="txtSourceTelemetry" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <Button id="btnSourceTelemetry" mnemonicParsing="false" onAction="#buttonSourceTelemetry" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                                                <Label fx:id="txtFPSLabel" text="Use Default FPS (30):" GridPane.rowIndex="1" />
+                                                <HBox GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                   <children>
+                                                      <CheckBox fx:id="cbFPS" mnemonicParsing="false" selected="true" />
+                                                      <TextField fx:id="txtFPS" editable="false" prefHeight="25.0" prefWidth="75.0" />
+                                                   </children>
+                                                </HBox>
                                              </children>
                                           </GridPane>
                                           <GridPane fx:id="gridProgress" hgap="4.0" layoutX="20.0" layoutY="20.0" vgap="4.0">
@@ -134,9 +142,9 @@
                                        </rowConstraints>
                                        <children>
                                           <Label text="Video Start Time:" />
-                                          <TextField fx:id="txtVideoStart" onKeyReleased="#validateTime" styleClass="input-float" GridPane.columnIndex="1" />
+                                          <TextField fx:id="txtVideoStart" onKeyReleased="#validatePositiveTime" styleClass="input-float" GridPane.columnIndex="1" />
                                           <Label text="Video End Time:" GridPane.rowIndex="1" />
-                                          <TextField fx:id="txtVideoEnd" onKeyReleased="#validateTime" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <TextField fx:id="txtVideoEnd" onKeyReleased="#validatePositiveTime" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                           <Label text="Telemetry Sync. Value:" GridPane.rowIndex="2" />
                                           <TextField fx:id="txtVideoSync" onKeyReleased="#validateTime" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                        </children>

@@ -5,4 +5,4 @@ plugins {
 apply plugin: 'application'
 mainClassName = "com.senorpez.replayenhancer.configurationeditor.ConfigurationEditor"
 
-version = '0.1.1rc1'
+version = '0.1.1rc2'
