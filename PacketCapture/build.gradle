@@ -4,3 +4,5 @@ plugins {
 
 apply plugin: 'application'
 mainClassName = 'com.senorpez.replayenhancer.packetcapture.PacketCapture'
+
+version = '0.1'
