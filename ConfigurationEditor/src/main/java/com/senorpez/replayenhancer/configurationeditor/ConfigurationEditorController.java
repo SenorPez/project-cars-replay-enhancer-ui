@@ -6,7 +6,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
@@ -782,22 +781,25 @@ public class ConfigurationEditorController implements Initializable {
                         new SimpleStringProperty(param.getValue().getCarClass().getClassName())
         );
         colClassName.setCellFactory(param -> CustomCell.createStringEditCell());
-        colClassName.setOnEditCommit(
-                event -> (event.getTableView().getItems().get(
-                        event.getTablePosition().getRow())
-                ).getCarClass().setClassName(event.getNewValue())
-        );
+        colClassName.setOnEditCommit(event -> {
+            Map<String, CarClass> carClassMap = event.getTableView().getItems().stream().map(Car::getCarClass).collect(Collectors.toMap(CarClass::getClassName, carClass -> carClass, (carClass, carClass2) -> carClass));
+            if (carClassMap.containsKey(event.getNewValue())) {
+                (event.getTableView().getItems().get(event.getTablePosition().getRow())).setCarClass(carClassMap.get(event.getNewValue()));
+            } else {
+                (event.getTableView().getItems().get(event.getTablePosition().getRow())).setCarClass(new CarClass(event.getNewValue(), Color.RED));
+            }
+            event.getTableView().refresh();
+        });
         colClassColor.setCellValueFactory(
                 param -> param.getValue() == null || param.getValue().getCarClass() == null ?
                         new SimpleObjectProperty<>(null) :
                         new SimpleObjectProperty<>(param.getValue().getCarClass().getClassColor())
         );
         colClassColor.setCellFactory(ColorTableCell::new);
-        colClassColor.setOnEditCommit(
-                event -> (event.getTableView().getItems().get(
-                        event.getTablePosition().getRow())
-                ).getCarClass().setClassColor(event.getNewValue())
-        );
+        colClassColor.setOnEditCommit(event -> {
+            (event.getTableView().getItems().get(event.getTablePosition().getRow())).getCarClass().setClassColor(event.getNewValue());
+            event.getTableView().refresh();
+        });
     }
 
     private void addListeners() {

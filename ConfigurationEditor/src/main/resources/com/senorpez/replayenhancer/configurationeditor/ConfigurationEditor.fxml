@@ -413,7 +413,7 @@
                               </TitledPane>
                               <TitledPane animated="false" collapsible="false" focusTraversable="false" prefHeight="175.0" prefWidth="620.0" text="Cars">
                                  <content>
-                                    <TableView fx:id="tblCars" focusTraversable="false" prefHeight="200.0" prefWidth="618.0">
+                                    <TableView fx:id="tblCars" editable="true" focusTraversable="false" prefHeight="200.0" prefWidth="618.0">
                                       <columns>
                                         <TableColumn fx:id="colCarName" prefWidth="75.0" text="Car" />
                                         <TableColumn fx:id="colClassName" prefWidth="75.0" text="Class" />
