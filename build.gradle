@@ -6,7 +6,6 @@ apply plugin: 'idea'
 allprojects {
     apply plugin: 'idea'
     group = 'com.senorpez.replayenhancer'
-    version = '0.1'
 }
 
 subprojects {

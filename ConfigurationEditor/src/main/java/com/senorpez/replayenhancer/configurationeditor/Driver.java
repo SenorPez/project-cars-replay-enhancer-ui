@@ -12,6 +12,7 @@ public class Driver {
     private final SimpleStringProperty name;
     private final SimpleObjectProperty<Car> car;
     private final SimpleIntegerProperty seriesPoints;
+    private final SimpleStringProperty pointsAdjust;
 
     public Driver(String name) {
         this.name = new SimpleStringProperty(name);
@@ -29,6 +30,7 @@ public class Driver {
         this.car = new SimpleObjectProperty<>(new Car("", new CarClass("", Color.rgb(255, 0, 0))));
         this.team = new SimpleStringProperty("");
         this.seriesPoints = new SimpleIntegerProperty(0);
+        this.pointsAdjust = new SimpleStringProperty("");
     }
 
     public Driver(String name, String displayName, String shortName, Car car) {
@@ -38,6 +40,7 @@ public class Driver {
         this.car = new SimpleObjectProperty<>(car);
         this.team = new SimpleStringProperty("");
         this.seriesPoints = new SimpleIntegerProperty(0);
+        this.pointsAdjust = new SimpleStringProperty("");
     }
 
     public Driver(String name, String displayName, String shortName, Car car, String team, Integer points) {
@@ -47,6 +50,7 @@ public class Driver {
         this.car = new SimpleObjectProperty<>(car);
         this.team = new SimpleStringProperty(team);
         this.seriesPoints = new SimpleIntegerProperty(points);
+        this.pointsAdjust = new SimpleStringProperty("");
     }
 
     public String getTeam() {
@@ -119,5 +123,17 @@ public class Driver {
 
     public SimpleIntegerProperty seriesPointsProperty() {
         return seriesPoints;
+    }
+
+    public String getPointsAdjust() {
+        return pointsAdjust.get();
+    }
+
+    public SimpleStringProperty pointsAdjustProperty() {
+        return pointsAdjust;
+    }
+
+    public void setPointsAdjust(String pointsAdjust) {
+        this.pointsAdjust.set(pointsAdjust);
     }
 }

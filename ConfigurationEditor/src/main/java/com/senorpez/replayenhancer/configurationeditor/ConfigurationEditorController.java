@@ -51,7 +51,16 @@ public class ConfigurationEditorController implements Initializable {
     
     @FXML
     private TextField txtSourceVideo;
-    
+
+    @FXML
+    private Label txtFPSLabel;
+
+    @FXML
+    private CheckBox cbFPS;
+
+    @FXML
+    private TextField txtFPS;
+
     @FXML
     private TextField txtSourceTelemetry;
     
@@ -165,6 +174,9 @@ public class ConfigurationEditorController implements Initializable {
     
     @FXML
     private TableColumn<Driver, Integer> colSeriesPoints;
+
+    @FXML
+    private TableColumn<Driver, String> colPointsAdjust;
 
     @FXML
     private TableView<Driver> tblAddDrivers;
@@ -323,6 +335,19 @@ public class ConfigurationEditorController implements Initializable {
         TextField txtSource = (TextField) source;
         txtSource.setStyle("-fx-text-inner-color: black");
 
+        Pattern regex = Pattern.compile("(?:^-?(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^-?(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^-?(\\d*(?:\\.\\d*)?)$)");
+        Matcher match = regex.matcher(txtSource.getText());
+        if (!match.matches()) {
+            txtSource.setStyle("-fx-text-inner-color: red");
+        }
+    }
+
+    @FXML
+    private void validatePositiveTime(KeyEvent event) {
+        Object source = event.getSource();
+        TextField txtSource = (TextField) source;
+        txtSource.setStyle("-fx-text-inner-color: black");
+
         Pattern regex = Pattern.compile("(?:^(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*(?:\\.\\d*)?)$)");
         Matcher match = regex.matcher(txtSource.getText());
         if (!match.matches()) {
@@ -386,11 +411,37 @@ public class ConfigurationEditorController implements Initializable {
     }
 
     @FXML
-    private void buttonMakeSyncVideo(ActionEvent event) {
-        String[] command = {"replayenhancer", "-s", txtFileName.getText()};
-        PythonExecutor pythonExecutor = new PythonExecutor(command);
+    private void buttonMakeSyncVideo(ActionEvent event) throws IOException {
+        menuFileSave();
+
+        Integer fps;
+        try {
+            fps = Integer.valueOf(txtFPS.getText());
+        } catch (NumberFormatException e) {
+            fps = null;
+        }
+
+        ArrayList<String> command = new ArrayList<>();
+        if (fps == null) {
+            command.add("replayenhancer");
+            command.add("-s");
+            command.add(txtFileName.getText());
+        } else {
+            command.add("replayenhancer");
+            command.add("-f");
+            command.add(fps.toString());
+            command.add("-s");
+            command.add(txtFileName.getText());
+        }
+
+        PythonExecutor pythonExecutor = new PythonExecutor(command.toArray(new String[command.size()]));
+        ChangeListener<String> messageListener = (observable, oldValue, newValue) -> {
+            txtPythonOutput.clear();
+            txtPythonOutput.appendText(newValue);
+        };
+
         pythonExecutor.setOnRunning(serviceEvent -> {
-            txtPythonOutput.textProperty().bind(pythonExecutor.messageProperty());
+            pythonExecutor.messageProperty().addListener(messageListener);
             prgPython.setVisible(true);
             btnMakeSyncVideo.disableProperty().unbind();
             btnMakeVideo.disableProperty().unbind();
@@ -398,7 +449,7 @@ public class ConfigurationEditorController implements Initializable {
             btnMakeVideo.setDisable(true);
         });
         pythonExecutor.setOnSucceeded(serviceEvent -> {
-            txtPythonOutput.textProperty().unbind();
+            pythonExecutor.messageProperty().removeListener(messageListener);
             prgPython.setVisible(false);
             btnMakeSyncVideo.setDisable(false);
             btnMakeVideo.setDisable(false);
@@ -410,8 +461,27 @@ public class ConfigurationEditorController implements Initializable {
 
     @FXML
     private void buttonMakeVideo(ActionEvent event) throws IOException {
-        String[] command = {"replayenhancer", txtFileName.getText()};
-        PythonExecutor pythonExecutor = new PythonExecutor(command);
+        menuFileSave();
+
+        Integer fps;
+        try {
+            fps = Integer.valueOf(txtFPS.getText());
+        } catch (NumberFormatException e) {
+            fps = null;
+        }
+
+        ArrayList<String> command = new ArrayList<>();
+        if (fps == null) {
+            command.add("replayenhancer");
+            command.add(txtFileName.getText());
+        } else {
+            command.add("replayenhancer");
+            command.add("-f");
+            command.add(fps.toString());
+            command.add(txtFileName.getText());
+        }
+
+        PythonExecutor pythonExecutor = new PythonExecutor(command.toArray(new String[command.size()]));
         ChangeListener<String> messageListener = (observable, oldValue, newValue) -> {
             txtPythonOutput.clear();
             txtPythonOutput.appendText(newValue);
@@ -567,8 +637,8 @@ public class ConfigurationEditorController implements Initializable {
         prgPython.managedProperty().bind(prgPython.visibleProperty());
         prgPython.setVisible(false);
 
-        btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull());
-        btnMakeVideo.disableProperty().bind(JSONFile.isNull());
+        btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull().or(txtSourceTelemetry.textProperty().isEmpty().or(txtOutputVideo.textProperty().isEmpty())));
+        btnMakeVideo.disableProperty().bind(JSONFile.isNull().or(txtSourceTelemetry.textProperty().isEmpty().or(txtOutputVideo.textProperty().isEmpty())));
 
         configuration = new Configuration();
         addListeners();
@@ -632,6 +702,7 @@ public class ConfigurationEditorController implements Initializable {
                         t.getTablePosition().getRow())
                 ).setTeam(t.getNewValue())
         );
+
         colSeriesPoints.setCellValueFactory(
                 new PropertyValueFactory<>("seriesPoints")
         );
@@ -640,6 +711,16 @@ public class ConfigurationEditorController implements Initializable {
                 t -> (t.getTableView().getItems().get(
                         t.getTablePosition().getRow())
                 ).setSeriesPoints(t.getNewValue())
+        );
+
+        colPointsAdjust.setCellValueFactory(
+                new PropertyValueFactory<>("pointsAdjust")
+        );
+        colPointsAdjust.setCellFactory(param -> CustomCell.createStringEditCell());
+        colPointsAdjust.setOnEditCommit(
+                t -> (t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                ).setPointsAdjust(t.getNewValue())
         );
 
         colAddName.setCellValueFactory(
@@ -744,6 +825,30 @@ public class ConfigurationEditorController implements Initializable {
                 return new File(string);
             }
         });
+
+        if (txtSourceVideo.getText() == null || txtSourceVideo.getText() == "") {
+            txtFPSLabel.setText("Use Default FPS (30):");
+        } else {
+            txtFPSLabel.setText("Use Source Video FPS:");
+        }
+
+        txtSourceVideo.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null || newValue == "") {
+                txtFPSLabel.setText("Use Default FPS (30):");
+            } else {
+                txtFPSLabel.setText("Use Source Video FPS:");
+            }
+        });
+
+        cbFPS.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            txtFPS.setEditable(!newValue);
+            txtFPS.setDisable(newValue);
+
+            if (newValue) {
+                txtFPS.setText(null);
+            }
+        });
+
         txtSourceTelemetry.textProperty().bindBidirectional(configuration.sourceTelemetryProperty(), new StringConverter<File>() {
             @Override
             public String toString(File object) {
