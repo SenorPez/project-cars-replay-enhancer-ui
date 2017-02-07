@@ -8,6 +8,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -1076,9 +1077,29 @@ public class ConfigurationEditorController implements Initializable {
         tblPointStructure.setItems(configuration.pointStructureProperty().filtered(pointStructureItem -> pointStructureItem.getFinishPosition() > 0));
 
         // Drivers (and teams, and cars, oh my!)
-        tblDrivers.setItems(configuration.participantConfigurationProperty());
-        tblAddDrivers.setItems(configuration.additionalParticipantConfigurationProperty());
-        tblCars.setItems(configuration.carsProperty());
+        SortedList<Driver> sortedDrivers = configuration.participantConfigurationProperty().sorted((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
+        sortedDrivers.comparatorProperty().bind(tblDrivers.comparatorProperty());
+        tblDrivers.setItems(sortedDrivers);
+        tblDrivers.getColumns().get(0).setSortType(TableColumn.SortType.ASCENDING);
+        tblDrivers.getSortOrder().clear();
+        tblDrivers.getSortOrder().add(tblDrivers.getColumns().get(0));
+        tblDrivers.sort();
+
+        SortedList<Driver> sortedAddDrivers = configuration.additionalParticipantConfigurationProperty().sorted((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
+        sortedAddDrivers.comparatorProperty().bind(tblAddDrivers.comparatorProperty());
+        tblAddDrivers.setItems(sortedAddDrivers);
+        tblAddDrivers.getColumns().get(0).setSortType(TableColumn.SortType.ASCENDING);
+        tblAddDrivers.getSortOrder().clear();
+        tblAddDrivers.getSortOrder().add(tblAddDrivers.getColumns().get(0));
+        tblAddDrivers.sort();
+
+        SortedList<Car> sortedCars = configuration.carsProperty().sorted((o1, o2) -> o1.getCarName().compareToIgnoreCase(o2.getCarName()));
+        sortedCars.comparatorProperty().bind(tblCars.comparatorProperty());
+        tblCars.setItems(sortedCars);
+        tblCars.getColumns().get(0).setSortType(TableColumn.SortType.ASCENDING);
+        tblCars.getSortOrder().clear();
+        tblCars.getSortOrder().add(tblCars.getColumns().get(0));
+        tblCars.sort();
     }
 
     private static class ConvertTime extends StringConverter<Number> {
