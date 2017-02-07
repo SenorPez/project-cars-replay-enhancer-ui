@@ -427,9 +427,9 @@
                                  <content>
                                     <TableView fx:id="tblCars" editable="true" focusTraversable="false" prefHeight="200.0" prefWidth="618.0">
                                       <columns>
-                                        <TableColumn fx:id="colCarName" prefWidth="75.0" text="Car" />
-                                        <TableColumn fx:id="colClassName" prefWidth="75.0" text="Class" />
-                                          <TableColumn fx:id="colClassColor" prefWidth="75.0" text="Class Color" />
+                                        <TableColumn fx:id="colCarName" prefWidth="250.0" text="Car" />
+                                        <TableColumn fx:id="colClassName" prefWidth="250.0" text="Class" />
+                                          <TableColumn fx:id="colClassColor" prefWidth="150.0" text="Class Color" />
                                       </columns>
                                     </TableView>
                                  </content>
@@ -443,10 +443,10 @@
                                        <children>
                                           <TableView fx:id="tblAddDrivers" editable="true" focusTraversable="false" prefHeight="200.0" prefWidth="618.0">
                                              <columns>
-                                                <TableColumn fx:id="colAddName" prefWidth="75.0" text="Name" />
-                                                <TableColumn fx:id="colAddCar" prefWidth="53.0" text="Car" />
-                                                <TableColumn fx:id="colAddTeam" prefWidth="71.0" text="Team" />
-                                                <TableColumn fx:id="colAddSeriesPoints" prefWidth="110.0" text="Series Points" />
+                                                <TableColumn fx:id="colAddName" prefWidth="110.0" text="Name" />
+                                                <TableColumn fx:id="colAddCar" prefWidth="110.0" text="Car" />
+                                                <TableColumn fx:id="colAddTeam" prefWidth="110.0" text="Team" />
+                                                <TableColumn fx:id="colAddSeriesPoints" text="Series Points" />
                                              </columns>
                                           </TableView>
                                           <HBox>
