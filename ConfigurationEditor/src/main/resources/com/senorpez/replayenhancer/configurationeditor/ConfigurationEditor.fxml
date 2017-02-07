@@ -28,7 +28,7 @@
 
 <VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.senorpez.replayenhancer.configurationeditor.ConfigurationEditorController">
    <children>
-      <MenuBar maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="640.0">
+      <MenuBar maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="25.0">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
@@ -65,7 +65,7 @@
           </Menu>
         </menus>
       </MenuBar>
-      <ScrollPane fitToWidth="true" hbarPolicy="NEVER" minWidth="-Infinity" VBox.vgrow="NEVER">
+      <ScrollPane VBox.vgrow="NEVER">
          <content>
             <TabPane tabClosingPolicy="UNAVAILABLE">
               <tabs>
