@@ -316,6 +316,7 @@
                                           <RowConstraints vgrow="SOMETIMES" />
                                           <RowConstraints vgrow="SOMETIMES" />
                                           <RowConstraints vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="25.0" vgrow="SOMETIMES" />
                                        </rowConstraints>
                                        <children>
                                           <Label text="Margin Width" />
@@ -328,6 +329,8 @@
                                           <TextField fx:id="txtLeaderStandingsLines" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                           <Label text="Target Standings Lines" GridPane.rowIndex="4" />
                                           <TextField fx:id="txtWindowStandingsLines" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                          <Label text="Show Lap Counter and Timer?" GridPane.rowIndex="5" />
+                                          <CheckBox fx:id="cbShowTimer" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                        </children>
                                     </GridPane>
                                  </content>

@@ -117,6 +117,9 @@ public class Configuration {
     @JsonProperty(value = "field_window_size")
     private final SimpleIntegerProperty windowStandingsLines;
 
+    @JsonProperty(value = "show_timer")
+    private final SimpleBooleanProperty showTimer;
+
     // Options
     @JsonProperty(value = "show_champion")
     private final SimpleBooleanProperty showChampion;
@@ -183,6 +186,7 @@ public class Configuration {
         this.resultLines = new SimpleIntegerProperty(16);
         this.leaderStandingsLines = new SimpleIntegerProperty(16);
         this.windowStandingsLines = new SimpleIntegerProperty(0);
+        this.showTimer = new SimpleBooleanProperty(true);
 
         // Options
         this.showChampion = new SimpleBooleanProperty(false);
@@ -578,6 +582,18 @@ public class Configuration {
 
     public void setWindowStandingsLines(int windowStandingsLines) {
         this.windowStandingsLines.set(windowStandingsLines);
+    }
+
+    public boolean isShowTimer() {
+        return showTimer.get();
+    }
+
+    public SimpleBooleanProperty showTimerProperty() {
+        return showTimer;
+    }
+
+    public void setShowTimer(boolean showTimer) {
+        this.showTimer.set(showTimer);
     }
 
     public boolean isShowChampion() {

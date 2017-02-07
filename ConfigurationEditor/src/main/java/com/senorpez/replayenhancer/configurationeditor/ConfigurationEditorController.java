@@ -136,6 +136,9 @@ public class ConfigurationEditorController implements Initializable {
     private TextField txtSubheadingText;
 
     @FXML
+    private CheckBox cbShowTimer;
+
+    @FXML
     private CheckBox cbShowChampion;
 
     @FXML
@@ -1013,6 +1016,7 @@ public class ConfigurationEditorController implements Initializable {
         txtResultLines.textProperty().bindBidirectional(configuration.resultLinesProperty(), new NumberStringConverter());
         txtLeaderStandingsLines.textProperty().bindBidirectional(configuration.leaderStandingsLinesProperty(), new NumberStringConverter());
         txtWindowStandingsLines.textProperty().bindBidirectional(configuration.windowStandingsLinesProperty(), new NumberStringConverter());
+        cbShowTimer.selectedProperty().bindBidirectional(configuration.showTimerProperty());
 
         // Options
         cbShowChampion.selectedProperty().bindBidirectional(configuration.showChampionProperty());
