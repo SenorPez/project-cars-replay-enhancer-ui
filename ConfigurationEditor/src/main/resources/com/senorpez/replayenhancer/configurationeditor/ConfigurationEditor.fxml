@@ -360,24 +360,33 @@
                                         <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                                           <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                                           <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                                           <RowConstraints maxHeight="399.0" minHeight="-Infinity" prefHeight="287.0" vgrow="SOMETIMES" />
                                           <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                                       </rowConstraints>
                                        <children>
                                           <Label text="Show Series Champion?" />
                                           <CheckBox fx:id="cbShowChampion" mnemonicParsing="false" GridPane.columnIndex="1" />
-                                          <Label text="Fastest Lap Bonus Points" GridPane.rowIndex="2" />
-                                          <TextField fx:id="txtBonusPoints" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                          <TableView fx:id="tblPointStructure" editable="true" focusTraversable="false" prefHeight="404.0" prefWidth="254.0" GridPane.columnSpan="2" GridPane.rowIndex="3">
+                                          <Label text="Fastest Lap Bonus Points" GridPane.rowIndex="5" />
+                                          <TextField fx:id="txtBonusPoints" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                          <TableView fx:id="tblPointStructure" editable="true" focusTraversable="false" prefHeight="404.0" prefWidth="254.0" GridPane.columnSpan="2" GridPane.rowIndex="6">
                                             <columns>
                                               <TableColumn fx:id="colFinishPosition" editable="false" prefWidth="75.0" resizable="false" sortable="false" text="Position" />
                                               <TableColumn fx:id="colPoints" prefWidth="178.0" sortable="false" text="Points" />
                                             </columns>
                                           </TableView>
-                                          <Button id="btnAddPosition" mnemonicParsing="false" onAction="#buttonAddPosition" text="Add Position" GridPane.rowIndex="4" />
-                                          <Button id="btnDeletePosition" mnemonicParsing="false" onAction="#buttonDeletePosition" text="Delete Position" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                          <Label text="Hide Drivers With 0 Points&#10;in Series Standings?" wrapText="true" GridPane.rowIndex="1" />
-                                          <CheckBox fx:id="cbHideSeriesZeros" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <Button id="btnAddPosition" mnemonicParsing="false" onAction="#buttonAddPosition" text="Add Position" GridPane.rowIndex="7" />
+                                          <Button id="btnDeletePosition" mnemonicParsing="false" onAction="#buttonDeletePosition" text="Delete Position" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                                          <Label text="Hide Drivers With 0 Points&#10;in Series Standings?" wrapText="true" GridPane.rowIndex="4" />
+                                          <CheckBox fx:id="cbHideSeriesZeros" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                          <Label fx:id="lblChampionWidth" text="Champion Logo Width" GridPane.rowIndex="1" />
+                                          <Label fx:id="lblChampionHeight" text="Champion Logo Height" GridPane.rowIndex="2" />
+                                          <Label fx:id="lblChampionColor" text="Champion Logo Background" GridPane.rowIndex="3" />
+                                          <ColorPicker fx:id="colorChampionColor" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                          <TextField fx:id="txtChampionWidth" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <TextField fx:id="txtChampionHeight" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                        </children>
                                     </GridPane>
                                  </content>

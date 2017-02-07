@@ -142,6 +142,24 @@ public class ConfigurationEditorController implements Initializable {
     private CheckBox cbShowChampion;
 
     @FXML
+    private Label lblChampionHeight;
+
+    @FXML
+    private TextField txtChampionHeight;
+
+    @FXML
+    private Label lblChampionWidth;
+
+    @FXML
+    private TextField txtChampionWidth;
+
+    @FXML
+    private Label lblChampionColor;
+
+    @FXML
+    private ColorPicker colorChampionColor;
+
+    @FXML
     private CheckBox cbHideSeriesZeros;
 
     @FXML
@@ -1020,6 +1038,25 @@ public class ConfigurationEditorController implements Initializable {
 
         // Options
         cbShowChampion.selectedProperty().bindBidirectional(configuration.showChampionProperty());
+
+        txtChampionWidth.textProperty().bindBidirectional(configuration.championWidthProperty(), new NumberStringConverter());
+        lblChampionWidth.managedProperty().bind(cbShowChampion.selectedProperty());
+        lblChampionWidth.visibleProperty().bind(cbShowChampion.selectedProperty());
+        txtChampionWidth.managedProperty().bind(cbShowChampion.selectedProperty());
+        txtChampionWidth.visibleProperty().bind(cbShowChampion.selectedProperty());
+
+        txtChampionHeight.textProperty().bindBidirectional(configuration.championHeightProperty(), new NumberStringConverter());
+        lblChampionHeight.managedProperty().bind(cbShowChampion.selectedProperty());
+        lblChampionHeight.visibleProperty().bind(cbShowChampion.selectedProperty());
+        txtChampionHeight.managedProperty().bind(cbShowChampion.selectedProperty());
+        txtChampionHeight.visibleProperty().bind(cbShowChampion.selectedProperty());
+
+        colorChampionColor.valueProperty().bindBidirectional(configuration.championColorProperty());
+        lblChampionColor.managedProperty().bind(cbShowChampion.selectedProperty());
+        lblChampionColor.visibleProperty().bind(cbShowChampion.selectedProperty());
+        colorChampionColor.managedProperty().bind(cbShowChampion.selectedProperty());
+        colorChampionColor.visibleProperty().bind(cbShowChampion.selectedProperty());
+
         cbHideSeriesZeros.selectedProperty().bindBidirectional(configuration.hideSeriesZerosProperty());
 
         txtBonusPoints.textProperty().bindBidirectional(configuration.pointStructureProperty(), new StringConverter<ObservableList<PointStructureItem>>() {

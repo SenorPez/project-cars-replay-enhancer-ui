@@ -124,6 +124,17 @@ public class Configuration {
     @JsonProperty(value = "show_champion")
     private final SimpleBooleanProperty showChampion;
 
+    @JsonProperty(value = "champion_width")
+    private final SimpleIntegerProperty championWidth;
+
+    @JsonProperty(value = "champion_height")
+    private final SimpleIntegerProperty championHeight;
+
+    @JsonDeserialize(using = Configuration.ColorDeserializer.class)
+    @JsonProperty(value = "champion_color")
+    @JsonSerialize(using = Configuration.ColorSerializer.class)
+    private final SimpleObjectProperty<Color> championColor;
+
     @JsonProperty(value = "hide_series_zeros")
     private final SimpleBooleanProperty hideSeriesZeros;
 
@@ -190,6 +201,9 @@ public class Configuration {
 
         // Options
         this.showChampion = new SimpleBooleanProperty(false);
+        this.championWidth = new SimpleIntegerProperty(300);
+        this.championHeight = new SimpleIntegerProperty(300);
+        this.championColor = new SimpleObjectProperty<>(Color.WHITE);
         this.hideSeriesZeros = new SimpleBooleanProperty(false);
 
         List<Integer> defaultPoints = new ArrayList<>(Arrays.asList(5, 25, 18, 15, 12, 10, 8, 6, 4, 2, 1));
@@ -606,6 +620,42 @@ public class Configuration {
 
     public SimpleBooleanProperty showChampionProperty() {
         return showChampion;
+    }
+
+    public int getChampionWidth() {
+        return championWidth.get();
+    }
+
+    public SimpleIntegerProperty championWidthProperty() {
+        return championWidth;
+    }
+
+    public void setChampionWidth(int championWidth) {
+        this.championWidth.set(championWidth);
+    }
+
+    public int getChampionHeight() {
+        return championHeight.get();
+    }
+
+    public SimpleIntegerProperty championHeightProperty() {
+        return championHeight;
+    }
+
+    public void setChampionHeight(int championHeight) {
+        this.championHeight.set(championHeight);
+    }
+
+    public Color getChampionColor() {
+        return championColor.get();
+    }
+
+    public SimpleObjectProperty<Color> championColorProperty() {
+        return championColor;
+    }
+
+    public void setChampionColor(Color championColor) {
+        this.championColor.set(championColor);
     }
 
     public boolean isHideSeriesZeros() {
