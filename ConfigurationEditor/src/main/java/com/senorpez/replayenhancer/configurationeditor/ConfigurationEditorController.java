@@ -233,7 +233,7 @@ public class ConfigurationEditorController implements Initializable {
     private ProgressBar prgProgress;
 
     @FXML
-    private ProgressBar prgPython;
+    private GridPane gridPython;
 
     @FXML
     private Button btnMakeSyncVideo;
@@ -242,6 +242,7 @@ public class ConfigurationEditorController implements Initializable {
     private Button btnMakeVideo;
 
     private DriverPopulator driverPopulator = null;
+    private PythonExecutor pythonExecutor = null;
 
     private static void updateConfiguration(File file, Configuration configuration) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -286,9 +287,6 @@ public class ConfigurationEditorController implements Initializable {
             menuFileNew();
             updateConfiguration(file, configuration);
             JSONFile.set(file);
-
-            // TODO: 10/28/2016 Figure out why we need to do this for this sequence: Open -> Select Tele -> Open. Without, no Driver refresh.
-            tblDrivers.refresh();
         }
     }
 
@@ -540,7 +538,16 @@ public class ConfigurationEditorController implements Initializable {
     }
 
     @FXML
-    private void buttonMakeSyncVideo(ActionEvent event) throws IOException {
+    private void buttonMakeSyncVideo(ActionEvent event) throws IOException{
+        createVideo(true);
+    }
+
+    @FXML
+    private void buttonMakeVideo(ActionEvent event) throws IOException{
+        createVideo(false);
+    }
+
+    private void createVideo(Boolean syncVideo) throws IOException {
         menuFileSave();
 
         Integer fps;
@@ -551,27 +558,26 @@ public class ConfigurationEditorController implements Initializable {
         }
 
         ArrayList<String> command = new ArrayList<>();
-        if (fps == null) {
-            command.add("replayenhancer");
-            command.add("-s");
-            command.add(txtFileName.getText());
-        } else {
-            command.add("replayenhancer");
+        command.add("replayenhancer");
+        if (fps != null) {
             command.add("-f");
             command.add(fps.toString());
-            command.add("-s");
-            command.add(txtFileName.getText());
         }
+        if (syncVideo) {
+            command.add("-s");
+        }
+        command.add(txtFileName.getText());
 
-        PythonExecutor pythonExecutor = new PythonExecutor(command.toArray(new String[command.size()]));
+        pythonExecutor = new PythonExecutor(command.toArray(new String[command.size()]));
         ChangeListener<String> messageListener = (observable, oldValue, newValue) -> {
             txtPythonOutput.clear();
             txtPythonOutput.appendText(newValue);
         };
 
+        pythonExecutor.setOnScheduled(serviceEvent -> txtPythonOutput.clear());
         pythonExecutor.setOnRunning(serviceEvent -> {
             pythonExecutor.messageProperty().addListener(messageListener);
-            prgPython.setVisible(true);
+            gridPython.setVisible(true);
             btnMakeSyncVideo.disableProperty().unbind();
             btnMakeVideo.disableProperty().unbind();
             btnMakeSyncVideo.setDisable(true);
@@ -579,60 +585,39 @@ public class ConfigurationEditorController implements Initializable {
         });
         pythonExecutor.setOnSucceeded(serviceEvent -> {
             pythonExecutor.messageProperty().removeListener(messageListener);
-            prgPython.setVisible(false);
+            gridPython.setVisible(false);
             btnMakeSyncVideo.setDisable(false);
             btnMakeVideo.setDisable(false);
             btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull());
             btnMakeVideo.disableProperty().bind(JSONFile.isNull());
         });
+        pythonExecutor.setOnCancelled(serviceEvent -> {
+            pythonExecutor.messageProperty().removeListener(messageListener);
+            txtPythonOutput.clear();
+            txtPythonOutput.appendText("Cancelled.");
+            gridPython.setVisible(false);
+            btnMakeSyncVideo.setDisable(false);
+            btnMakeVideo.setDisable(false);
+            btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull());
+            btnMakeVideo.disableProperty().bind(JSONFile.isNull());
+        });
+        pythonExecutor.setOnFailed(serviceEvent -> {
+            pythonExecutor.messageProperty().removeListener(messageListener);
+            txtPythonOutput.clear();
+            txtPythonOutput.appendText("Error.");
+            gridPython.setVisible(false);
+            btnMakeSyncVideo.setDisable(false);
+            btnMakeVideo.setDisable(false);
+            btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull());
+            btnMakeVideo.disableProperty().bind(JSONFile.isNull());
+        });
+
         pythonExecutor.start();
     }
 
     @FXML
-    private void buttonMakeVideo(ActionEvent event) throws IOException {
-        menuFileSave();
-
-        Integer fps;
-        try {
-            fps = Integer.valueOf(txtFPS.getText());
-        } catch (NumberFormatException e) {
-            fps = null;
-        }
-
-        ArrayList<String> command = new ArrayList<>();
-        if (fps == null) {
-            command.add("replayenhancer");
-            command.add(txtFileName.getText());
-        } else {
-            command.add("replayenhancer");
-            command.add("-f");
-            command.add(fps.toString());
-            command.add(txtFileName.getText());
-        }
-
-        PythonExecutor pythonExecutor = new PythonExecutor(command.toArray(new String[command.size()]));
-        ChangeListener<String> messageListener = (observable, oldValue, newValue) -> {
-            txtPythonOutput.clear();
-            txtPythonOutput.appendText(newValue);
-        };
-
-        pythonExecutor.setOnRunning(serviceEvent -> {
-            pythonExecutor.messageProperty().addListener(messageListener);
-            prgPython.setVisible(true);
-            btnMakeSyncVideo.disableProperty().unbind();
-            btnMakeVideo.disableProperty().unbind();
-            btnMakeSyncVideo.setDisable(true);
-            btnMakeVideo.setDisable(true);
-        });
-        pythonExecutor.setOnSucceeded(serviceEvent -> {
-            pythonExecutor.messageProperty().removeListener(messageListener);
-            prgPython.setVisible(false);
-            btnMakeSyncVideo.setDisable(false);
-            btnMakeVideo.setDisable(false);
-            btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull());
-            btnMakeVideo.disableProperty().bind(JSONFile.isNull());
-        });
-        pythonExecutor.start();
+    private void buttonCancelPython(ActionEvent event) {
+        pythonExecutor.cancel();
     }
 
     @FXML
@@ -763,8 +748,8 @@ public class ConfigurationEditorController implements Initializable {
         gridProgress.managedProperty().bind(gridProgress.visibleProperty());
         gridProgress.setVisible(false);
 
-        prgPython.managedProperty().bind(prgPython.visibleProperty());
-        prgPython.setVisible(false);
+        gridPython.managedProperty().bind(gridPython.visibleProperty());
+        gridPython.setVisible(false);
 
         btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull().or(txtSourceTelemetry.textProperty().isEmpty().or(txtOutputVideo.textProperty().isEmpty())));
         btnMakeVideo.disableProperty().bind(JSONFile.isNull().or(txtSourceTelemetry.textProperty().isEmpty().or(txtOutputVideo.textProperty().isEmpty())));
@@ -1266,16 +1251,30 @@ public class ConfigurationEditorController implements Initializable {
 
     private static class PythonExecutor extends Service<Integer> {
         private final String[] command;
+        private Process process;
 
         public PythonExecutor(String[] command) {
             this.command = command;
         }
 
         @Override
+        protected void cancelled() {
+            super.cancelled();
+            try {
+                process.getInputStream().close();
+                process.getErrorStream().close();
+                process.getOutputStream().close();
+                process.destroy();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
         protected Task<Integer> createTask() {
             return new Task<Integer>() {
                 @Override
-                protected Integer call() {
+                protected Integer call() throws Exception {
                     updateMessage("");
                     String outputText = "";
                     String commandString = "";
@@ -1285,20 +1284,22 @@ public class ConfigurationEditorController implements Initializable {
                     outputText += commandString + "\n\n";
                     updateMessage(outputText);
                     System.out.println("Running Command: " + commandString);
+                    process = new ProcessBuilder(command).redirectErrorStream(true).start();
 
                     try {
-                        Process p = new ProcessBuilder(command).redirectErrorStream(true).start();
-                        BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                        BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
                         String s;
                         while ((s = br.readLine()) != null) {
                             outputText += s + "\n";
                             updateMessage(outputText);
                             System.out.println(s);
                         }
-                        return p.waitFor();
-                    } catch (IOException | InterruptedException ex) {
-                        ex.printStackTrace();
-                        return -1;
+                        return process.waitFor();
+                    } catch (IOException e) {
+                        if (!isCancelled()) {
+                            e.printStackTrace();
+                            return -1;
+                        } else return 0;
                     }
                 }
             };

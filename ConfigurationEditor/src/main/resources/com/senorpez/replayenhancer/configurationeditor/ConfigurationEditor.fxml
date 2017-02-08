@@ -186,7 +186,7 @@
                                        <children>
                                           <Button fx:id="btnMakeSyncVideo" mnemonicParsing="false" onAction="#buttonMakeSyncVideo" text="Create Telemetry Sync Video" />
                                           <Button fx:id="btnMakeVideo" mnemonicParsing="false" onAction="#buttonMakeVideo" text="Create Video" />
-                                          <GridPane>
+                                          <GridPane fx:id="gridPython">
                                              <columnConstraints>
                                                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="372.0" minWidth="10.0" prefWidth="228.0" />
                                                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="427.0" minWidth="10.0" prefWidth="427.0" />
@@ -196,7 +196,7 @@
                                              </rowConstraints>
                                              <children>
                                                 <ProgressBar fx:id="prgPython" focusTraversable="false" prefWidth="200.0" />
-                                                <Button mnemonicParsing="false" text="Cancel" GridPane.columnIndex="1" />
+                                                <Button mnemonicParsing="false" onAction="#buttonCancelPython" text="Cancel" GridPane.columnIndex="1" />
                                              </children>
                                           </GridPane>
                                           <TextArea fx:id="txtPythonOutput" editable="false" prefHeight="200.0" prefWidth="200.0" />
