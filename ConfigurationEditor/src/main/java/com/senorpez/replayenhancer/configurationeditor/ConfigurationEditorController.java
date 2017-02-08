@@ -1,12 +1,10 @@
 package com.senorpez.replayenhancer.configurationeditor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Service;
@@ -31,13 +29,12 @@ import java.io.*;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ConfigurationEditorController implements Initializable {
     private final SimpleObjectProperty<File> JSONFile = new SimpleObjectProperty<>();
@@ -244,6 +241,8 @@ public class ConfigurationEditorController implements Initializable {
     @FXML
     private Button btnMakeVideo;
 
+    private DriverPopulator driverPopulator = null;
+
     private static void updateConfiguration(File file, Configuration configuration) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         String data = Files.lines(file.toPath()).collect(Collectors.joining());
@@ -394,23 +393,132 @@ public class ConfigurationEditorController implements Initializable {
     }
 
     @FXML
-    private void buttonSourceTelemetry(ActionEvent event) {
+    private void buttonSourceTelemetry(ActionEvent event) throws IOException {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Open Source Telemetry Directory");
         directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        File directory = directoryChooser.showDialog(root.getScene().getWindow());
+        File file = directoryChooser.showDialog(root.getScene().getWindow());
 
-        if (directory != null && directory.isDirectory()) {
-            configuration.setSourceTelemetry(directory);
-            DriverPopulator driverPopulator = new DriverPopulator(txtSourceTelemetry.getText(), prgProgress);
-            driverPopulator.setOnSucceeded(serviceEvent -> {
-                configuration.setParticipantConfiguration(driverPopulator.getValue());
-                gridProgress.setVisible(false);
-                prgProgress.setProgress(0);
+        if (file != null && file.isDirectory()) {
+            configuration.setSourceTelemetry(file);
+            driverPopulator = new DriverPopulator(file.toPath());
+            ChangeListener<Number> progressListener = (observable, oldValue, newValue) -> prgProgress.setProgress(Math.max(0, newValue.doubleValue()));
+
+            driverPopulator.setOnScheduled(serviceEvent -> prgProgress.setProgress(0));
+            driverPopulator.setOnRunning(serviceEvent -> {
+                driverPopulator.progressProperty().addListener(progressListener);
+                gridProgress.setVisible(true);
             });
-            gridProgress.setVisible(true);
-            configuration.getParticipantConfiguration().clear();
+            driverPopulator.setOnSucceeded(serviceEvent -> {
+                configuration.getParticipantConfiguration().setAll(driverPopulator.getValue());
+                driverPopulator.progressProperty().removeListener(progressListener);
+                gridProgress.setVisible(false);
+            });
+            driverPopulator.setOnCancelled(serviceEvent -> {
+                driverPopulator.progressProperty().removeListener(progressListener);
+                gridProgress.setVisible(false);
+            });
+            driverPopulator.setOnFailed(serviceEvent -> {
+                driverPopulator.progressProperty().removeListener(progressListener);
+                gridProgress.setVisible(false);
+            });
+
             driverPopulator.start();
+        }
+    }
+
+    @FXML
+    private void buttonCancelDriver(ActionEvent event) {
+        driverPopulator.cancel();
+    }
+
+    private static class DriverPopulator extends Service<List<Driver>> {
+        private final Path telemetryDirectory;
+        private final Set<String> names = new HashSet<>();
+        private Integer sessionState = 0;
+        private Boolean clearDrivers = false;
+
+        public DriverPopulator(Path telemetryDirectory) {
+            this.telemetryDirectory = telemetryDirectory;
+        }
+
+        private void dispatchPacket(Path packetPath) {
+            Long length = packetPath.toFile().length();
+            try {
+                ByteBuffer packetData = ByteBuffer.wrap(Files.readAllBytes(packetPath));
+                if (length == 1367) {
+                    processPacket(new TelemetryDataPacket(packetData));
+                } else if (length == 1347) {
+                    if (sessionState == 5) {
+                        if (clearDrivers) {
+                            clearDrivers = false;
+                            names.clear();
+                        }
+                        processPacket(new ParticipantPacket(packetData));
+                    } else clearDrivers = true;
+                } else if (length == 1028) {
+                    if (sessionState == 5) {
+                        if (clearDrivers) {
+                            clearDrivers = false;
+                            names.clear();
+                        }
+                        processPacket(new AdditionalParticipantPacket(packetData));
+                    } else clearDrivers = true;
+                }
+            } catch (IOException e) {
+                if (!getState().equals(State.CANCELLED)) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        private void processPacket(AdditionalParticipantPacket packet) {
+            names.addAll(
+                    packet.getNames().stream()
+                            .map(SimpleStringProperty::get)
+                            .filter(s -> !s.isEmpty())
+                            .collect(Collectors.toCollection(ArrayList::new))
+            );
+        }
+
+        private void processPacket(ParticipantPacket packet) {
+            names.addAll(
+                    packet.getNames().stream()
+                            .map(SimpleStringProperty::get)
+                            .filter(s -> !s.isEmpty())
+                            .collect(Collectors.toCollection(ArrayList::new))
+            );
+        }
+
+        private void processPacket(TelemetryDataPacket packet) {
+            sessionState = packet.getSessionState();
+        }
+
+        @Override
+        protected Task<List<Driver>> createTask() {
+            return new Task<List<Driver>>() {
+                @Override
+                protected List<Driver> call() throws Exception {
+
+                    try (Stream<Path> files = Files.list(telemetryDirectory)) {
+                        List<Path> telemetry = files.collect(Collectors.toCollection(ArrayList::new));
+                        telemetry.removeIf(path -> path.toFile().getName().replaceAll("[^\\d]", "").equals(""));
+                        telemetry.sort((o1, o2) -> {
+                            Integer n1 = Integer.valueOf(o1.toFile().getName().replaceAll("[^\\d]", ""));
+                            Integer n2 = Integer.valueOf(o2.toFile().getName().replaceAll("[^\\d]", ""));
+                            return n1.compareTo(n2);
+                        });
+
+                        telemetry.stream()
+                                .filter(path -> !isCancelled())
+                                .forEach(path -> {
+                                    updateProgress(Long.valueOf(path.toFile().getName().replaceAll("[^\\d]", "")), telemetry.size());
+                                    dispatchPacket(path);
+                                });
+                    }
+                    return names.stream().map(Driver::new).collect(Collectors.toCollection(ArrayList::new));
+                }
+            };
         }
     }
 
@@ -745,7 +853,7 @@ public class ConfigurationEditorController implements Initializable {
         );
 
         colAddName.setCellValueFactory(
-                new PropertyValueFactory<Driver, String>("name")
+                new PropertyValueFactory<>("name")
         );
         colAddName.setCellFactory(param -> CustomCell.createStringEditCell());
         colAddName.setOnEditCommit(
@@ -775,7 +883,7 @@ public class ConfigurationEditorController implements Initializable {
         );
 
         colAddTeam.setCellValueFactory(
-                new PropertyValueFactory<Driver, String>("team")
+                new PropertyValueFactory<>("team")
         );
         colAddTeam.setCellFactory(param -> CustomCell.createStringEditCell());
         colAddTeam.setOnEditCommit(
@@ -785,7 +893,7 @@ public class ConfigurationEditorController implements Initializable {
         );
 
         colAddSeriesPoints.setCellValueFactory(
-                new PropertyValueFactory<Driver, Integer>("seriesPoints")
+                new PropertyValueFactory<>("seriesPoints")
         );
         colAddSeriesPoints.setCellFactory(param -> CustomCell.createIntegerEditCell());
         colAddSeriesPoints.setOnEditCommit(
@@ -850,14 +958,14 @@ public class ConfigurationEditorController implements Initializable {
             }
         });
 
-        if (txtSourceVideo.getText() == null || txtSourceVideo.getText() == "") {
+        if (txtSourceVideo.getText() == null || txtSourceVideo.getText().isEmpty()) {
             txtFPSLabel.setText("Use Default FPS (30):");
         } else {
             txtFPSLabel.setText("Use Source Video FPS:");
         }
 
         txtSourceVideo.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null || newValue == "") {
+            if (newValue == null || newValue.isEmpty()) {
                 txtFPSLabel.setText("Use Default FPS (30):");
             } else {
                 txtFPSLabel.setText("Use Source Video FPS:");
@@ -1153,167 +1261,6 @@ public class ConfigurationEditorController implements Initializable {
             }
 
             return hours + minutes + seconds;
-        }
-    }
-
-    private static class DriverPopulator extends Service<ObservableList<Driver>> {
-        private final String telemetryDirectory;
-        private final ProgressBar prgProgress;
-
-        public DriverPopulator(String telemetryDirectory, ProgressBar prgProgress) {
-            this.telemetryDirectory = telemetryDirectory;
-            this.prgProgress = prgProgress;
-        }
-
-        @Override
-        protected Task<ObservableList<Driver>> createTask() {
-            return new Task<ObservableList<Driver>>() {
-                @Override
-                protected ObservableList<Driver> call() throws Exception {
-                    File[] files = new File(telemetryDirectory).listFiles((dir, name) -> name.matches(".*pdata.*"));
-
-                    if (files == null) return null;
-
-                    Arrays.sort(files, (file1, file2) -> {
-                        Integer n1 = Integer.valueOf(file1.getName().replaceAll("[^\\d]", ""));
-                        Integer n2 = Integer.valueOf(file2.getName().replaceAll("[^\\d]", ""));
-                        return Integer.compare(n1, n2);
-                    });
-
-                    List<List<String>> allNames = new ArrayList<>();
-                    List<String> names = new ArrayList<>();
-                    Integer numParticipants = null;
-
-                    int fileNumber = 0;
-
-                    ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-                    DriverProgress progress = new DriverProgress(fileNumber, files.length, prgProgress);
-                    executorService.scheduleWithFixedDelay(progress, 0L, 500L, TimeUnit.MILLISECONDS);
-
-                    for (File file : files) {
-                        fileNumber += 1;
-                        progress.setFileNumber(fileNumber);
-
-                        if (file.length() == 1367) {
-                            try {
-                                TelemetryDataPacket packet = new TelemetryDataPacket(
-                                        ByteBuffer.wrap(Files.readAllBytes(file.toPath()))
-                                );
-                                if (packet.getRaceState() == 2) {
-                                    if (numParticipants == null || numParticipants != packet.getNumParticipants()) {
-                                        numParticipants = packet.getNumParticipants();
-                                        names = new ArrayList<>();
-                                    }
-                                } else {
-                                    numParticipants = null;
-                                    names = new ArrayList<>();
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        } else if (file.length() == 1347) {
-                            try {
-                                ParticipantPacket packet = new ParticipantPacket(
-                                        ByteBuffer.wrap(Files.readAllBytes(file.toPath()))
-                                );
-
-                                if (numParticipants != null && names.size() < numParticipants) {
-                                    names.addAll(packet.getNames().stream()
-                                            .limit(numParticipants)
-                                            .map(SimpleStringProperty::get)
-                                            .filter(name -> !name.equals(""))
-                                            .collect(Collectors.toList()));
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        } else if (file.length() == 1028) {
-                            try {
-                                AdditionalParticipantPacket packet = new AdditionalParticipantPacket(
-                                        ByteBuffer.wrap(Files.readAllBytes(file.toPath()))
-                                );
-
-                                if (numParticipants != null && names.size() < numParticipants) {
-                                    names.addAll(packet.getNames().stream()
-                                            .limit(numParticipants)
-                                            .map(SimpleStringProperty::get)
-                                            .filter(name -> !name.equals(""))
-                                            .collect(Collectors.toList()));
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        if (numParticipants != null && names.size() >= numParticipants) {
-                            if (allNames.size() == 0 || !allNames.get(allNames.size() - 1).equals(names)) {
-                                allNames.add(names);
-                            }
-                        }
-                    }
-
-                    executorService.shutdown();
-
-                    Set<String> masterNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-                    masterNames.addAll(allNames.get(0));
-
-                    List<String> oldNames = allNames.get(0);
-                    for (List<String> newNames : allNames.subList(1, allNames.size())) {
-                        ListIterator<String> iterator = newNames.listIterator();
-                        while (iterator.hasNext()) {
-                            int nextIndex = iterator.nextIndex();
-                            String newName = iterator.next();
-
-                            if (!oldNames.get(nextIndex).equals(newName)) {
-                                String oldName = oldNames.get(oldNames.size() - 1);
-                                String name = oldName;
-                                int minLength = Math.min(oldName.length(), newName.length());
-                                for (int i = 0; i < minLength; i++) {
-                                    if (oldName.charAt(i) != newName.charAt(i)) {
-                                        name = oldName.substring(0, i);
-                                        break;
-                                    }
-                                }
-                                masterNames.remove(oldName);
-                                masterNames.add(name);
-                            }
-                        }
-                        oldNames = newNames;
-                    }
-
-                    ObservableList<Driver> drivers = FXCollections.observableArrayList(param -> new Observable[]{param.getCar().carNameProperty()});
-                    drivers.addAll(masterNames
-                            .stream()
-                            .map(Driver::new)
-                            .collect(Collectors.toList()));
-
-                    return drivers;
-                }
-            };
-        }
-    }
-
-    private static class DriverProgress implements Runnable {
-        private final int fileCount;
-        private final ProgressBar prgProgress;
-        private int fileNumber;
-
-
-        public DriverProgress(int fileNumber, int fileCount, ProgressBar prgProgress) {
-            this.fileNumber = fileNumber;
-            this.fileCount = fileCount;
-            this.prgProgress = prgProgress;
-        }
-
-        @Override
-        public void run() {
-            Double progress = ((double) fileNumber / (double) fileCount);
-            prgProgress.setProgress(progress);
-            System.out.println(String.format("Processing Telemetry: %1$.2f%%", progress * 100));
-        }
-
-        public void setFileNumber(int fileNumber) {
-            this.fileNumber = fileNumber;
         }
     }
 

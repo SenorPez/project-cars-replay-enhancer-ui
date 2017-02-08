@@ -5,13 +5,14 @@ import javafx.beans.property.SimpleIntegerProperty;
 import java.nio.ByteBuffer;
 
 public class TelemetryDataPacket extends Packet {
+    private final SimpleIntegerProperty gameSessionState;
     private final SimpleIntegerProperty numParticipants;
     private final SimpleIntegerProperty raceStateFlags;
 
     public TelemetryDataPacket(ByteBuffer data) {
         super(data);
 
-        Integer gameSessionState = ReadChar(data);
+        this.gameSessionState = new SimpleIntegerProperty(ReadChar(data));
         Integer viewedParticipantIndex = ReadChar(data);
 
         this.numParticipants = new SimpleIntegerProperty(ReadChar(data));
@@ -31,5 +32,10 @@ public class TelemetryDataPacket extends Packet {
     public int getRaceState() {
         int bitmask = 0b00000111;
         return raceStateFlags.get() & bitmask;
+    }
+
+    public int getSessionState() {
+        int bitmask = 0b11110000;
+        return (gameSessionState.get() & bitmask) >> 4;
     }
 }
