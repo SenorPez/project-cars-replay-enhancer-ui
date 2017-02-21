@@ -1,7 +1,9 @@
 package com.senorpez.replayenhancer.configurationeditor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.humble.video.Demuxer;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
@@ -244,6 +246,8 @@ public class ConfigurationEditorController implements Initializable {
     private DriverPopulator driverPopulator = null;
     private PythonExecutor pythonExecutor = null;
 
+    private final SimpleDoubleProperty sourceVideoDuraton = new SimpleDoubleProperty();
+
     private static void updateConfiguration(File file, Configuration configuration) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         String data = Files.lines(file.toPath()).collect(Collectors.joining());
@@ -354,19 +358,6 @@ public class ConfigurationEditorController implements Initializable {
         txtSource.setStyle("-fx-text-inner-color: black");
 
         Pattern regex = Pattern.compile("(?:^-?(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^-?(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^-?(\\d*(?:\\.\\d*)?)$)");
-        Matcher match = regex.matcher(txtSource.getText());
-        if (!match.matches()) {
-            txtSource.setStyle("-fx-text-inner-color: red");
-        }
-    }
-
-    @FXML
-    private void validatePositiveTime(KeyEvent event) {
-        Object source = event.getSource();
-        TextField txtSource = (TextField) source;
-        txtSource.setStyle("-fx-text-inner-color: black");
-
-        Pattern regex = Pattern.compile("(?:^(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*(?:\\.\\d*)?)$)");
         Matcher match = regex.matcher(txtSource.getText());
         if (!match.matches()) {
             txtSource.setStyle("-fx-text-inner-color: red");
@@ -917,6 +908,16 @@ public class ConfigurationEditorController implements Initializable {
         });
     }
 
+    private static Double getVideoDuration(String video) {
+        final Demuxer demuxer = Demuxer.make();
+        try {
+            demuxer.open(video, null, false, true, null, null);
+        } catch (InterruptedException | IOException e) {
+            return null;
+        }
+        return demuxer.getDuration() / 1000000.0;
+    }
+
     private void addListeners() {
         // Interface
         tabDrivers.setDisable(true);
@@ -952,8 +953,10 @@ public class ConfigurationEditorController implements Initializable {
         txtSourceVideo.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null || newValue.isEmpty()) {
                 txtFPSLabel.setText("Use Default FPS (30):");
+                sourceVideoDuraton.setValue(null);
             } else {
                 txtFPSLabel.setText("Use Source Video FPS:");
+                sourceVideoDuraton.setValue(getVideoDuration(newValue));
             }
         });
 
@@ -988,7 +991,57 @@ public class ConfigurationEditorController implements Initializable {
 
         // Source Parameters
         txtVideoStart.textProperty().bindBidirectional(configuration.videoStartTimeProperty(), new ConvertTime());
+        configuration.videoStartTimeProperty().addListener((observable, oldValue, newValue) -> {
+            txtVideoStart.setStyle("-fx-text-inner-color: black");
+
+            if (newValue != null) {
+                final Pattern regex = Pattern.compile("(?:^(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*(?:\\.\\d*)?)$)");
+                final Matcher match = regex.matcher(txtVideoStart.getText());
+
+                if (!match.matches()) {
+                    txtVideoStart.setStyle("-fx-text-inner-color: red");
+                } else if (newValue.doubleValue() > sourceVideoDuraton.get()) {
+                    txtVideoStart.setStyle("-fx-text-inner-color: red");
+                } else if (newValue.doubleValue() > configuration.videoEndTimeProperty().get()) {
+                    txtVideoStart.setStyle("-fx-text-inner-color: red");
+                }
+            }
+        });
+
         txtVideoEnd.textProperty().bindBidirectional(configuration.videoEndTimeProperty(), new ConvertTime());
+        configuration.videoEndTimeProperty().addListener((observable, oldValue, newValue) -> {
+            txtVideoEnd.setStyle("-fx-text-inner-color: black");
+
+            if (newValue != null) {
+                final Pattern regex = Pattern.compile("(?:^(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*(?:\\.\\d*)?)$)");
+                final Matcher match = regex.matcher(txtVideoEnd.getText());
+
+                if (!match.matches()) {
+                    txtVideoEnd.setStyle("-fx-text-inner-color: red");
+                } else if (newValue.doubleValue() > sourceVideoDuraton.get()) {
+                    txtVideoEnd.setStyle("-fx-text-inner-color: red");
+                } else if (newValue.doubleValue() < configuration.videoStartTimeProperty().get()) {
+                    txtVideoEnd.setStyle("-fx-text-inner-color: red");
+                }
+            }
+        });
+
+        sourceVideoDuraton.addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                if (configuration.videoEndTimeProperty().get() == 0) {
+                    configuration.videoEndTimeProperty().setValue(newValue);
+                }
+
+                if (configuration.videoStartTimeProperty().get() > sourceVideoDuraton.get()) {
+                    txtVideoStart.setStyle("-fx-text-inner-color: red");
+                }
+
+                if (configuration.videoEndTimeProperty().get() > sourceVideoDuraton.get()) {
+                    txtVideoEnd.setStyle("-fx-text-inner-color: red");
+                }
+            }
+        });
+
         txtVideoSync.textProperty().bindBidirectional(configuration.syncRacestartProperty(), new ConvertTime());
 
         // Output

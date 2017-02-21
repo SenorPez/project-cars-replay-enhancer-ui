@@ -143,9 +143,9 @@
                                        </rowConstraints>
                                        <children>
                                           <Label text="Video Start Time:" />
-                                          <TextField fx:id="txtVideoStart" onKeyReleased="#validatePositiveTime" styleClass="input-float" GridPane.columnIndex="1" />
+                                          <TextField fx:id="txtVideoStart" styleClass="input-float" GridPane.columnIndex="1" />
                                           <Label text="Video End Time:" GridPane.rowIndex="1" />
-                                          <TextField fx:id="txtVideoEnd" onKeyReleased="#validatePositiveTime" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <TextField fx:id="txtVideoEnd" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                           <Label text="Telemetry Sync. Value:" GridPane.rowIndex="2" />
                                           <TextField fx:id="txtVideoSync" onKeyReleased="#validateTime" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                        </children>
