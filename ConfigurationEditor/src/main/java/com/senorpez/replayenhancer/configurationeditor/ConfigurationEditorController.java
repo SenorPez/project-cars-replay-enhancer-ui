@@ -1384,9 +1384,9 @@ public class ConfigurationEditorController implements Initializable {
                 tableView.getSelectionModel().select(getTableRow().getIndex());
                 tableView.edit(tableView.getSelectionModel().getSelectedIndex(), column);
             });
-            this.colorPicker.valueProperty().addListener((observable, oldValue, newValue) -> {
+            this.colorPicker.setOnHiding(event -> {
                 if (isEditing()) {
-                    commitEdit(newValue);
+                    commitEdit(this.colorPicker.getValue());
                 }
             });
             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
