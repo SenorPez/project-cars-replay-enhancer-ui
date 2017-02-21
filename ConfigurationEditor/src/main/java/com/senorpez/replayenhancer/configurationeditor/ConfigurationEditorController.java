@@ -3,6 +3,7 @@ package com.senorpez.replayenhancer.configurationeditor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.humble.video.Demuxer;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -247,6 +248,7 @@ public class ConfigurationEditorController implements Initializable {
     private PythonExecutor pythonExecutor = null;
 
     private final SimpleDoubleProperty sourceVideoDuraton = new SimpleDoubleProperty();
+    private ConfigurationValidator configurationValidator = new ConfigurationValidator();
 
     private static void updateConfiguration(File file, Configuration configuration) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -356,11 +358,13 @@ public class ConfigurationEditorController implements Initializable {
         Object source = event.getSource();
         TextField txtSource = (TextField) source;
         txtSource.setStyle("-fx-text-inner-color: black");
+        configurationValidator.setInvalidVideoSyncTime(false);
 
         Pattern regex = Pattern.compile("(?:^-?(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^-?(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^-?(\\d*(?:\\.\\d*)?)$)");
         Matcher match = regex.matcher(txtSource.getText());
         if (!match.matches()) {
             txtSource.setStyle("-fx-text-inner-color: red");
+            configurationValidator.setInvalidVideoSyncTime(true);
         }
     }
 
@@ -388,8 +392,8 @@ public class ConfigurationEditorController implements Initializable {
         directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         File file = directoryChooser.showDialog(root.getScene().getWindow());
 
+        configurationValidator.setInvalidSourceTelemetry(true);
         if (file != null && file.isDirectory()) {
-            configuration.setSourceTelemetry(file);
             driverPopulator = new DriverPopulator(file.toPath());
             ChangeListener<Number> progressListener = (observable, oldValue, newValue) -> prgProgress.setProgress(Math.max(0, newValue.doubleValue()));
 
@@ -399,7 +403,9 @@ public class ConfigurationEditorController implements Initializable {
                 gridProgress.setVisible(true);
             });
             driverPopulator.setOnSucceeded(serviceEvent -> {
+                configuration.setSourceTelemetry(file);
                 configuration.getParticipantConfiguration().setAll(driverPopulator.getValue());
+                configurationValidator.setInvalidSourceTelemetry(false);
                 driverPopulator.progressProperty().removeListener(progressListener);
                 gridProgress.setVisible(false);
             });
@@ -522,9 +528,11 @@ public class ConfigurationEditorController implements Initializable {
                 new FileChooser.ExtensionFilter("All Files", "*.*")
         );
         File file = fileChooser.showSaveDialog(root.getScene().getWindow());
+        configurationValidator.setInvalidOutputVideo(true);
 
         if (file != null) {
             configuration.setOutputVideo(file);
+            configurationValidator.setInvalidOutputVideo(false);
         }
     }
 
@@ -579,8 +587,8 @@ public class ConfigurationEditorController implements Initializable {
             gridPython.setVisible(false);
             btnMakeSyncVideo.setDisable(false);
             btnMakeVideo.setDisable(false);
-            btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull());
-            btnMakeVideo.disableProperty().bind(JSONFile.isNull());
+            btnMakeSyncVideo.disableProperty().bind(configurationValidator.invalidConfigurationProperty());
+            btnMakeVideo.disableProperty().bind(configurationValidator.invalidConfigurationProperty());
         });
         pythonExecutor.setOnCancelled(serviceEvent -> {
             pythonExecutor.messageProperty().removeListener(messageListener);
@@ -589,8 +597,8 @@ public class ConfigurationEditorController implements Initializable {
             gridPython.setVisible(false);
             btnMakeSyncVideo.setDisable(false);
             btnMakeVideo.setDisable(false);
-            btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull());
-            btnMakeVideo.disableProperty().bind(JSONFile.isNull());
+            btnMakeSyncVideo.disableProperty().bind(configurationValidator.invalidConfigurationProperty());
+            btnMakeVideo.disableProperty().bind(configurationValidator.invalidConfigurationProperty());
         });
         pythonExecutor.setOnFailed(serviceEvent -> {
             pythonExecutor.messageProperty().removeListener(messageListener);
@@ -599,8 +607,8 @@ public class ConfigurationEditorController implements Initializable {
             gridPython.setVisible(false);
             btnMakeSyncVideo.setDisable(false);
             btnMakeVideo.setDisable(false);
-            btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull());
-            btnMakeVideo.disableProperty().bind(JSONFile.isNull());
+            btnMakeSyncVideo.disableProperty().bind(configurationValidator.invalidConfigurationProperty());
+            btnMakeVideo.disableProperty().bind(configurationValidator.invalidConfigurationProperty());
         });
 
         pythonExecutor.start();
@@ -742,8 +750,8 @@ public class ConfigurationEditorController implements Initializable {
         gridPython.managedProperty().bind(gridPython.visibleProperty());
         gridPython.setVisible(false);
 
-        btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull().or(txtSourceTelemetry.textProperty().isEmpty().or(txtOutputVideo.textProperty().isEmpty())));
-        btnMakeVideo.disableProperty().bind(JSONFile.isNull().or(txtSourceTelemetry.textProperty().isEmpty().or(txtOutputVideo.textProperty().isEmpty())));
+        btnMakeSyncVideo.disableProperty().bind(configurationValidator.invalidConfigurationProperty());
+        btnMakeVideo.disableProperty().bind(configurationValidator.invalidConfigurationProperty());
 
         configuration = new Configuration();
         addListeners();
@@ -993,17 +1001,17 @@ public class ConfigurationEditorController implements Initializable {
         txtVideoStart.textProperty().bindBidirectional(configuration.videoStartTimeProperty(), new ConvertTime());
         configuration.videoStartTimeProperty().addListener((observable, oldValue, newValue) -> {
             txtVideoStart.setStyle("-fx-text-inner-color: black");
+            configurationValidator.setInvalidVideoStartTime(false);
 
             if (newValue != null) {
                 final Pattern regex = Pattern.compile("(?:^(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*(?:\\.\\d*)?)$)");
                 final Matcher match = regex.matcher(txtVideoStart.getText());
 
-                if (!match.matches()) {
+                if (!match.matches()
+                        || newValue.doubleValue() > sourceVideoDuraton.get()
+                        || newValue.doubleValue() > configuration.videoEndTimeProperty().get()) {
                     txtVideoStart.setStyle("-fx-text-inner-color: red");
-                } else if (newValue.doubleValue() > sourceVideoDuraton.get()) {
-                    txtVideoStart.setStyle("-fx-text-inner-color: red");
-                } else if (newValue.doubleValue() > configuration.videoEndTimeProperty().get()) {
-                    txtVideoStart.setStyle("-fx-text-inner-color: red");
+                    configurationValidator.setInvalidVideoStartTime(true);
                 }
             }
         });
@@ -1011,17 +1019,17 @@ public class ConfigurationEditorController implements Initializable {
         txtVideoEnd.textProperty().bindBidirectional(configuration.videoEndTimeProperty(), new ConvertTime());
         configuration.videoEndTimeProperty().addListener((observable, oldValue, newValue) -> {
             txtVideoEnd.setStyle("-fx-text-inner-color: black");
+            configurationValidator.setInvalidVideoEndTime(false);
 
             if (newValue != null) {
                 final Pattern regex = Pattern.compile("(?:^(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*(?:\\.\\d*)?)$)");
                 final Matcher match = regex.matcher(txtVideoEnd.getText());
 
-                if (!match.matches()) {
+                if (!match.matches()
+                        || newValue.doubleValue() > sourceVideoDuraton.get()
+                        || newValue.doubleValue() < configuration.videoStartTimeProperty().get()) {
                     txtVideoEnd.setStyle("-fx-text-inner-color: red");
-                } else if (newValue.doubleValue() > sourceVideoDuraton.get()) {
-                    txtVideoEnd.setStyle("-fx-text-inner-color: red");
-                } else if (newValue.doubleValue() < configuration.videoStartTimeProperty().get()) {
-                    txtVideoEnd.setStyle("-fx-text-inner-color: red");
+                    configurationValidator.setInvalidVideoEndTime(true);
                 }
             }
         });
@@ -1034,10 +1042,12 @@ public class ConfigurationEditorController implements Initializable {
 
                 if (configuration.videoStartTimeProperty().get() > sourceVideoDuraton.get()) {
                     txtVideoStart.setStyle("-fx-text-inner-color: red");
+                    configurationValidator.setInvalidVideoStartTime(true);
                 }
 
                 if (configuration.videoEndTimeProperty().get() > sourceVideoDuraton.get()) {
                     txtVideoEnd.setStyle("-fx-text-inner-color: red");
+                    configurationValidator.setInvalidVideoEndTime(true);
                 }
             }
         });
@@ -1393,6 +1403,62 @@ public class ConfigurationEditorController implements Initializable {
                 this.colorPicker.setValue(item);
                 this.setGraphic(this.colorPicker);
             }
+        }
+    }
+
+    private class ConfigurationValidator {
+        private final SimpleBooleanProperty invalidConfiguration = new SimpleBooleanProperty(true);
+
+        private final SimpleBooleanProperty invalidSourceTelemetry = new SimpleBooleanProperty(true);
+        private final SimpleBooleanProperty invalidOutputVideo = new SimpleBooleanProperty(true);
+        private final SimpleBooleanProperty invalidVideoStartTime = new SimpleBooleanProperty(false);
+        private final SimpleBooleanProperty invalidVideoEndTime = new SimpleBooleanProperty(false);
+        private final SimpleBooleanProperty invalidVideoSyncTime = new SimpleBooleanProperty(false);
+
+        public ConfigurationValidator() {
+            ChangeListener<Boolean> listener = (observable, oldValue, newValue) -> invalidConfiguration.setValue(checkAll());
+
+            invalidSourceTelemetry.addListener(listener);
+            invalidOutputVideo.addListener(listener);
+            invalidVideoStartTime.addListener(listener);
+            invalidVideoEndTime.addListener(listener);
+            invalidVideoSyncTime.addListener(listener);
+        }
+
+        private Boolean checkAll() {
+            return (invalidSourceTelemetry.getValue()
+                || invalidOutputVideo.getValue()
+                || invalidVideoStartTime.getValue()
+                || invalidVideoEndTime.getValue()
+                || invalidVideoSyncTime.getValue());
+        }
+
+        public boolean getInvalidConfiguration() {
+            return invalidConfiguration.get();
+        }
+
+        public SimpleBooleanProperty invalidConfigurationProperty() {
+            return invalidConfiguration;
+        }
+
+        public void setInvalidSourceTelemetry(boolean invalidSourceTelemetry) {
+            this.invalidSourceTelemetry.set(invalidSourceTelemetry);
+        }
+
+        public void setInvalidOutputVideo(boolean invalidOutputVideo) {
+            this.invalidOutputVideo.set(invalidOutputVideo);
+        }
+
+        public void setInvalidVideoStartTime(boolean invalidVideoStartTime) {
+            this.invalidVideoStartTime.set(invalidVideoStartTime);
+        }
+
+        public void setInvalidVideoEndTime(boolean invalidVideoEndTime) {
+            this.invalidVideoEndTime.set(invalidVideoEndTime);
+        }
+
+        public void setInvalidVideoSyncTime(boolean invalidVideoSyncTime) {
+            this.invalidVideoSyncTime.set(invalidVideoSyncTime);
         }
     }
 }
