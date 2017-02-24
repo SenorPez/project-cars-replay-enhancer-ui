@@ -1,6 +1,6 @@
 mainClassName = "com.senorpez.replayenhancer.configurationeditor.ConfigurationEditor"
 
-version = '0.2rc2'
+version = '0.2'
 
 dependencies {
     compile "com.fasterxml.jackson.core:jackson-databind:2.8.4"
