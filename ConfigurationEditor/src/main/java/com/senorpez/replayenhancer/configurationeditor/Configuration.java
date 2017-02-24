@@ -1,6 +1,5 @@
 package com.senorpez.replayenhancer.configurationeditor;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -16,6 +15,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
 
@@ -117,9 +117,23 @@ public class Configuration {
     @JsonProperty(value = "field_window_size")
     private final SimpleIntegerProperty windowStandingsLines;
 
+    @JsonProperty(value = "show_timer")
+    private final SimpleBooleanProperty showTimer;
+
     // Options
     @JsonProperty(value = "show_champion")
     private final SimpleBooleanProperty showChampion;
+
+    @JsonProperty(value = "champion_width")
+    private final SimpleIntegerProperty championWidth;
+
+    @JsonProperty(value = "champion_height")
+    private final SimpleIntegerProperty championHeight;
+
+    @JsonDeserialize(using = Configuration.ColorDeserializer.class)
+    @JsonProperty(value = "champion_color")
+    @JsonSerialize(using = Configuration.ColorSerializer.class)
+    private final SimpleObjectProperty<Color> championColor;
 
     @JsonProperty(value = "hide_series_zeros")
     private final SimpleBooleanProperty hideSeriesZeros;
@@ -139,7 +153,9 @@ public class Configuration {
     @JsonSerialize(using = Configuration.ParticipantConfigurationSerializer.class)
     private final SimpleListProperty<Driver> additionalParticipantConfiguration;
 
-    @JsonIgnore
+    @JsonDeserialize(using = Configuration.CarClassesDeserializer.class)
+    @JsonProperty(value = "car_classes")
+    @JsonSerialize(using = Configuration.CarClassesSerializer.class)
     private final SimpleListProperty<Car> cars;
 
     public Configuration() {
@@ -178,12 +194,16 @@ public class Configuration {
         // Layout
         this.margin = new SimpleIntegerProperty(20);
         this.columnMargin = new SimpleIntegerProperty(10);
-        this.resultLines = new SimpleIntegerProperty(10);
-        this.leaderStandingsLines = new SimpleIntegerProperty(10);
+        this.resultLines = new SimpleIntegerProperty(16);
+        this.leaderStandingsLines = new SimpleIntegerProperty(16);
         this.windowStandingsLines = new SimpleIntegerProperty(0);
+        this.showTimer = new SimpleBooleanProperty(true);
 
         // Options
         this.showChampion = new SimpleBooleanProperty(false);
+        this.championWidth = new SimpleIntegerProperty(300);
+        this.championHeight = new SimpleIntegerProperty(300);
+        this.championColor = new SimpleObjectProperty<>(Color.WHITE);
         this.hideSeriesZeros = new SimpleBooleanProperty(false);
 
         List<Integer> defaultPoints = new ArrayList<>(Arrays.asList(5, 25, 18, 15, 12, 10, 8, 6, 4, 2, 1));
@@ -195,27 +215,87 @@ public class Configuration {
         }
         this.pointStructure = new SimpleListProperty<>(defaultPointStructure);
 
-        this.participantConfiguration = new SimpleListProperty<>(FXCollections.observableList(new ArrayList<Driver>(), param -> new Observable[]{param.getCar().carNameProperty()}));
-        this.additionalParticipantConfiguration = new SimpleListProperty<>(FXCollections.observableList(new ArrayList<Driver>(), param -> new Observable[]{param.getCar().carNameProperty()}));
+        this.participantConfiguration = new SimpleListProperty<>(FXCollections.observableList(new ArrayList<Driver>(), param -> new Observable[]{param.carProperty(), param.carProperty().get().carNameProperty()}));
+        this.additionalParticipantConfiguration = new SimpleListProperty<>(FXCollections.observableList(new ArrayList<Driver>(), param -> new Observable[]{}));
 
-        this.cars = new SimpleListProperty<>(FXCollections.observableArrayList(new TreeSet<>()));
+        this.cars = new SimpleListProperty<>(FXCollections.observableList(new ArrayList<>(), param -> new Observable[]{param.carClassProperty().get().classNameProperty(), param.carClassProperty().get().classColorProperty()}));
 
-        this.participantConfiguration.addListener(((observable, oldValue, newValue) -> cars.set(FXCollections.observableArrayList(Stream.concat(
-                newValue.stream().map(Driver::getCar), additionalParticipantConfiguration.stream().map(Driver::getCar))
-                .collect(Collectors.toCollection(
-                        () -> new TreeSet<>(
-                                (o1, o2) -> o1.getCarName().compareTo(o2.getCarName())
-                        )
-                ))
-        ))));
-        this.additionalParticipantConfiguration.addListener(((observable, oldValue, newValue) -> cars.set(FXCollections.observableArrayList(Stream.concat(
-                newValue.stream().map(Driver::getCar), participantConfiguration.stream().map(Driver::getCar))
-                .collect(Collectors.toCollection(
-                        () -> new TreeSet<>(
-                                (o1, o2) -> o1.getCarName().compareTo(o2.getCarName())
-                        )
-                ))
-        ))));
+        this.participantConfiguration.addListener((ListChangeListener<Driver>) c -> {
+            Map<String, CarClass> carClassMap = cars.stream().collect(Collectors.toMap(Car::getCarName, Car::getCarClass));
+            Set<String> carNames = cars.stream().map(Car::getCarName).collect(Collectors.toSet());
+
+            while (c.next()) {
+                if (c.wasPermutated()) {
+                    // Do something, maybe, someday? I don't know. Life is a void.
+                } else if (c.wasUpdated()) {
+                    for (Driver updatedDriver : c.getList().subList(c.getFrom(), c.getTo())) {
+                        if (carClassMap.containsKey(updatedDriver.getCar().getCarName())) {
+                            CarClass carClass = carClassMap.get(updatedDriver.getCar().getCarName());
+                            updatedDriver.getCar().setCarClass(carClass);
+                        } else if (!carNames.contains(updatedDriver.getCar().getCarName())) {
+                            cars.add(new Car(updatedDriver.getCar().getCarName(), new CarClass("", Color.RED)));
+                            carNames.add(updatedDriver.getCar().getCarName());
+                        }
+                    }
+                } else {
+                    for (Driver removedDriver : c.getRemoved()) {
+                        // Do something, maybe, someday? I don't know. Life is pain and sorrow.
+                    }
+                    for (Driver addedDriver : c.getAddedSubList()) {
+                        if (carClassMap.containsKey(addedDriver.getCar().getCarName())) {
+                            CarClass carClass = carClassMap.get(addedDriver.getCar().getCarName());
+                            addedDriver.getCar().setCarClass(carClass);
+                        } else if (!carNames.contains(addedDriver.getCar().getCarName())) {
+                            cars.add(new Car(addedDriver.getCar().getCarName(), new CarClass("", Color.RED)));
+                            carNames.add(addedDriver.getCar().getCarName());
+                        }
+                    }
+                }
+            }
+            cars.removeIf(car -> !Stream
+                    .concat(participantConfiguration.stream(), additionalParticipantConfiguration.stream())
+                    .map(Driver::getCar)
+                    .map(Car::getCarName)
+                    .collect(Collectors.toSet())
+                    .contains(car.getCarName()));
+        });
+
+        this.additionalParticipantConfiguration.addListener((ListChangeListener<Driver>) c -> {
+            Map<String, CarClass> carClassMap = cars.stream().collect(Collectors.toMap(Car::getCarName, Car::getCarClass));
+
+            while (c.next()) {
+                if (c.wasPermutated()) {
+                    // Do something, maybe, someday? I don't know. Life is hopeless.
+                } else if (c.wasUpdated()) {
+                    for (Driver updatedDriver : c.getList().subList(c.getFrom(), c.getTo())) {
+                        if (carClassMap.containsKey(updatedDriver.getCar().getCarName())) {
+                            CarClass carClass = carClassMap.get(updatedDriver.getCar().getCarName());
+                            updatedDriver.getCar().setCarClass(carClass);
+                        } else {
+                            cars.add(new Car(updatedDriver.getCar().getCarName(), new CarClass("", Color.RED)));
+                        }
+                    }
+                } else {
+                    for (Driver removedDriver : c.getRemoved()) {
+                        // Do something, maybe, someday? I don't know. Life is empty.
+                    }
+                    for (Driver addedDriver : c.getAddedSubList()) {
+                        if (carClassMap.containsKey(addedDriver.getCar().getCarName())) {
+                            CarClass carClass = carClassMap.get(addedDriver.getCar().getCarName());
+                            addedDriver.getCar().setCarClass(carClass);
+                        } else {
+                            cars.add(new Car(addedDriver.getCar().getCarName(), new CarClass("", Color.RED)));
+                        }
+                    }
+                }
+            }
+            cars.removeIf(car -> !Stream
+                    .concat(participantConfiguration.stream(), additionalParticipantConfiguration.stream())
+                    .map(Driver::getCar)
+                    .map(Car::getCarName)
+                    .collect(Collectors.toSet())
+                    .contains(car.getCarName()));
+        });
     }
 
     public File getSourceVideo() {
@@ -518,6 +598,18 @@ public class Configuration {
         this.windowStandingsLines.set(windowStandingsLines);
     }
 
+    public boolean isShowTimer() {
+        return showTimer.get();
+    }
+
+    public SimpleBooleanProperty showTimerProperty() {
+        return showTimer;
+    }
+
+    public void setShowTimer(boolean showTimer) {
+        this.showTimer.set(showTimer);
+    }
+
     public boolean isShowChampion() {
         return showChampion.get();
     }
@@ -528,6 +620,42 @@ public class Configuration {
 
     public SimpleBooleanProperty showChampionProperty() {
         return showChampion;
+    }
+
+    public int getChampionWidth() {
+        return championWidth.get();
+    }
+
+    public SimpleIntegerProperty championWidthProperty() {
+        return championWidth;
+    }
+
+    public void setChampionWidth(int championWidth) {
+        this.championWidth.set(championWidth);
+    }
+
+    public int getChampionHeight() {
+        return championHeight.get();
+    }
+
+    public SimpleIntegerProperty championHeightProperty() {
+        return championHeight;
+    }
+
+    public void setChampionHeight(int championHeight) {
+        this.championHeight.set(championHeight);
+    }
+
+    public Color getChampionColor() {
+        return championColor.get();
+    }
+
+    public SimpleObjectProperty<Color> championColorProperty() {
+        return championColor;
+    }
+
+    public void setChampionColor(Color championColor) {
+        this.championColor.set(championColor);
     }
 
     public boolean isHideSeriesZeros() {
@@ -684,7 +812,7 @@ public class Configuration {
         @Override
         public ObservableList<Driver> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             JsonNode node = p.getCodec().readTree(p);
-            ObservableList<Driver> drivers = FXCollections.observableList(new ArrayList<>(), param -> new Observable[]{param.displayNameProperty(), param.getCar().carNameProperty()});
+            ObservableList<Driver> drivers = FXCollections.observableList(new ArrayList<>(), param -> new Observable[]{param.carProperty(), param.carProperty().get().carNameProperty()});
 
             Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
             while (iterator.hasNext()) {
@@ -697,6 +825,12 @@ public class Configuration {
                         entry.getValue().findValue("team").textValue(),
                         entry.getValue().findValue("points").intValue()
                 );
+                if (entry.getValue().findValue("points_adjust") != null) {
+                    driver.setPointsAdjust(entry.getValue().findValue("points_adjust").textValue());
+                } else {
+                    driver.setPointsAdjust("");
+                }
+
                 drivers.add(driver);
             }
 
@@ -729,6 +863,89 @@ public class Configuration {
                 }
                 gen.writeStringField("team", driver.getTeam());
                 gen.writeNumberField("points", driver.getSeriesPoints());
+                gen.writeStringField("points_adjust", driver.getPointsAdjust());
+                gen.writeEndObject();
+            }
+            gen.writeEndObject();
+        }
+    }
+
+    private static class CarClassesDeserializer extends StdDeserializer<ObservableList<Car>> {
+        public CarClassesDeserializer() {
+            this(null);
+        }
+
+        public CarClassesDeserializer(Class<?> vc) {
+            super(vc);
+        }
+
+        @Override
+        public ObservableList<Car> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            JsonNode node = p.getCodec().readTree(p);
+            ObservableList<Car> cars = FXCollections.observableList(new ArrayList<Car>(), param -> new Observable[]{param.carClassProperty().get().classNameProperty(), param.carClassProperty().get().classColorProperty()});
+
+            Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
+            while (iterator.hasNext()) {
+                Map.Entry<String, JsonNode> entry = iterator.next();
+                ArrayList<Integer> colorValues = new ArrayList<>();
+                for (final JsonNode colorValue : entry.getValue().findValue("color")) {
+                    colorValues.add(colorValue.asInt());
+                }
+
+                CarClass carClass = new CarClass(entry.getKey(), Color.rgb(colorValues.get(0), colorValues.get(1), colorValues.get(2)));
+
+                for (final JsonNode car : entry.getValue().findValue("cars")) {
+                    cars.add(new Car(car.asText(), carClass));
+                }
+            }
+            return cars;
+        }
+    }
+
+    private static class CarClassesSerializer extends StdSerializer<ObservableList<Car>> {
+        public CarClassesSerializer() {
+            this(null);
+        }
+
+        public CarClassesSerializer(Class<ObservableList<Car>> t) {
+            super(t);
+        }
+
+        @Override
+        public void serialize(ObservableList<Car> value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+            gen.configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);
+
+            Map<String, Set<String>> classCars = new TreeMap<>();
+            Map<String, Color> classColors = new TreeMap<>();
+
+            for (Car car : value) {
+                if (!car.getCarClass().getClassName().equals("")) {
+                    classCars.putIfAbsent(car.getCarClass().getClassName(), new TreeSet<>());
+                    classCars.get(car.getCarClass().getClassName()).add(car.getCarName());
+                    classColors.putIfAbsent(car.getCarClass().getClassName(), car.getCarClass().getClassColor());
+                }
+            }
+
+            gen.writeStartObject();
+            for (Map.Entry<String, Set<String>> entry : classCars.entrySet()) {
+                gen.writeFieldName(entry.getKey());
+
+                gen.writeStartObject();
+
+                gen.writeFieldName("color");
+                int[] colorValues = new int[3];
+                colorValues[0] = (int) (classColors.get(entry.getKey()).getRed() * 255);
+                colorValues[1] = (int) (classColors.get(entry.getKey()).getGreen() * 255);
+                colorValues[2] = (int) (classColors.get(entry.getKey()).getBlue() * 255);
+                gen.writeArray(colorValues, 0, 3);
+
+                gen.writeFieldName("cars");
+                gen.writeStartArray();
+                for (String carName : entry.getValue()) {
+                    gen.writeString(carName);
+                }
+                gen.writeEndArray();
+
                 gen.writeEndObject();
             }
             gen.writeEndObject();

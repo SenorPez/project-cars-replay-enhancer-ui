@@ -1,12 +1,15 @@
 import org.gradle.api.artifacts.*
 
+plugins {
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
+}
+
 apply plugin: 'base' // To add "clean" task to the root project.
 apply plugin: 'idea'
 
 allprojects {
     apply plugin: 'idea'
     group = 'com.senorpez.replayenhancer'
-    version = '0.1'
 }
 
 subprojects {

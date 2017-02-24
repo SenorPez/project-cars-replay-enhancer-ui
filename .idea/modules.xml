@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/ConfigurationEditor/ConfigurationEditor.iml" filepath="$PROJECT_DIR$/ConfigurationEditor/ConfigurationEditor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PacketCapture/PacketCapture.iml" filepath="$PROJECT_DIR$/PacketCapture/PacketCapture.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ConfigurationEditor/configurationeditor.iml" filepath="$PROJECT_DIR$/.idea/modules/ConfigurationEditor/configurationeditor.iml" group="configurationeditor" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ConfigurationEditor/configurationeditor_main.iml" filepath="$PROJECT_DIR$/.idea/modules/ConfigurationEditor/configurationeditor_main.iml" group="configurationeditor" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ConfigurationEditor/configurationeditor_test.iml" filepath="$PROJECT_DIR$/.idea/modules/ConfigurationEditor/configurationeditor_test.iml" group="configurationeditor" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/PacketCapture/packetcapture.iml" filepath="$PROJECT_DIR$/.idea/modules/PacketCapture/packetcapture.iml" group="packetcapture" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/PacketCapture/packetcapture_main.iml" filepath="$PROJECT_DIR$/.idea/modules/PacketCapture/packetcapture_main.iml" group="packetcapture" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/PacketCapture/packetcapture_test.iml" filepath="$PROJECT_DIR$/.idea/modules/PacketCapture/packetcapture_test.iml" group="packetcapture" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/replayenhancerui.iml" filepath="$PROJECT_DIR$/.idea/modules/replayenhancerui.iml" />
+    </modules>
+  </component>
+</project>

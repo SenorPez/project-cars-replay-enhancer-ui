@@ -28,7 +28,7 @@
 
 <VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.senorpez.replayenhancer.configurationeditor.ConfigurationEditorController">
    <children>
-      <MenuBar maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="640.0">
+      <MenuBar maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="25.0">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
@@ -65,7 +65,7 @@
           </Menu>
         </menus>
       </MenuBar>
-      <ScrollPane fitToWidth="true" hbarPolicy="NEVER" minWidth="-Infinity" VBox.vgrow="NEVER">
+      <ScrollPane VBox.vgrow="NEVER">
          <content>
             <TabPane tabClosingPolicy="UNAVAILABLE">
               <tabs>
@@ -86,14 +86,22 @@
                                              <rowConstraints>
                                                 <RowConstraints fillHeight="false" vgrow="NEVER" />
                                                 <RowConstraints vgrow="NEVER" />
+                                                <RowConstraints vgrow="NEVER" />
                                              </rowConstraints>
                                              <children>
                                                 <Label text="Source Video" />
                                                 <TextField fx:id="txtSourceVideo" editable="false" GridPane.columnIndex="1" />
                                                 <Button id="btnSourceVideo" fx:id="btnSourceVideo" mnemonicParsing="false" onAction="#buttonSourceVideo" text="Select..." GridPane.columnIndex="2" />
-                                                <Label text="Source Telemetry" GridPane.rowIndex="1" />
-                                                <TextField fx:id="txtSourceTelemetry" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <Button id="btnSourceTelemetry" mnemonicParsing="false" onAction="#buttonSourceTelemetry" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                                <Label text="Source Telemetry" GridPane.rowIndex="2" />
+                                                <TextField fx:id="txtSourceTelemetry" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <Button id="btnSourceTelemetry" mnemonicParsing="false" onAction="#buttonSourceTelemetry" text="Select..." GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                                                <Label fx:id="txtFPSLabel" text="Use Default FPS (30):" GridPane.rowIndex="1" />
+                                                <HBox GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                   <children>
+                                                      <CheckBox fx:id="cbFPS" mnemonicParsing="false" selected="true" />
+                                                      <TextField fx:id="txtFPS" editable="false" prefHeight="25.0" prefWidth="75.0" />
+                                                   </children>
+                                                </HBox>
                                              </children>
                                           </GridPane>
                                           <GridPane fx:id="gridProgress" hgap="4.0" layoutX="20.0" layoutY="20.0" vgap="4.0">
@@ -108,6 +116,7 @@
                                              <children>
                                                 <Label text="Processing Telemetry:" />
                                                 <ProgressBar fx:id="prgProgress" prefWidth="200.0" progress="0.0" GridPane.columnIndex="1" />
+                                                <Button mnemonicParsing="false" onAction="#buttonCancelDriver" text="Cancel" GridPane.columnIndex="2" />
                                              </children>
                                              <padding>
                                                 <Insets top="4.0" />
@@ -134,9 +143,9 @@
                                        </rowConstraints>
                                        <children>
                                           <Label text="Video Start Time:" />
-                                          <TextField fx:id="txtVideoStart" onKeyReleased="#validateTime" styleClass="input-float" GridPane.columnIndex="1" />
+                                          <TextField fx:id="txtVideoStart" styleClass="input-float" GridPane.columnIndex="1" />
                                           <Label text="Video End Time:" GridPane.rowIndex="1" />
-                                          <TextField fx:id="txtVideoEnd" onKeyReleased="#validateTime" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <TextField fx:id="txtVideoEnd" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                           <Label text="Telemetry Sync. Value:" GridPane.rowIndex="2" />
                                           <TextField fx:id="txtVideoSync" onKeyReleased="#validateTime" styleClass="input-float" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                        </children>
@@ -177,7 +186,19 @@
                                        <children>
                                           <Button fx:id="btnMakeSyncVideo" mnemonicParsing="false" onAction="#buttonMakeSyncVideo" text="Create Telemetry Sync Video" />
                                           <Button fx:id="btnMakeVideo" mnemonicParsing="false" onAction="#buttonMakeVideo" text="Create Video" />
-                                          <ProgressBar fx:id="prgPython" focusTraversable="false" prefWidth="200.0" />
+                                          <GridPane fx:id="gridPython">
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="372.0" minWidth="10.0" prefWidth="228.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="427.0" minWidth="10.0" prefWidth="427.0" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                             <children>
+                                                <ProgressBar fx:id="prgPython" focusTraversable="false" prefWidth="200.0" />
+                                                <Button mnemonicParsing="false" onAction="#buttonCancelPython" text="Cancel" GridPane.columnIndex="1" />
+                                             </children>
+                                          </GridPane>
                                           <TextArea fx:id="txtPythonOutput" editable="false" prefHeight="200.0" prefWidth="200.0" />
                                        </children>
                                     </VBox>
@@ -308,6 +329,7 @@
                                           <RowConstraints vgrow="SOMETIMES" />
                                           <RowConstraints vgrow="SOMETIMES" />
                                           <RowConstraints vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="25.0" vgrow="SOMETIMES" />
                                        </rowConstraints>
                                        <children>
                                           <Label text="Margin Width" />
@@ -320,6 +342,8 @@
                                           <TextField fx:id="txtLeaderStandingsLines" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                           <Label text="Target Standings Lines" GridPane.rowIndex="4" />
                                           <TextField fx:id="txtWindowStandingsLines" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                          <Label text="Show Lap Counter and Timer?" GridPane.rowIndex="5" />
+                                          <CheckBox fx:id="cbShowTimer" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                        </children>
                                     </GridPane>
                                  </content>
@@ -349,24 +373,33 @@
                                         <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                                           <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                                           <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                                           <RowConstraints maxHeight="399.0" minHeight="-Infinity" prefHeight="287.0" vgrow="SOMETIMES" />
                                           <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                                       </rowConstraints>
                                        <children>
                                           <Label text="Show Series Champion?" />
                                           <CheckBox fx:id="cbShowChampion" mnemonicParsing="false" GridPane.columnIndex="1" />
-                                          <Label text="Fastest Lap Bonus Points" GridPane.rowIndex="2" />
-                                          <TextField fx:id="txtBonusPoints" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                          <TableView fx:id="tblPointStructure" editable="true" focusTraversable="false" prefHeight="404.0" prefWidth="254.0" GridPane.columnSpan="2" GridPane.rowIndex="3">
+                                          <Label text="Fastest Lap Bonus Points" GridPane.rowIndex="5" />
+                                          <TextField fx:id="txtBonusPoints" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                          <TableView fx:id="tblPointStructure" editable="true" focusTraversable="false" prefHeight="404.0" prefWidth="254.0" GridPane.columnSpan="2" GridPane.rowIndex="6">
                                             <columns>
                                               <TableColumn fx:id="colFinishPosition" editable="false" prefWidth="75.0" resizable="false" sortable="false" text="Position" />
                                               <TableColumn fx:id="colPoints" prefWidth="178.0" sortable="false" text="Points" />
                                             </columns>
                                           </TableView>
-                                          <Button id="btnAddPosition" mnemonicParsing="false" onAction="#buttonAddPosition" text="Add Position" GridPane.rowIndex="4" />
-                                          <Button id="btnDeletePosition" mnemonicParsing="false" onAction="#buttonDeletePosition" text="Delete Position" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                          <Label text="Hide Drivers With 0 Points&#10;in Series Standings?" wrapText="true" GridPane.rowIndex="1" />
-                                          <CheckBox fx:id="cbHideSeriesZeros" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <Button id="btnAddPosition" mnemonicParsing="false" onAction="#buttonAddPosition" text="Add Position" GridPane.rowIndex="7" />
+                                          <Button id="btnDeletePosition" mnemonicParsing="false" onAction="#buttonDeletePosition" text="Delete Position" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                                          <Label text="Hide Drivers With 0 Points&#10;in Series Standings?" wrapText="true" GridPane.rowIndex="4" />
+                                          <CheckBox fx:id="cbHideSeriesZeros" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                          <Label fx:id="lblChampionWidth" text="Champion Logo Width" GridPane.rowIndex="1" />
+                                          <Label fx:id="lblChampionHeight" text="Champion Logo Height" GridPane.rowIndex="2" />
+                                          <Label fx:id="lblChampionColor" text="Champion Logo Background" GridPane.rowIndex="3" />
+                                          <ColorPicker fx:id="colorChampionColor" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                          <TextField fx:id="txtChampionWidth" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <TextField fx:id="txtChampionHeight" onKeyReleased="#validateInteger" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                        </children>
                                     </GridPane>
                                  </content>
@@ -395,6 +428,7 @@
                                           <TableColumn fx:id="colCar" prefWidth="110.0" text="Car" />
                                           <TableColumn fx:id="colTeam" prefWidth="110.0" text="Team" />
                                           <TableColumn fx:id="colSeriesPoints" text="Series Points" />
+                                          <TableColumn fx:id="colPointsAdjust" prefWidth="75.0" text="Points Adjust" />
                                       </columns>
                                     </TableView>
                                  </content>
@@ -404,11 +438,11 @@
                               </TitledPane>
                               <TitledPane animated="false" collapsible="false" focusTraversable="false" prefHeight="175.0" prefWidth="620.0" text="Cars">
                                  <content>
-                                    <TableView fx:id="tblCars" focusTraversable="false" prefHeight="200.0" prefWidth="618.0">
+                                    <TableView fx:id="tblCars" editable="true" focusTraversable="false" prefHeight="200.0" prefWidth="618.0">
                                       <columns>
-                                        <TableColumn fx:id="colCarName" prefWidth="75.0" text="Car" />
-                                        <TableColumn fx:id="colClassName" prefWidth="75.0" text="Class" />
-                                          <TableColumn fx:id="colClassColor" prefWidth="75.0" text="Class Color" />
+                                        <TableColumn fx:id="colCarName" prefWidth="250.0" text="Car" />
+                                        <TableColumn fx:id="colClassName" prefWidth="250.0" text="Class" />
+                                          <TableColumn fx:id="colClassColor" prefWidth="150.0" text="Class Color" />
                                       </columns>
                                     </TableView>
                                  </content>
@@ -422,10 +456,10 @@
                                        <children>
                                           <TableView fx:id="tblAddDrivers" editable="true" focusTraversable="false" prefHeight="200.0" prefWidth="618.0">
                                              <columns>
-                                                <TableColumn fx:id="colAddName" prefWidth="75.0" text="Name" />
-                                                <TableColumn fx:id="colAddCar" prefWidth="53.0" text="Car" />
-                                                <TableColumn fx:id="colAddTeam" prefWidth="71.0" text="Team" />
-                                                <TableColumn fx:id="colAddSeriesPoints" prefWidth="110.0" text="Series Points" />
+                                                <TableColumn fx:id="colAddName" prefWidth="110.0" text="Name" />
+                                                <TableColumn fx:id="colAddCar" prefWidth="110.0" text="Car" />
+                                                <TableColumn fx:id="colAddTeam" prefWidth="110.0" text="Team" />
+                                                <TableColumn fx:id="colAddSeriesPoints" text="Series Points" />
                                              </columns>
                                           </TableView>
                                           <HBox>

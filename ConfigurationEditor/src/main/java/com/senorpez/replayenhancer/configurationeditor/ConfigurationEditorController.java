@@ -1,14 +1,15 @@
 package com.senorpez.replayenhancer.configurationeditor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.beans.Observable;
+import io.humble.video.Demuxer;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -31,13 +32,12 @@ import java.io.*;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ConfigurationEditorController implements Initializable {
     private final SimpleObjectProperty<File> JSONFile = new SimpleObjectProperty<>();
@@ -51,7 +51,16 @@ public class ConfigurationEditorController implements Initializable {
     
     @FXML
     private TextField txtSourceVideo;
-    
+
+    @FXML
+    private Label txtFPSLabel;
+
+    @FXML
+    private CheckBox cbFPS;
+
+    @FXML
+    private TextField txtFPS;
+
     @FXML
     private TextField txtSourceTelemetry;
     
@@ -128,7 +137,28 @@ public class ConfigurationEditorController implements Initializable {
     private TextField txtSubheadingText;
 
     @FXML
+    private CheckBox cbShowTimer;
+
+    @FXML
     private CheckBox cbShowChampion;
+
+    @FXML
+    private Label lblChampionHeight;
+
+    @FXML
+    private TextField txtChampionHeight;
+
+    @FXML
+    private Label lblChampionWidth;
+
+    @FXML
+    private TextField txtChampionWidth;
+
+    @FXML
+    private Label lblChampionColor;
+
+    @FXML
+    private ColorPicker colorChampionColor;
 
     @FXML
     private CheckBox cbHideSeriesZeros;
@@ -167,6 +197,9 @@ public class ConfigurationEditorController implements Initializable {
     private TableColumn<Driver, Integer> colSeriesPoints;
 
     @FXML
+    private TableColumn<Driver, String> colPointsAdjust;
+
+    @FXML
     private TableView<Driver> tblAddDrivers;
 
     @FXML
@@ -203,13 +236,19 @@ public class ConfigurationEditorController implements Initializable {
     private ProgressBar prgProgress;
 
     @FXML
-    private ProgressBar prgPython;
+    private GridPane gridPython;
 
     @FXML
     private Button btnMakeSyncVideo;
 
     @FXML
     private Button btnMakeVideo;
+
+    private DriverPopulator driverPopulator = null;
+    private PythonExecutor pythonExecutor = null;
+
+    private final SimpleDoubleProperty sourceVideoDuraton = new SimpleDoubleProperty();
+    private ConfigurationValidator configurationValidator = new ConfigurationValidator();
 
     private static void updateConfiguration(File file, Configuration configuration) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -254,9 +293,6 @@ public class ConfigurationEditorController implements Initializable {
             menuFileNew();
             updateConfiguration(file, configuration);
             JSONFile.set(file);
-
-            // TODO: 10/28/2016 Figure out why we need to do this for this sequence: Open -> Select Tele -> Open. Without, no Driver refresh.
-            tblDrivers.refresh();
         }
     }
 
@@ -322,11 +358,13 @@ public class ConfigurationEditorController implements Initializable {
         Object source = event.getSource();
         TextField txtSource = (TextField) source;
         txtSource.setStyle("-fx-text-inner-color: black");
+        configurationValidator.setInvalidVideoSyncTime(false);
 
-        Pattern regex = Pattern.compile("(?:^(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*(?:\\.\\d*)?)$)");
+        Pattern regex = Pattern.compile("(?:^-?(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^-?(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^-?(\\d*(?:\\.\\d*)?)$)");
         Matcher match = regex.matcher(txtSource.getText());
         if (!match.matches()) {
             txtSource.setStyle("-fx-text-inner-color: red");
+            configurationValidator.setInvalidVideoSyncTime(true);
         }
     }
 
@@ -348,23 +386,134 @@ public class ConfigurationEditorController implements Initializable {
     }
 
     @FXML
-    private void buttonSourceTelemetry(ActionEvent event) {
+    private void buttonSourceTelemetry(ActionEvent event) throws IOException {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Open Source Telemetry Directory");
         directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        File directory = directoryChooser.showDialog(root.getScene().getWindow());
+        File file = directoryChooser.showDialog(root.getScene().getWindow());
 
-        if (directory != null && directory.isDirectory()) {
-            configuration.setSourceTelemetry(directory);
-            DriverPopulator driverPopulator = new DriverPopulator(txtSourceTelemetry.getText(), prgProgress);
-            driverPopulator.setOnSucceeded(serviceEvent -> {
-                configuration.setParticipantConfiguration(driverPopulator.getValue());
-                gridProgress.setVisible(false);
-                prgProgress.setProgress(0);
+        configurationValidator.setInvalidSourceTelemetry(true);
+        if (file != null && file.isDirectory()) {
+            driverPopulator = new DriverPopulator(file.toPath());
+            ChangeListener<Number> progressListener = (observable, oldValue, newValue) -> prgProgress.setProgress(Math.max(0, newValue.doubleValue()));
+
+            driverPopulator.setOnScheduled(serviceEvent -> prgProgress.setProgress(0));
+            driverPopulator.setOnRunning(serviceEvent -> {
+                driverPopulator.progressProperty().addListener(progressListener);
+                gridProgress.setVisible(true);
             });
-            gridProgress.setVisible(true);
-            configuration.getParticipantConfiguration().clear();
+            driverPopulator.setOnSucceeded(serviceEvent -> {
+                configuration.setSourceTelemetry(file);
+                configuration.getParticipantConfiguration().setAll(driverPopulator.getValue());
+                configurationValidator.setInvalidSourceTelemetry(false);
+                driverPopulator.progressProperty().removeListener(progressListener);
+                gridProgress.setVisible(false);
+            });
+            driverPopulator.setOnCancelled(serviceEvent -> {
+                driverPopulator.progressProperty().removeListener(progressListener);
+                gridProgress.setVisible(false);
+            });
+            driverPopulator.setOnFailed(serviceEvent -> {
+                driverPopulator.progressProperty().removeListener(progressListener);
+                gridProgress.setVisible(false);
+            });
+
             driverPopulator.start();
+        }
+    }
+
+    @FXML
+    private void buttonCancelDriver(ActionEvent event) {
+        driverPopulator.cancel();
+    }
+
+    private static class DriverPopulator extends Service<List<Driver>> {
+        private final Path telemetryDirectory;
+        private final Set<String> names = new HashSet<>();
+        private Integer sessionState = 0;
+        private Boolean clearDrivers = false;
+
+        public DriverPopulator(Path telemetryDirectory) {
+            this.telemetryDirectory = telemetryDirectory;
+        }
+
+        private void dispatchPacket(Path packetPath) {
+            Long length = packetPath.toFile().length();
+            try {
+                ByteBuffer packetData = ByteBuffer.wrap(Files.readAllBytes(packetPath));
+                if (length == 1367) {
+                    processPacket(new TelemetryDataPacket(packetData));
+                } else if (length == 1347) {
+                    if (sessionState == 5) {
+                        if (clearDrivers) {
+                            clearDrivers = false;
+                            names.clear();
+                        }
+                        processPacket(new ParticipantPacket(packetData));
+                    } else clearDrivers = true;
+                } else if (length == 1028) {
+                    if (sessionState == 5) {
+                        if (clearDrivers) {
+                            clearDrivers = false;
+                            names.clear();
+                        }
+                        processPacket(new AdditionalParticipantPacket(packetData));
+                    } else clearDrivers = true;
+                }
+            } catch (IOException e) {
+                if (!getState().equals(State.CANCELLED)) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        private void processPacket(AdditionalParticipantPacket packet) {
+            names.addAll(
+                    packet.getNames().stream()
+                            .map(SimpleStringProperty::get)
+                            .filter(s -> !s.isEmpty())
+                            .collect(Collectors.toCollection(ArrayList::new))
+            );
+        }
+
+        private void processPacket(ParticipantPacket packet) {
+            names.addAll(
+                    packet.getNames().stream()
+                            .map(SimpleStringProperty::get)
+                            .filter(s -> !s.isEmpty())
+                            .collect(Collectors.toCollection(ArrayList::new))
+            );
+        }
+
+        private void processPacket(TelemetryDataPacket packet) {
+            sessionState = packet.getSessionState();
+        }
+
+        @Override
+        protected Task<List<Driver>> createTask() {
+            return new Task<List<Driver>>() {
+                @Override
+                protected List<Driver> call() throws Exception {
+
+                    try (Stream<Path> files = Files.list(telemetryDirectory)) {
+                        List<Path> telemetry = files.collect(Collectors.toCollection(ArrayList::new));
+                        telemetry.removeIf(path -> path.toFile().getName().replaceAll("[^\\d]", "").equals(""));
+                        telemetry.sort((o1, o2) -> {
+                            Integer n1 = Integer.valueOf(o1.toFile().getName().replaceAll("[^\\d]", ""));
+                            Integer n2 = Integer.valueOf(o2.toFile().getName().replaceAll("[^\\d]", ""));
+                            return n1.compareTo(n2);
+                        });
+
+                        telemetry.stream()
+                                .filter(path -> !isCancelled())
+                                .forEach(path -> {
+                                    updateProgress(Long.valueOf(path.toFile().getName().replaceAll("[^\\d]", "")), telemetry.size());
+                                    dispatchPacket(path);
+                                });
+                    }
+                    return names.stream().map(Driver::new).collect(Collectors.toCollection(ArrayList::new));
+                }
+            };
         }
     }
 
@@ -379,47 +528,55 @@ public class ConfigurationEditorController implements Initializable {
                 new FileChooser.ExtensionFilter("All Files", "*.*")
         );
         File file = fileChooser.showSaveDialog(root.getScene().getWindow());
+        configurationValidator.setInvalidOutputVideo(true);
 
         if (file != null) {
             configuration.setOutputVideo(file);
+            configurationValidator.setInvalidOutputVideo(false);
         }
     }
 
     @FXML
-    private void buttonMakeSyncVideo(ActionEvent event) {
-        String[] command = {"replayenhancer", "-s", txtFileName.getText()};
-        PythonExecutor pythonExecutor = new PythonExecutor(command);
-        pythonExecutor.setOnRunning(serviceEvent -> {
-            txtPythonOutput.textProperty().bind(pythonExecutor.messageProperty());
-            prgPython.setVisible(true);
-            btnMakeSyncVideo.disableProperty().unbind();
-            btnMakeVideo.disableProperty().unbind();
-            btnMakeSyncVideo.setDisable(true);
-            btnMakeVideo.setDisable(true);
-        });
-        pythonExecutor.setOnSucceeded(serviceEvent -> {
-            txtPythonOutput.textProperty().unbind();
-            prgPython.setVisible(false);
-            btnMakeSyncVideo.setDisable(false);
-            btnMakeVideo.setDisable(false);
-            btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull());
-            btnMakeVideo.disableProperty().bind(JSONFile.isNull());
-        });
-        pythonExecutor.start();
+    private void buttonMakeSyncVideo(ActionEvent event) throws IOException{
+        createVideo(true);
     }
 
     @FXML
-    private void buttonMakeVideo(ActionEvent event) throws IOException {
-        String[] command = {"replayenhancer", txtFileName.getText()};
-        PythonExecutor pythonExecutor = new PythonExecutor(command);
+    private void buttonMakeVideo(ActionEvent event) throws IOException{
+        createVideo(false);
+    }
+
+    private void createVideo(Boolean syncVideo) throws IOException {
+        menuFileSave();
+
+        Integer fps;
+        try {
+            fps = Integer.valueOf(txtFPS.getText());
+        } catch (NumberFormatException e) {
+            fps = null;
+        }
+
+        ArrayList<String> command = new ArrayList<>();
+        command.add("replayenhancer");
+        if (fps != null) {
+            command.add("-f");
+            command.add(fps.toString());
+        }
+        if (syncVideo) {
+            command.add("-s");
+        }
+        command.add(txtFileName.getText());
+
+        pythonExecutor = new PythonExecutor(command.toArray(new String[command.size()]));
         ChangeListener<String> messageListener = (observable, oldValue, newValue) -> {
             txtPythonOutput.clear();
             txtPythonOutput.appendText(newValue);
         };
 
+        pythonExecutor.setOnScheduled(serviceEvent -> txtPythonOutput.clear());
         pythonExecutor.setOnRunning(serviceEvent -> {
             pythonExecutor.messageProperty().addListener(messageListener);
-            prgPython.setVisible(true);
+            gridPython.setVisible(true);
             btnMakeSyncVideo.disableProperty().unbind();
             btnMakeVideo.disableProperty().unbind();
             btnMakeSyncVideo.setDisable(true);
@@ -427,13 +584,39 @@ public class ConfigurationEditorController implements Initializable {
         });
         pythonExecutor.setOnSucceeded(serviceEvent -> {
             pythonExecutor.messageProperty().removeListener(messageListener);
-            prgPython.setVisible(false);
+            gridPython.setVisible(false);
             btnMakeSyncVideo.setDisable(false);
             btnMakeVideo.setDisable(false);
-            btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull());
-            btnMakeVideo.disableProperty().bind(JSONFile.isNull());
+            btnMakeSyncVideo.disableProperty().bind(configurationValidator.invalidConfigurationProperty());
+            btnMakeVideo.disableProperty().bind(configurationValidator.invalidConfigurationProperty());
         });
+        pythonExecutor.setOnCancelled(serviceEvent -> {
+            pythonExecutor.messageProperty().removeListener(messageListener);
+            txtPythonOutput.clear();
+            txtPythonOutput.appendText("Cancelled.");
+            gridPython.setVisible(false);
+            btnMakeSyncVideo.setDisable(false);
+            btnMakeVideo.setDisable(false);
+            btnMakeSyncVideo.disableProperty().bind(configurationValidator.invalidConfigurationProperty());
+            btnMakeVideo.disableProperty().bind(configurationValidator.invalidConfigurationProperty());
+        });
+        pythonExecutor.setOnFailed(serviceEvent -> {
+            pythonExecutor.messageProperty().removeListener(messageListener);
+            txtPythonOutput.clear();
+            txtPythonOutput.appendText("Error.");
+            gridPython.setVisible(false);
+            btnMakeSyncVideo.setDisable(false);
+            btnMakeVideo.setDisable(false);
+            btnMakeSyncVideo.disableProperty().bind(configurationValidator.invalidConfigurationProperty());
+            btnMakeVideo.disableProperty().bind(configurationValidator.invalidConfigurationProperty());
+        });
+
         pythonExecutor.start();
+    }
+
+    @FXML
+    private void buttonCancelPython(ActionEvent event) {
+        pythonExecutor.cancel();
     }
 
     @FXML
@@ -564,11 +747,11 @@ public class ConfigurationEditorController implements Initializable {
         gridProgress.managedProperty().bind(gridProgress.visibleProperty());
         gridProgress.setVisible(false);
 
-        prgPython.managedProperty().bind(prgPython.visibleProperty());
-        prgPython.setVisible(false);
+        gridPython.managedProperty().bind(gridPython.visibleProperty());
+        gridPython.setVisible(false);
 
-        btnMakeSyncVideo.disableProperty().bind(JSONFile.isNull());
-        btnMakeVideo.disableProperty().bind(JSONFile.isNull());
+        btnMakeSyncVideo.disableProperty().bind(configurationValidator.invalidConfigurationProperty());
+        btnMakeVideo.disableProperty().bind(configurationValidator.invalidConfigurationProperty());
 
         configuration = new Configuration();
         addListeners();
@@ -632,6 +815,7 @@ public class ConfigurationEditorController implements Initializable {
                         t.getTablePosition().getRow())
                 ).setTeam(t.getNewValue())
         );
+
         colSeriesPoints.setCellValueFactory(
                 new PropertyValueFactory<>("seriesPoints")
         );
@@ -642,8 +826,18 @@ public class ConfigurationEditorController implements Initializable {
                 ).setSeriesPoints(t.getNewValue())
         );
 
+        colPointsAdjust.setCellValueFactory(
+                new PropertyValueFactory<>("pointsAdjust")
+        );
+        colPointsAdjust.setCellFactory(param -> CustomCell.createStringEditCell());
+        colPointsAdjust.setOnEditCommit(
+                t -> (t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                ).setPointsAdjust(t.getNewValue())
+        );
+
         colAddName.setCellValueFactory(
-                new PropertyValueFactory<Driver, String>("name")
+                new PropertyValueFactory<>("name")
         );
         colAddName.setCellFactory(param -> CustomCell.createStringEditCell());
         colAddName.setOnEditCommit(
@@ -673,7 +867,7 @@ public class ConfigurationEditorController implements Initializable {
         );
 
         colAddTeam.setCellValueFactory(
-                new PropertyValueFactory<Driver, String>("team")
+                new PropertyValueFactory<>("team")
         );
         colAddTeam.setCellFactory(param -> CustomCell.createStringEditCell());
         colAddTeam.setOnEditCommit(
@@ -683,7 +877,7 @@ public class ConfigurationEditorController implements Initializable {
         );
 
         colAddSeriesPoints.setCellValueFactory(
-                new PropertyValueFactory<Driver, Integer>("seriesPoints")
+                new PropertyValueFactory<>("seriesPoints")
         );
         colAddSeriesPoints.setCellFactory(param -> CustomCell.createIntegerEditCell());
         colAddSeriesPoints.setOnEditCommit(
@@ -701,22 +895,35 @@ public class ConfigurationEditorController implements Initializable {
                         new SimpleStringProperty(param.getValue().getCarClass().getClassName())
         );
         colClassName.setCellFactory(param -> CustomCell.createStringEditCell());
-        colClassName.setOnEditCommit(
-                event -> (event.getTableView().getItems().get(
-                        event.getTablePosition().getRow())
-                ).getCarClass().setClassName(event.getNewValue())
-        );
+        colClassName.setOnEditCommit(event -> {
+            Map<String, CarClass> carClassMap = event.getTableView().getItems().stream().map(Car::getCarClass).collect(Collectors.toMap(CarClass::getClassName, carClass -> carClass, (carClass, carClass2) -> carClass));
+            if (carClassMap.containsKey(event.getNewValue())) {
+                (event.getTableView().getItems().get(event.getTablePosition().getRow())).setCarClass(carClassMap.get(event.getNewValue()));
+            } else {
+                (event.getTableView().getItems().get(event.getTablePosition().getRow())).setCarClass(new CarClass(event.getNewValue(), Color.RED));
+            }
+            event.getTableView().refresh();
+        });
         colClassColor.setCellValueFactory(
                 param -> param.getValue() == null || param.getValue().getCarClass() == null ?
                         new SimpleObjectProperty<>(null) :
                         new SimpleObjectProperty<>(param.getValue().getCarClass().getClassColor())
         );
         colClassColor.setCellFactory(ColorTableCell::new);
-        colClassColor.setOnEditCommit(
-                event -> (event.getTableView().getItems().get(
-                        event.getTablePosition().getRow())
-                ).getCarClass().setClassColor(event.getNewValue())
-        );
+        colClassColor.setOnEditCommit(event -> {
+            (event.getTableView().getItems().get(event.getTablePosition().getRow())).getCarClass().setClassColor(event.getNewValue());
+            event.getTableView().refresh();
+        });
+    }
+
+    private static Double getVideoDuration(String video) {
+        final Demuxer demuxer = Demuxer.make();
+        try {
+            demuxer.open(video, null, false, true, null, null);
+        } catch (InterruptedException | IOException e) {
+            return null;
+        }
+        return demuxer.getDuration() / 1000000.0;
     }
 
     private void addListeners() {
@@ -744,6 +951,32 @@ public class ConfigurationEditorController implements Initializable {
                 return new File(string);
             }
         });
+
+        if (txtSourceVideo.getText() == null || txtSourceVideo.getText().isEmpty()) {
+            txtFPSLabel.setText("Use Default FPS (30):");
+        } else {
+            txtFPSLabel.setText("Use Source Video FPS:");
+        }
+
+        txtSourceVideo.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null || newValue.isEmpty()) {
+                txtFPSLabel.setText("Use Default FPS (30):");
+                sourceVideoDuraton.setValue(null);
+            } else {
+                txtFPSLabel.setText("Use Source Video FPS:");
+                sourceVideoDuraton.setValue(getVideoDuration(newValue));
+            }
+        });
+
+        cbFPS.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            txtFPS.setEditable(!newValue);
+            txtFPS.setDisable(newValue);
+
+            if (newValue) {
+                txtFPS.setText(null);
+            }
+        });
+
         txtSourceTelemetry.textProperty().bindBidirectional(configuration.sourceTelemetryProperty(), new StringConverter<File>() {
             @Override
             public String toString(File object) {
@@ -766,7 +999,59 @@ public class ConfigurationEditorController implements Initializable {
 
         // Source Parameters
         txtVideoStart.textProperty().bindBidirectional(configuration.videoStartTimeProperty(), new ConvertTime());
+        configuration.videoStartTimeProperty().addListener((observable, oldValue, newValue) -> {
+            txtVideoStart.setStyle("-fx-text-inner-color: black");
+            configurationValidator.setInvalidVideoStartTime(false);
+
+            if (newValue != null) {
+                final Pattern regex = Pattern.compile("(?:^(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*(?:\\.\\d*)?)$)");
+                final Matcher match = regex.matcher(txtVideoStart.getText());
+
+                if (!match.matches()
+                        || newValue.doubleValue() > sourceVideoDuraton.get()
+                        || newValue.doubleValue() > configuration.videoEndTimeProperty().get()) {
+                    txtVideoStart.setStyle("-fx-text-inner-color: red");
+                    configurationValidator.setInvalidVideoStartTime(true);
+                }
+            }
+        });
+
         txtVideoEnd.textProperty().bindBidirectional(configuration.videoEndTimeProperty(), new ConvertTime());
+        configuration.videoEndTimeProperty().addListener((observable, oldValue, newValue) -> {
+            txtVideoEnd.setStyle("-fx-text-inner-color: black");
+            configurationValidator.setInvalidVideoEndTime(false);
+
+            if (newValue != null) {
+                final Pattern regex = Pattern.compile("(?:^(\\d*):([0-5]?\\d):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*):([0-5]?\\d(?:\\.\\d*)?)$|^(\\d*(?:\\.\\d*)?)$)");
+                final Matcher match = regex.matcher(txtVideoEnd.getText());
+
+                if (!match.matches()
+                        || newValue.doubleValue() > sourceVideoDuraton.get()
+                        || newValue.doubleValue() < configuration.videoStartTimeProperty().get()) {
+                    txtVideoEnd.setStyle("-fx-text-inner-color: red");
+                    configurationValidator.setInvalidVideoEndTime(true);
+                }
+            }
+        });
+
+        sourceVideoDuraton.addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                if (configuration.videoEndTimeProperty().get() == 0) {
+                    configuration.videoEndTimeProperty().setValue(newValue);
+                }
+
+                if (configuration.videoStartTimeProperty().get() > sourceVideoDuraton.get()) {
+                    txtVideoStart.setStyle("-fx-text-inner-color: red");
+                    configurationValidator.setInvalidVideoStartTime(true);
+                }
+
+                if (configuration.videoEndTimeProperty().get() > sourceVideoDuraton.get()) {
+                    txtVideoEnd.setStyle("-fx-text-inner-color: red");
+                    configurationValidator.setInvalidVideoEndTime(true);
+                }
+            }
+        });
+
         txtVideoSync.textProperty().bindBidirectional(configuration.syncRacestartProperty(), new ConvertTime());
 
         // Output
@@ -906,9 +1191,29 @@ public class ConfigurationEditorController implements Initializable {
         txtResultLines.textProperty().bindBidirectional(configuration.resultLinesProperty(), new NumberStringConverter());
         txtLeaderStandingsLines.textProperty().bindBidirectional(configuration.leaderStandingsLinesProperty(), new NumberStringConverter());
         txtWindowStandingsLines.textProperty().bindBidirectional(configuration.windowStandingsLinesProperty(), new NumberStringConverter());
+        cbShowTimer.selectedProperty().bindBidirectional(configuration.showTimerProperty());
 
         // Options
         cbShowChampion.selectedProperty().bindBidirectional(configuration.showChampionProperty());
+
+        txtChampionWidth.textProperty().bindBidirectional(configuration.championWidthProperty(), new NumberStringConverter());
+        lblChampionWidth.managedProperty().bind(cbShowChampion.selectedProperty());
+        lblChampionWidth.visibleProperty().bind(cbShowChampion.selectedProperty());
+        txtChampionWidth.managedProperty().bind(cbShowChampion.selectedProperty());
+        txtChampionWidth.visibleProperty().bind(cbShowChampion.selectedProperty());
+
+        txtChampionHeight.textProperty().bindBidirectional(configuration.championHeightProperty(), new NumberStringConverter());
+        lblChampionHeight.managedProperty().bind(cbShowChampion.selectedProperty());
+        lblChampionHeight.visibleProperty().bind(cbShowChampion.selectedProperty());
+        txtChampionHeight.managedProperty().bind(cbShowChampion.selectedProperty());
+        txtChampionHeight.visibleProperty().bind(cbShowChampion.selectedProperty());
+
+        colorChampionColor.valueProperty().bindBidirectional(configuration.championColorProperty());
+        lblChampionColor.managedProperty().bind(cbShowChampion.selectedProperty());
+        lblChampionColor.visibleProperty().bind(cbShowChampion.selectedProperty());
+        colorChampionColor.managedProperty().bind(cbShowChampion.selectedProperty());
+        colorChampionColor.visibleProperty().bind(cbShowChampion.selectedProperty());
+
         cbHideSeriesZeros.selectedProperty().bindBidirectional(configuration.hideSeriesZerosProperty());
 
         txtBonusPoints.textProperty().bindBidirectional(configuration.pointStructureProperty(), new StringConverter<ObservableList<PointStructureItem>>() {
@@ -928,9 +1233,29 @@ public class ConfigurationEditorController implements Initializable {
         tblPointStructure.setItems(configuration.pointStructureProperty().filtered(pointStructureItem -> pointStructureItem.getFinishPosition() > 0));
 
         // Drivers (and teams, and cars, oh my!)
-        tblDrivers.setItems(configuration.participantConfigurationProperty());
-        tblAddDrivers.setItems(configuration.additionalParticipantConfigurationProperty());
-        tblCars.setItems(configuration.carsProperty());
+        SortedList<Driver> sortedDrivers = configuration.participantConfigurationProperty().sorted((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
+        sortedDrivers.comparatorProperty().bind(tblDrivers.comparatorProperty());
+        tblDrivers.setItems(sortedDrivers);
+        tblDrivers.getColumns().get(0).setSortType(TableColumn.SortType.ASCENDING);
+        tblDrivers.getSortOrder().clear();
+        tblDrivers.getSortOrder().add(tblDrivers.getColumns().get(0));
+        tblDrivers.sort();
+
+        SortedList<Driver> sortedAddDrivers = configuration.additionalParticipantConfigurationProperty().sorted((o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
+        sortedAddDrivers.comparatorProperty().bind(tblAddDrivers.comparatorProperty());
+        tblAddDrivers.setItems(sortedAddDrivers);
+        tblAddDrivers.getColumns().get(0).setSortType(TableColumn.SortType.ASCENDING);
+        tblAddDrivers.getSortOrder().clear();
+        tblAddDrivers.getSortOrder().add(tblAddDrivers.getColumns().get(0));
+        tblAddDrivers.sort();
+
+        SortedList<Car> sortedCars = configuration.carsProperty().sorted((o1, o2) -> o1.getCarName().compareToIgnoreCase(o2.getCarName()));
+        sortedCars.comparatorProperty().bind(tblCars.comparatorProperty());
+        tblCars.setItems(sortedCars);
+        tblCars.getColumns().get(0).setSortType(TableColumn.SortType.ASCENDING);
+        tblCars.getSortOrder().clear();
+        tblCars.getSortOrder().add(tblCars.getColumns().get(0));
+        tblCars.sort();
     }
 
     private static class ConvertTime extends StringConverter<Number> {
@@ -987,179 +1312,32 @@ public class ConfigurationEditorController implements Initializable {
         }
     }
 
-    private static class DriverPopulator extends Service<ObservableList<Driver>> {
-        private final String telemetryDirectory;
-        private final ProgressBar prgProgress;
-
-        public DriverPopulator(String telemetryDirectory, ProgressBar prgProgress) {
-            this.telemetryDirectory = telemetryDirectory;
-            this.prgProgress = prgProgress;
-        }
-
-        @Override
-        protected Task<ObservableList<Driver>> createTask() {
-            return new Task<ObservableList<Driver>>() {
-                @Override
-                protected ObservableList<Driver> call() throws Exception {
-                    File[] files = new File(telemetryDirectory).listFiles((dir, name) -> name.matches(".*pdata.*"));
-
-                    if (files == null) return null;
-
-                    Arrays.sort(files, (file1, file2) -> {
-                        Integer n1 = Integer.valueOf(file1.getName().replaceAll("[^\\d]", ""));
-                        Integer n2 = Integer.valueOf(file2.getName().replaceAll("[^\\d]", ""));
-                        return Integer.compare(n1, n2);
-                    });
-
-                    List<List<String>> allNames = new ArrayList<>();
-                    List<String> names = new ArrayList<>();
-                    Integer numParticipants = null;
-
-                    int fileNumber = 0;
-
-                    ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-                    DriverProgress progress = new DriverProgress(fileNumber, files.length, prgProgress);
-                    executorService.scheduleWithFixedDelay(progress, 0L, 500L, TimeUnit.MILLISECONDS);
-
-                    for (File file : files) {
-                        fileNumber += 1;
-                        progress.setFileNumber(fileNumber);
-
-                        if (file.length() == 1367) {
-                            try {
-                                TelemetryDataPacket packet = new TelemetryDataPacket(
-                                        ByteBuffer.wrap(Files.readAllBytes(file.toPath()))
-                                );
-                                if (packet.getRaceState() == 2) {
-                                    if (numParticipants == null || numParticipants != packet.getNumParticipants()) {
-                                        numParticipants = packet.getNumParticipants();
-                                        names = new ArrayList<>();
-                                    }
-                                } else {
-                                    numParticipants = null;
-                                    names = new ArrayList<>();
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        } else if (file.length() == 1347) {
-                            try {
-                                ParticipantPacket packet = new ParticipantPacket(
-                                        ByteBuffer.wrap(Files.readAllBytes(file.toPath()))
-                                );
-
-                                if (numParticipants != null && names.size() < numParticipants) {
-                                    names.addAll(packet.getNames().stream()
-                                            .limit(numParticipants)
-                                            .map(SimpleStringProperty::get)
-                                            .filter(name -> !name.equals(""))
-                                            .collect(Collectors.toList()));
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        } else if (file.length() == 1028) {
-                            try {
-                                AdditionalParticipantPacket packet = new AdditionalParticipantPacket(
-                                        ByteBuffer.wrap(Files.readAllBytes(file.toPath()))
-                                );
-
-                                if (numParticipants != null && names.size() < numParticipants) {
-                                    names.addAll(packet.getNames().stream()
-                                            .limit(numParticipants)
-                                            .map(SimpleStringProperty::get)
-                                            .filter(name -> !name.equals(""))
-                                            .collect(Collectors.toList()));
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        if (numParticipants != null && names.size() >= numParticipants) {
-                            if (allNames.size() == 0 || !allNames.get(allNames.size() - 1).equals(names)) {
-                                allNames.add(names);
-                            }
-                        }
-                    }
-
-                    executorService.shutdown();
-
-                    Set<String> masterNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-                    masterNames.addAll(allNames.get(0));
-
-                    List<String> oldNames = allNames.get(0);
-                    for (List<String> newNames : allNames.subList(1, allNames.size())) {
-                        ListIterator<String> iterator = newNames.listIterator();
-                        while (iterator.hasNext()) {
-                            int nextIndex = iterator.nextIndex();
-                            String newName = iterator.next();
-
-                            if (!oldNames.get(nextIndex).equals(newName)) {
-                                String oldName = oldNames.get(oldNames.size() - 1);
-                                String name = oldName;
-                                int minLength = Math.min(oldName.length(), newName.length());
-                                for (int i = 0; i < minLength; i++) {
-                                    if (oldName.charAt(i) != newName.charAt(i)) {
-                                        name = oldName.substring(0, i);
-                                        break;
-                                    }
-                                }
-                                masterNames.remove(oldName);
-                                masterNames.add(name);
-                            }
-                        }
-                        oldNames = newNames;
-                    }
-
-                    ObservableList<Driver> drivers = FXCollections.observableArrayList(param -> new Observable[]{param.getCar().carNameProperty()});
-                    drivers.addAll(masterNames
-                            .stream()
-                            .map(Driver::new)
-                            .collect(Collectors.toList()));
-
-                    return drivers;
-                }
-            };
-        }
-    }
-
-    private static class DriverProgress implements Runnable {
-        private final int fileCount;
-        private final ProgressBar prgProgress;
-        private int fileNumber;
-
-
-        public DriverProgress(int fileNumber, int fileCount, ProgressBar prgProgress) {
-            this.fileNumber = fileNumber;
-            this.fileCount = fileCount;
-            this.prgProgress = prgProgress;
-        }
-
-        @Override
-        public void run() {
-            Double progress = ((double) fileNumber / (double) fileCount);
-            prgProgress.setProgress(progress);
-            System.out.println(String.format("Processing Telemetry: %1$.2f%%", progress * 100));
-        }
-
-        public void setFileNumber(int fileNumber) {
-            this.fileNumber = fileNumber;
-        }
-    }
-
     private static class PythonExecutor extends Service<Integer> {
         private final String[] command;
+        private Process process;
 
         public PythonExecutor(String[] command) {
             this.command = command;
         }
 
         @Override
+        protected void cancelled() {
+            super.cancelled();
+            try {
+                process.getInputStream().close();
+                process.getErrorStream().close();
+                process.getOutputStream().close();
+                process.destroy();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
         protected Task<Integer> createTask() {
             return new Task<Integer>() {
                 @Override
-                protected Integer call() {
+                protected Integer call() throws Exception {
                     updateMessage("");
                     String outputText = "";
                     String commandString = "";
@@ -1169,20 +1347,22 @@ public class ConfigurationEditorController implements Initializable {
                     outputText += commandString + "\n\n";
                     updateMessage(outputText);
                     System.out.println("Running Command: " + commandString);
+                    process = new ProcessBuilder(command).redirectErrorStream(true).start();
 
                     try {
-                        Process p = new ProcessBuilder(command).redirectErrorStream(true).start();
-                        BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                        BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
                         String s;
                         while ((s = br.readLine()) != null) {
                             outputText += s + "\n";
                             updateMessage(outputText);
                             System.out.println(s);
                         }
-                        return p.waitFor();
-                    } catch (IOException | InterruptedException ex) {
-                        ex.printStackTrace();
-                        return -1;
+                        return process.waitFor();
+                    } catch (IOException e) {
+                        if (!isCancelled()) {
+                            e.printStackTrace();
+                            return -1;
+                        } else return 0;
                     }
                 }
             };
@@ -1204,9 +1384,9 @@ public class ConfigurationEditorController implements Initializable {
                 tableView.getSelectionModel().select(getTableRow().getIndex());
                 tableView.edit(tableView.getSelectionModel().getSelectedIndex(), column);
             });
-            this.colorPicker.valueProperty().addListener((observable, oldValue, newValue) -> {
+            this.colorPicker.setOnHiding(event -> {
                 if (isEditing()) {
-                    commitEdit(newValue);
+                    commitEdit(this.colorPicker.getValue());
                 }
             });
             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -1223,6 +1403,62 @@ public class ConfigurationEditorController implements Initializable {
                 this.colorPicker.setValue(item);
                 this.setGraphic(this.colorPicker);
             }
+        }
+    }
+
+    private class ConfigurationValidator {
+        private final SimpleBooleanProperty invalidConfiguration = new SimpleBooleanProperty(true);
+
+        private final SimpleBooleanProperty invalidSourceTelemetry = new SimpleBooleanProperty(true);
+        private final SimpleBooleanProperty invalidOutputVideo = new SimpleBooleanProperty(true);
+        private final SimpleBooleanProperty invalidVideoStartTime = new SimpleBooleanProperty(false);
+        private final SimpleBooleanProperty invalidVideoEndTime = new SimpleBooleanProperty(false);
+        private final SimpleBooleanProperty invalidVideoSyncTime = new SimpleBooleanProperty(false);
+
+        public ConfigurationValidator() {
+            ChangeListener<Boolean> listener = (observable, oldValue, newValue) -> invalidConfiguration.setValue(checkAll());
+
+            invalidSourceTelemetry.addListener(listener);
+            invalidOutputVideo.addListener(listener);
+            invalidVideoStartTime.addListener(listener);
+            invalidVideoEndTime.addListener(listener);
+            invalidVideoSyncTime.addListener(listener);
+        }
+
+        private Boolean checkAll() {
+            return (invalidSourceTelemetry.getValue()
+                || invalidOutputVideo.getValue()
+                || invalidVideoStartTime.getValue()
+                || invalidVideoEndTime.getValue()
+                || invalidVideoSyncTime.getValue());
+        }
+
+        public boolean getInvalidConfiguration() {
+            return invalidConfiguration.get();
+        }
+
+        public SimpleBooleanProperty invalidConfigurationProperty() {
+            return invalidConfiguration;
+        }
+
+        public void setInvalidSourceTelemetry(boolean invalidSourceTelemetry) {
+            this.invalidSourceTelemetry.set(invalidSourceTelemetry);
+        }
+
+        public void setInvalidOutputVideo(boolean invalidOutputVideo) {
+            this.invalidOutputVideo.set(invalidOutputVideo);
+        }
+
+        public void setInvalidVideoStartTime(boolean invalidVideoStartTime) {
+            this.invalidVideoStartTime.set(invalidVideoStartTime);
+        }
+
+        public void setInvalidVideoEndTime(boolean invalidVideoEndTime) {
+            this.invalidVideoEndTime.set(invalidVideoEndTime);
+        }
+
+        public void setInvalidVideoSyncTime(boolean invalidVideoSyncTime) {
+            this.invalidVideoSyncTime.set(invalidVideoSyncTime);
         }
     }
 }

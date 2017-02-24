@@ -46,12 +46,13 @@ public class ConfigurationEditor extends Application {
         stage.setX(primaryScreenBounds.getMinX());
         stage.setY(primaryScreenBounds.getMinY());
         stage.show();
-        stage.setMinWidth(stage.getWidth());
-        stage.setMaxWidth(stage.getWidth());
-        stage.setMaxHeight(stage.getHeight());
 
         if (stage.getHeight() > primaryScreenBounds.getHeight()) {
-            stage.setHeight(primaryScreenBounds.getHeight()*.90);
+            stage.setHeight(primaryScreenBounds.getHeight() * .90);
+        }
+
+        if (stage.getWidth() > primaryScreenBounds.getWidth()) {
+            stage.setWidth(primaryScreenBounds.getWidth() * .90);
         }
 
         stage.setTitle("Project CARS Replay Enhancer Configuration Editor");
