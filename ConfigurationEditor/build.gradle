@@ -1,8 +1,21 @@
 mainClassName = "com.senorpez.replayenhancer.configurationeditor.ConfigurationEditor"
 
-version = '0.2'
+version = '0.2.1'
 
 dependencies {
     compile "com.fasterxml.jackson.core:jackson-databind:2.8.4"
     compile "io.humble:humble-video-all:0.2.1"
+    compile 'org.slf4j:slf4j-simple:1.7.25'
+}
+
+distZip.shouldRunAfter(build)
+distTar.shouldRunAfter(build)
+
+jar {
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/*.MF'
+
+    manifest {
+        attributes 'Main-Class': 'com.senorpez.replayenhancer.configurationeditor.ConfigurationEditor',
+                'Class-Path': configurations.runtime.files.collect { "$it.name"}.join(' ')
+    }
 }

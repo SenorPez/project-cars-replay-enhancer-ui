@@ -29,6 +29,17 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-all/0.2.1/b30835b18e2634a5ed810b24f5fa8fcd8f75bc53/humble-video-all-0.2.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-all/0.2.1/8b7e9342a88fde574a9bbf3193de7f51c674cee8/humble-video-all-0.2.1-sources.jar!/"/>
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-simple/1.7.25/8dacf9514f0c707cbbcdd6fd699e8940d42fb54e/slf4j-simple-1.7.25.jar!/"/>
+        </CLASSES>
+        <JAVADOC/>
         <SOURCES/>
       </library>
     </orderEntry>
@@ -82,7 +93,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-i686-apple-darwin12/0.2.1/340c842394da1a639b26ea08da076ea3479c08b1/humble-video-arch-i686-apple-darwin12-0.2.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-i686-apple-darwin12/0.2.1/e3d73c785c17b801699a7b2c72fb5c05f267543c/humble-video-arch-i686-apple-darwin12-0.2.1-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="PROVIDED">
@@ -91,7 +104,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-i686-apple-darwin12/0.2.1/340c842394da1a639b26ea08da076ea3479c08b1/humble-video-arch-i686-apple-darwin12-0.2.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-i686-apple-darwin12/0.2.1/e3d73c785c17b801699a7b2c72fb5c05f267543c/humble-video-arch-i686-apple-darwin12-0.2.1-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="RUNTIME">
@@ -100,7 +115,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-x86_64-apple-darwin12/0.2.1/c76b69da9ad519e9ac5eaa1d3eabd2b34fa63fbb/humble-video-arch-x86_64-apple-darwin12-0.2.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-x86_64-apple-darwin12/0.2.1/746e1fc77242c1c8fd0a5e41addebe91fefcd9a7/humble-video-arch-x86_64-apple-darwin12-0.2.1-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="PROVIDED">
@@ -109,7 +126,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-x86_64-apple-darwin12/0.2.1/c76b69da9ad519e9ac5eaa1d3eabd2b34fa63fbb/humble-video-arch-x86_64-apple-darwin12-0.2.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-x86_64-apple-darwin12/0.2.1/746e1fc77242c1c8fd0a5e41addebe91fefcd9a7/humble-video-arch-x86_64-apple-darwin12-0.2.1-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="RUNTIME">
@@ -118,7 +137,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-i686-pc-linux-gnu6/0.2.1/10eecdfef75064885ba99997a2aae57a1fb58e96/humble-video-arch-i686-pc-linux-gnu6-0.2.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-i686-pc-linux-gnu6/0.2.1/9caf609be521997e5e42da0233c1f5fd2e20c349/humble-video-arch-i686-pc-linux-gnu6-0.2.1-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="PROVIDED">
@@ -127,7 +148,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-i686-pc-linux-gnu6/0.2.1/10eecdfef75064885ba99997a2aae57a1fb58e96/humble-video-arch-i686-pc-linux-gnu6-0.2.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-i686-pc-linux-gnu6/0.2.1/9caf609be521997e5e42da0233c1f5fd2e20c349/humble-video-arch-i686-pc-linux-gnu6-0.2.1-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="RUNTIME">
@@ -136,7 +159,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-x86_64-pc-linux-gnu6/0.2.1/bb11e003133d178b129e70b3a23f415055e2b60e/humble-video-arch-x86_64-pc-linux-gnu6-0.2.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-x86_64-pc-linux-gnu6/0.2.1/c28ba8e4d0e912abdb35d730a449cf07a99e8130/humble-video-arch-x86_64-pc-linux-gnu6-0.2.1-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="PROVIDED">
@@ -145,7 +170,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-x86_64-pc-linux-gnu6/0.2.1/bb11e003133d178b129e70b3a23f415055e2b60e/humble-video-arch-x86_64-pc-linux-gnu6-0.2.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-x86_64-pc-linux-gnu6/0.2.1/c28ba8e4d0e912abdb35d730a449cf07a99e8130/humble-video-arch-x86_64-pc-linux-gnu6-0.2.1-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="RUNTIME">
@@ -154,7 +181,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-i686-w64-mingw32/0.2.1/f05413748668866de6bca192c638141d1de6627e/humble-video-arch-i686-w64-mingw32-0.2.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-i686-w64-mingw32/0.2.1/9985902381c4f3f9ce1af9cf5fb6c9cb883c63f1/humble-video-arch-i686-w64-mingw32-0.2.1-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="PROVIDED">
@@ -163,7 +192,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-i686-w64-mingw32/0.2.1/f05413748668866de6bca192c638141d1de6627e/humble-video-arch-i686-w64-mingw32-0.2.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-i686-w64-mingw32/0.2.1/9985902381c4f3f9ce1af9cf5fb6c9cb883c63f1/humble-video-arch-i686-w64-mingw32-0.2.1-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="RUNTIME">
@@ -172,7 +203,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-x86_64-w64-mingw32/0.2.1/836f73e15a137882cd7d49d7f726ad8723521632/humble-video-arch-x86_64-w64-mingw32-0.2.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-x86_64-w64-mingw32/0.2.1/bfeb1f500fea8cc7b3efb6a0954de4dc08fb5f23/humble-video-arch-x86_64-w64-mingw32-0.2.1-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="PROVIDED">
@@ -181,7 +214,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-x86_64-w64-mingw32/0.2.1/836f73e15a137882cd7d49d7f726ad8723521632/humble-video-arch-x86_64-w64-mingw32-0.2.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-arch-x86_64-w64-mingw32/0.2.1/bfeb1f500fea8cc7b3efb6a0954de4dc08fb5f23/humble-video-arch-x86_64-w64-mingw32-0.2.1-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="RUNTIME">
@@ -190,7 +225,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-noarch/0.2.1/1cd0c5b066240cb681c3d6716b949f46cdc65ba9/humble-video-noarch-0.2.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-noarch/0.2.1/e33008d8aaa57e5cd78576b5cc0530d30f0edd79/humble-video-noarch-0.2.1-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="PROVIDED">
@@ -199,13 +236,15 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-noarch/0.2.1/1cd0c5b066240cb681c3d6716b949f46cdc65ba9/humble-video-noarch-0.2.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/io.humble/humble-video-noarch/0.2.1/e33008d8aaa57e5cd78576b5cc0530d30f0edd79/humble-video-noarch-0.2.1-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
-          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.5/6b262da268f8ad9eff941b25503a9198f0a0ac93/slf4j-api-1.7.5.jar!/"/>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.25/da76ca59f6a57ee3102f8f9bd9cee742973efa8a/slf4j-api-1.7.25.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES/>
@@ -214,7 +253,7 @@
     <orderEntry type="module-library" scope="PROVIDED">
       <library>
         <CLASSES>
-          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.5/6b262da268f8ad9eff941b25503a9198f0a0ac93/slf4j-api-1.7.5.jar!/"/>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.25/da76ca59f6a57ee3102f8f9bd9cee742973efa8a/slf4j-api-1.7.25.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES/>
@@ -259,7 +298,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/org.testfx/testfx-core/4.0.5-alpha/5912b4581ddca4e6ebc5b5201da1b03741bf6eb3/testfx-core-4.0.5-alpha.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/org.testfx/testfx-core/4.0.5-alpha/544a6e36ac2f99c96bb2bc46a5577debf619445d/testfx-core-4.0.5-alpha-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
@@ -268,7 +309,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/org.testfx/testfx-junit/4.0.5-alpha/1abb504b6fc73a5f00f1b80843fed7817ef32231/testfx-junit-4.0.5-alpha.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/org.testfx/testfx-junit/4.0.5-alpha/6467431fc66061ab9d99aa7d384762ad6ca2fafd/testfx-junit-4.0.5-alpha-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
@@ -321,7 +364,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/20.0/89507701249388e1ed5ddcf8c41f4ce1be7831ef/guava-20.0.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/20.0/9c8493c7991464839b612d7547d6c263adf08f75/guava-20.0-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
@@ -330,7 +375,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/annotations/3.0.1u2/89a670596c98e416fb2583c08ae34cc5c3ce2097/annotations-3.0.1u2.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/annotations/3.0.1u2/3f8905fee497bc64999ea458285311220cfa92bf/annotations-3.0.1u2-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
@@ -339,7 +386,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/net.jcip/jcip-annotations/1.0/afba4942caaeaf46aab0b976afd57cc7c181467e/jcip-annotations-1.0.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/net.jcip/jcip-annotations/1.0/d853625d8001c00d40abed553e670279504699f9/jcip-annotations-1.0-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
@@ -348,7 +397,9 @@
           <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/3.0.1/f7be08ec23c21485b9b5a1cf1654c2ec8c58168d/jsr305-3.0.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
-        <SOURCES/>
+        <SOURCES>
+          <root url="jar://C:/Users/502625185/.gradle/caches/modules-2/files-2.1/com.google.code.findbugs/jsr305/3.0.1/a2926c057ca3b662b9db194c869bdbe7d3bb8aef/jsr305-3.0.1-sources.jar!/"/>
+        </SOURCES>
       </library>
     </orderEntry>
   </component>
