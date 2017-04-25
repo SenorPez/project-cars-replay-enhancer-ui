@@ -16,6 +16,10 @@
       <module name="configurationeditor_test" target="1.8" />
       <module name="packetcapture_main" target="1.8" />
       <module name="packetcapture_test" target="1.8" />
+      <module name="Replay Enhancer UI-configurationeditor_main" target="1.8" />
+      <module name="Replay Enhancer UI-configurationeditor_test" target="1.8" />
+      <module name="Replay Enhancer UI-packetcapture_main" target="1.8" />
+      <module name="Replay Enhancer UI-packetcapture_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

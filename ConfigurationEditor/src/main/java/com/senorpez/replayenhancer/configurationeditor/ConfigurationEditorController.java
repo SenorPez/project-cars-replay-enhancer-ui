@@ -430,7 +430,8 @@ public class ConfigurationEditorController implements Initializable {
     private static class DriverPopulator extends Service<List<Driver>> {
         private final Path telemetryDirectory;
         private final Set<String> names = new HashSet<>();
-        private Integer sessionState = 0;
+        private Integer raceState = null;
+        private Boolean raceFinished = false;
         private Boolean clearDrivers = false;
 
         public DriverPopulator(Path telemetryDirectory) {
@@ -444,21 +445,31 @@ public class ConfigurationEditorController implements Initializable {
                 if (length == 1367) {
                     processPacket(new TelemetryDataPacket(packetData));
                 } else if (length == 1347) {
-                    if (sessionState == 5) {
-                        if (clearDrivers) {
-                            clearDrivers = false;
-                            names.clear();
-                        }
-                        processPacket(new ParticipantPacket(packetData));
-                    } else clearDrivers = true;
+                    if (raceState == 3) { raceFinished = true; }
+
+                    if (raceState == 2 && raceFinished) {
+                        clearDrivers = true;
+                    }
+
+                    if (clearDrivers) {
+                        clearDrivers = false;
+                        raceFinished = false;
+                        names.clear();
+                    }
+                    processPacket(new ParticipantPacket(packetData));
                 } else if (length == 1028) {
-                    if (sessionState == 5) {
-                        if (clearDrivers) {
-                            clearDrivers = false;
-                            names.clear();
-                        }
-                        processPacket(new AdditionalParticipantPacket(packetData));
-                    } else clearDrivers = true;
+                    if (raceState == 3) { raceFinished = true; }
+
+                    if (raceState == 2 && raceFinished) {
+                        clearDrivers = true;
+                    }
+
+                    if (clearDrivers) {
+                        clearDrivers = false;
+                        raceFinished = false;
+                        names.clear();
+                    }
+                    processPacket(new ParticipantPacket(packetData));
                 }
             } catch (IOException e) {
                 if (!getState().equals(State.CANCELLED)) {
@@ -486,7 +497,7 @@ public class ConfigurationEditorController implements Initializable {
         }
 
         private void processPacket(TelemetryDataPacket packet) {
-            sessionState = packet.getSessionState();
+            raceState = packet.getRaceState();
         }
 
         @Override

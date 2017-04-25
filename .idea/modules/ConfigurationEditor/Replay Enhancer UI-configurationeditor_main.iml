@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":configurationeditor:main" external.linked.project.path="$MODULE_DIR$/../../../ConfigurationEditor" external.root.project.path="$MODULE_DIR$/../../.." external.system.id="GRADLE" external.system.module.group="com.senorpez.replayenhancer" external.system.module.type="sourceSet" external.system.module.version="0.2.2rc1" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
+    <output url="file://$MODULE_DIR$/../../../ConfigurationEditor/build/classes/main" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../ConfigurationEditor/src/main">
+      <sourceFolder url="file://$MODULE_DIR$/../../../ConfigurationEditor/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../ConfigurationEditor/src/main/resources" type="java-resource" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.8.4" level="project" />
+    <orderEntry type="library" name="Gradle: io.humble:humble-video-all:0.2.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-simple:1.7.25" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.8.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.8.4" level="project" />
+    <orderEntry type="library" name="Gradle: io.humble:humble-video-arch-i686-apple-darwin12:0.2.1" level="project" />
+    <orderEntry type="library" name="Gradle: io.humble:humble-video-arch-x86_64-apple-darwin12:0.2.1" level="project" />
+    <orderEntry type="library" name="Gradle: io.humble:humble-video-arch-i686-pc-linux-gnu6:0.2.1" level="project" />
+    <orderEntry type="library" name="Gradle: io.humble:humble-video-arch-x86_64-pc-linux-gnu6:0.2.1" level="project" />
+    <orderEntry type="library" name="Gradle: io.humble:humble-video-arch-i686-w64-mingw32:0.2.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.humble:humble-video-noarch:0.2.1" level="project" />
+    <orderEntry type="library" name="Gradle: io.humble:humble-video-arch-x86_64-w64-mingw32:0.2.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.25" level="project" />
+  </component>
+</module>
